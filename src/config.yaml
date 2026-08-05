@@ -36,6 +36,18 @@ simulation:
   break_after_minutes: 240        # scheduled break policy
   break_duration_minutes: 30
 
+  # Task demand for one shift. Sized so a normal shift (S1) runs close to but
+  # below the capacity of three operators, which leaves S2 (x1.5 demand)
+  # genuinely over capacity. That is the point where protecting the operator
+  # actually costs throughput, and where B2 and B3 must diverge.
+  #   3 operators x 480 min = 1440 operator-minutes
+  #   mean processing time at average skill ~= 15 min  ->  ~94 tasks = 100%
+  tasks_per_shift: 75             # [TUNABLE] ~80% of nominal capacity
+  task_type_mix:                  # [TUNABLE] must sum to 1.0
+    L: 0.35
+    M: 0.40
+    H: 0.25
+
   # T_maint — machine unavailable after HC4 fires (design §3.4, §8).
   # L0 is estimated from tool wear in D1, so the degradation process being
   # modelled is TOOL wear and the maintenance action is a TOOL CHANGE, not an
