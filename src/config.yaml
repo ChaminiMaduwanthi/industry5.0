@@ -317,8 +317,22 @@ constraints:
     enter_rest_at: 0.80
     leave_rest_at: 0.60           # [TUNABLE]
 
-  soft:                           # penalty terms added to the objective
-    SC1_workload_gini: 1.0        # [TUNABLE] weight on Gini(W)
+  # Soft constraints — preferences added to the objective (design §8).
+  #
+  # These values were briefly rescaled on the theory that they were outvoting
+  # the objective, since they sum to 1.70 against its 1.00. Measured, that was
+  # wrong: cutting them sixfold changed the results by nothing. The originals
+  # are therefore restored, because a parameter should not move without a
+  # measured reason.
+  #
+  # The real reason the five objective weights barely matter is upstream of
+  # both. In scenario S2, 95.8% of decisions face a feasible set of zero or one
+  # candidate after the hard constraints filter, so there is nothing to weigh;
+  # in the 4.2% that offer a genuine choice the score spread has a median of
+  # 0.016. The constraints, not the preferences and not the weights, are doing
+  # the work. Recorded in results/sensitivity.csv.
+  soft:
+    SC1_workload_gini: 1.0        # [TUNABLE] weight on workload share
     SC2_skill_mismatch: 0.5       # [TUNABLE] weight on (1 - S)
     SC3_machine_switching: 0.2    # [TUNABLE] setup penalty
 
