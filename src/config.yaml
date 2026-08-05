@@ -1,0 +1,341 @@
+# =============================================================================
+#  Human-Centric Industry 5.0 Digital Twin Framework — Configuration
+# =============================================================================
+#  ALL tunable parameters live here. Nothing in src/ may hard-code a number
+#  that appears in this file.
+#
+#  Design reference : docs/04-framework-design.md  (v2, FROZEN at GATE 3)
+#  Created          : 2026-08-05
+#
+#  ---------------------------------------------------------------------------
+#  READ BEFORE EDITING
+#  ---------------------------------------------------------------------------
+#  [FROZEN]  = model STRUCTURE, fixed at GATE 3 (2026-08-04). Do not change.
+#  [TUNABLE] = parameter VALUE. May be changed; requires re-running experiments.
+#  [DATA]    = derived from a real dataset in Phase 4. Do not invent by hand.
+#  [CALIB]   = calibrated by us, NOT measured and NOT taken from any paper.
+#              Must be covered by the sensitivity analysis (T7.6b).
+# =============================================================================
+
+meta:
+  version: "1.0"
+  design_doc: "docs/04-framework-design.md"
+  design_frozen: "2026-08-04"     # GATE 3
+  config_created: "2026-08-05"
+
+
+# =============================================================================
+#  1 · SIMULATION  (experiment-plan §2)
+# =============================================================================
+simulation:
+  n_machines: 5
+  n_operators: 3
+  shift_minutes: 480              # 8 h
+  epoch_minutes: 15               # decision epoch (design §9)
+  shifts_per_run: 20
+  break_after_minutes: 240        # scheduled break policy
+  break_duration_minutes: 30
+
+  # T_maint — machine unavailable after HC4 fires (design §3.4, §8).
+  # L0 is estimated from tool wear in D1, so the degradation process being
+  # modelled is TOOL wear and the maintenance action is a TOOL CHANGE, not an
+  # overhaul. 15 min matches a milling tool change; 45 min would have made the
+  # machine side dominate the shift for no data-supported reason.
+  maintenance_minutes: 15         # [TUNABLE]
+
+
+# =============================================================================
+#  2 · TASK TYPES  (design §4.3 — ISO 8996 metabolic classes)
+# =============================================================================
+#  E_w = (W/m2) * A_Du * 0.01434  [kcal/min],  A_Du = 1.8 m2
+#  Values below are the evaluated result of that equation — do not re-derive.
+tasks:
+  body_surface_area_m2: 1.8       # [FROZEN] A_Du, ISO 8996 reference body
+  metabolic_factor: 0.01434       # [FROZEN] W/m2 -> kcal/min conversion
+
+  types:
+    L:                            # Light
+      iso8996_class: 1
+      watt_per_m2: 100
+      energy_demand_kcal_min: 2.58    # [FROZEN] E'_w(L)
+      severity_kappa: 0.7             # [TUNABLE] machine wear multiplier
+      rula_base: 2                    # [FROZEN] McAtamney & Corlett (1993)
+      cognitive_base: 0.20            # [TUNABLE] c_tau
+      nominal_time_minutes: 8         # [TUNABLE] p0_tau, at skill S = 1.0
+    M:                            # Medium
+      iso8996_class: 2
+      watt_per_m2: 165
+      energy_demand_kcal_min: 4.26
+      severity_kappa: 1.0
+      rula_base: 3
+      cognitive_base: 0.40
+      nominal_time_minutes: 12
+    H:                            # Heavy
+      iso8996_class: 3
+      watt_per_m2: 230
+      energy_demand_kcal_min: 5.94
+      severity_kappa: 1.4
+      rula_base: 4
+      cognitive_base: 0.60
+      nominal_time_minutes: 18
+
+
+# =============================================================================
+#  3 · OPERATORS  (design §4.2)
+# =============================================================================
+#  Synthetic operators. Anthropometrics are a design choice, not data.
+#  E_rest and AWL are COMPUTED from the equations below — the values shown are
+#  the expected results and exist so that code can be unit-tested against them.
+#
+#    E_rest = (S + 10W + 6.25H_cm - 5*age) / 1440      Mifflin et al. (1990)
+#             S = +5 (male), -161 (female)
+#    AWL    = (60 - 0.55*age) * 0.005 * W / 3          male   } Price (1990)
+#             (48 - 0.37*age) * 0.005 * W / 3          female } Silva et al. (2016)
+operators:
+  recompute_from_anthropometrics: true   # if false, use the cached values below
+
+  profiles:
+    OP1:
+      sex: male
+      age: 28
+      weight_kg: 72
+      height_cm: 175
+      e_rest_kcal_min: 1.166      # expected value — asserted in tests
+      awl_kcal_min: 5.352
+    OP2:
+      sex: female
+      age: 35
+      weight_kg: 62
+      height_cm: 163
+      e_rest_kcal_min: 0.905
+      awl_kcal_min: 3.622
+    OP3:
+      sex: male
+      age: 47
+      weight_kg: 80
+      height_cm: 170
+      e_rest_kcal_min: 1.134
+      awl_kcal_min: 4.553
+
+  # Skill matrix S[operator][task] (design §4.6). Constant within a shift.
+  # Processing time: p = p0 / (0.5 + 0.5 * S)
+  skill_matrix:                   # [TUNABLE]
+    OP1: {L: 0.90, M: 0.60, H: 0.30}
+    OP2: {L: 0.50, M: 0.90, H: 0.70}
+    OP3: {L: 0.70, M: 0.40, H: 0.90}
+
+
+# =============================================================================
+#  4 · FATIGUE  (design §4.1, §4.4, §4.5)  ***  NOVELTY CLAIM 2  ***
+# =============================================================================
+#  F(t+dt) = E* + (F(t) - E*) * exp(-rho * dt)
+#      E*   = E_w(tau) when working, E_rest when resting/idle
+#      rho  = lambda when fatiguing, mu when recovering
+#  Normalised: F_hat = clip((F - E_rest) / (AWL - E_rest), 0, 1)
+#
+#  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+#  lambda AND mu ARE [CALIB] — CALIBRATED BY US.
+#  They do NOT appear in Calzavara et al. (2019) or in any other publication.
+#  NEVER write "as reported by Calzavara et al." for these two numbers.
+#  Correct wording is in docs/04-framework-design.md §4.5.
+#  They are covered by the mandatory sensitivity analysis T7.6b (see §12 below).
+#  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+fatigue:
+  model: "calzavara2019rest"      # [FROZEN] exponential work/recovery form
+  lambda_per_min: 0.020           # [CALIB] accumulation rate, t_half = 35 min
+  mu_per_min: 0.046               # [CALIB] recovery rate,     t_half = 15 min
+
+  # Calibration criteria that these two values satisfy (design §4.5):
+  #   1. mu > lambda                       (recovery faster than fatiguing)
+  #   2. mu < 0.132  = Yi et al. (2022) localized-muscle upper bound
+  #   3. F_hat traverses a meaningful band over one shift (0.66 - 0.76, §4.10)
+  literature_upper_bound_mu: 0.132        # Yi et al. (2022) IJERPH 19(2):930
+  operator_specific: false        # true only if WESAD calibration is done (T4.x)
+
+
+# =============================================================================
+#  5 · ERGONOMICS AND COGNITIVE LOAD  (design §4.7, §4.8)
+# =============================================================================
+#  R = clip(RULA_base(tau) + psi1 * F_hat + psi2 * v_hat, 1, 7)   <- CP5
+#  C = clip(c_tau + gamma1*(1-H) + gamma2*Q + gamma3*(n-1)/(M-1), 0, 1)  <- CP3
+ergonomics:
+  psi1_fatigue: 2.0               # [TUNABLE] fatigue -> worse posture
+  psi2_machine_speed: 1.0         # [TUNABLE] CP5
+  rula_min: 1
+  rula_max: 7
+
+cognitive:
+  gamma1_machine_health: 0.30     # [TUNABLE] CP3
+  gamma2_defect_risk: 0.20        # [TUNABLE]
+  gamma3_multi_machine: 0.15      # [TUNABLE]
+  source: "hart1988nasatlx"
+
+
+# =============================================================================
+#  6 · MACHINE TWIN  (design §3)
+# =============================================================================
+#  H(t+dt) = max(0, H(t) - dt * kappa_tau / L0)
+#  E(t)    = e_idle + 1[busy] * delta_e(tau)
+machines:
+  # [DATA] Per-machine parameters are NOT written here. They are estimated in
+  # Phase 4 (T4.2/T4.3) and loaded from the CSV below.
+  #   L0        <- D1 AI4I 2020   (tool wear at failure)
+  #   e_idle    <- D3 Steel Industry Energy
+  #   delta_e   <- D3, by Load_Type (Light / Medium / Maximum)
+  params_file: "data/processed/machine_params.csv"
+
+  # L0 measured from D1 is ~216 busy-minutes (tool wear at TWF events). At full
+  # utilisation that is 0.42-0.49 of a shift for Medium work, i.e. roughly two
+  # tool changes per machine per shift. That is realistic for milling and it
+  # creates genuine scheduling pressure, which is what makes the experiment
+  # informative.
+  #
+  # ⚠️ PHASE 5 CHECK (alongside T5.16): if machine downtime turns out to
+  # dominate the shift and crowds out the human-centric effects, raise this
+  # multiplier — do NOT edit the degradation equation, which is frozen.
+  # Record any change here with the date and the measured downtime share.
+  l0_scale_factor: 1.0            # [TUNABLE]
+  l0_scale_decision_log: "not yet measured (Phase 5)"
+
+  health_init: 1.0
+  health_min_operational: 0.30    # [TUNABLE] H_min, also HC4 threshold
+  degradation_when_idle: 0.0      # [FROZEN] kappa = 0 when idle
+  health_after_maintenance: 1.0
+
+  # Energy figures from D3 are rescaled to this factory's scale.
+  # Only the RATIO between load types carries over from the data; the absolute
+  # level is arbitrary and cancels out of every B1/B2/B3 comparison.
+  energy_rescale_to_kwh_per_hour: 5.0   # [TUNABLE] reference level for Medium
+
+
+# =============================================================================
+#  7 · QUALITY  (design §3.3)  ***  THE COUPLING EQUATION  ***
+# =============================================================================
+#  Q = sigmoid( b0 + b1*(1-H) + b2*(1-S) + b3*F_hat + b4*kappa )
+#                                 ^CP1      ^CP2
+#  Constraint during fitting: b2 > 0 and b3 > 0.
+quality:
+  fit_from_data: true             # [DATA] fitted on D4 SECOM / D1 in T5.5
+  fallback_coefficients:          # used only until the fit is available
+    b0: -4.00
+    b1: 2.50                      # machine degradation
+    b2: 1.50                      # [FROZEN sign > 0] skill gap        (CP1)
+    b3: 1.20                      # [FROZEN sign > 0] fatigue          (CP2)
+    b4: 0.60                      # task severity
+  enforce_positive: [b2, b3]
+
+
+# =============================================================================
+#  8 · SUSTAINABILITY  (design §3.2)
+# =============================================================================
+sustainability:
+  emission_factor_kg_co2_per_kwh: 0.33   # [TUNABLE] Ember (2025), Sri Lanka grid
+  emission_factor_source: "ember2025electricity"
+  emission_factor_year: 2025
+  # Historical range 2013-2025 is 0.30 - 0.53. CO2e = kWh * EF is a constant
+  # multiplier, so the B1/B2/B3 ranking is invariant to this choice.
+  emission_factor_range: [0.30, 0.53]
+
+
+# =============================================================================
+#  9 · CONSTRAINTS  (design §8)  ***  THE CORE OF INDUSTRY 5.0  ***
+# =============================================================================
+#  Hard constraints filter the feasible set BEFORE the optimiser runs.
+#  They can never be "bought" with a penalty term. That is the real difference
+#  between Industry 4.0 and Industry 5.0 in this framework.
+constraints:
+  hard:
+    HC1_fatigue_max: 0.80         # [TUNABLE] fraction of personal AWL
+    HC2_skill_min: 0.40           # [TUNABLE]
+    HC3_rula_max: 5               # [TUNABLE] RULA action level
+    HC4_health_min: 0.30          # [TUNABLE] = machines.health_min_operational
+
+  # Hysteresis stops the operator flipping between work and rest every epoch.
+  hc1_hysteresis:
+    enter_rest_at: 0.80
+    leave_rest_at: 0.60           # [TUNABLE]
+
+  soft:                           # penalty terms added to the objective
+    SC1_workload_gini: 1.0        # [TUNABLE] weight on Gini(W)
+    SC2_skill_mismatch: 0.5       # [TUNABLE] weight on (1 - S)
+    SC3_machine_switching: 0.2    # [TUNABLE] setup penalty
+
+  # T5.16 / design §12 carry-over. If the deferral rate over 640 epochs exceeds
+  # this, either relax HC1 to 0.85 or adjust the operator profiles, and RECORD
+  # THE DECISION HERE with the date and the measured rate.
+  deferral_rate_threshold: 0.15
+  deferral_decision_log: "not yet measured (T5.16)"
+
+
+# =============================================================================
+#  10 · OBJECTIVE  (design §7)
+# =============================================================================
+#  Scalarised (B3a): Z = w1*F + w2*R + w3*E + w4*W - w5*T
+#  Multi-objective (B3b, NSGA-II), 3 objectives:
+#      f1 People = (w1*F + w2*R) / (w1 + w2)
+#      f2 Planet = (w3*E + w4*W) / (w3 + w4)
+#      f3 Profit = -T
+objective:
+  active_weights: W-Balanced
+  weight_scenarios:               # [TUNABLE] all must sum to 1.0
+    W-Balanced: {w1: 0.20, w2: 0.15, w3: 0.20, w4: 0.15, w5: 0.30}
+    W-Human:    {w1: 0.35, w2: 0.25, w3: 0.10, w4: 0.10, w5: 0.20}
+    W-Green:    {w1: 0.15, w2: 0.10, w3: 0.30, w4: 0.25, w5: 0.20}
+    W-Profit:   {w1: 0.05, w2: 0.05, w3: 0.05, w4: 0.05, w5: 0.80}
+  # Expected result of T7.6: W-Profit ~ B2, i.e. Industry 4.0 is a special case
+  # of this framework with the human and environmental weights near zero.
+
+
+# =============================================================================
+#  11 · NORMALIZATION  (design §6)  — leakage-free protocol
+# =============================================================================
+#  x_hat = clip((x - x_min) / (x_max - x_min), 0, 1)
+#  Bounds come from B1 calibration runs on a SEPARATE seed block, then frozen.
+normalization:
+  method: minmax_p5_p95           # [FROZEN] P5/P95, not min/max (outlier-robust)
+  calibration_seeds: [100, 129]   # [FROZEN] calibration block
+  evaluation_seeds: [0, 29]       # [FROZEN] evaluation block — must not overlap
+  bounds:                         # filled by the calibration run, then frozen
+    energy_kwh: {p5: null, p95: null}
+    waste: {p5: 0.0, p95: null}
+    throughput: {p5: null, p95: null}
+  fixed_bounds:
+    ergonomic_rula: {min: 1, max: 7}
+
+
+# =============================================================================
+#  12 · EXPERIMENTS  (experiment-plan §6, §10)
+# =============================================================================
+experiment:
+  baselines: [B1, B2, B3]
+  scenarios: [S1, S2, S3]
+  seeds: 30                       # 0-29, the evaluation block
+  # 3 x 3 x 30 = 270 runs
+  scenario_settings:
+    S1: {demand_multiplier: 1.0, machine_failures: 0}
+    S2: {demand_multiplier: 1.5, machine_failures: 0}     # fatigue pressure
+    S3: {demand_multiplier: 1.0, machine_failures: 2}     # mid-shift disruption
+  output_csv: "results/raw_results.csv"
+
+# --- T7.6b : MANDATORY sensitivity analysis on the calibrated fatigue rates ---
+#  This is not optional. It is the condition under which lambda and mu may be
+#  declared calibrated rather than measured (design §4.5, GATE 3 carry-over).
+#  Pass criterion: the B2-vs-B3 RANKING must not flip across the scalings.
+sensitivity:
+  fatigue_rate_scalings: [0.5, 1.0, 2.0]
+  fatigue_scenario: S2            # highest fatigue pressure -> hardest test
+  fatigue_baselines: [B2, B3]
+  output_csv: "results/sensitivity_fatigue.csv"
+  weight_output_csv: "results/sensitivity.csv"
+
+
+# =============================================================================
+#  13 · REPRODUCIBILITY
+# =============================================================================
+reproducibility:
+  global_seed: 42
+  seed_numpy: true
+  seed_random: true
+  results_dir: "results"
+  figures_dir: "figures"
+  processed_data_dir: "data/processed"
