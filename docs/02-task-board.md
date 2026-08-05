@@ -278,6 +278,11 @@
 > **B2 vs B3 ranking එක වෙනස් නොවන බව** පෙන්නන්නම ඕන. එහෙම නම් නිගමන **robust**. (design §4.5)
 > ⚠️ **T7.8 (ablation) — ඔබේ ප්‍රබලම සාක්ෂිය.** CP1–CP5 නැති කලාම framework එක Destouet ලාගේ
 > static ආකෘතිය බවට පත් වෙනවා. **වෙනස = coupling එකේ ඇත්ත වටිනාකම.** (design §5)
+>
+> ⚠️ **T7.8 එකට තවත් හේතුවක් (2026-08-05 හි හම්බුණා):** `β₂` (skill→quality) සහ `β₃` (fatigue→quality)
+> **කිසිම dataset එකකින් fit කරන්න බෑ** — SECOM හි operator features නෑ. ඒ නිසා ඒවා **λ, μ වගේම
+> calibrated**. T7.8 එකෙන් ඒවා ඉවත් කලාම මොකද වෙන්නේ කියලා පෙන්නන එක **අනිවාර්යයි**.
+> Calibration විස්තර: [10-data-card.md](10-data-card.md) §3 (D4).
 
 > 💡 **Throughput ටිකක් අඩු වුණොත් ඒක වහන්න එපා.** ඒක තමයි ඔබේ ප්‍රධාන කතාව:
 > *"Throughput 5%ක් අඩු කිරීමෙන් fatigue 35%ක් අඩු කළ හැක."* — මේක **දුර්වලකමක් නෙවෙයි, contribution එකක්.**
