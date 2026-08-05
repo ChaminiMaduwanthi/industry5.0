@@ -1,0 +1,17 @@
+{
+  "L0_minutes": 216.4,
+  "L0_range": [
+    198.0,
+    253.0
+  ],
+  "L0_basis": "mean tool wear at TWF events, AI4I 2020",
+  "energy_interval_minutes": 15,
+  "e_idle_kwh_per_interval": 2.66,
+  "delta_e_kwh_per_interval": {
+    "L": 5.966,
+    "M": 35.785,
+    "H": 56.605
+  },
+  "energy_ratio_H_over_L": 6.87,
+  "secom_defect_rate": 0.0664
+}

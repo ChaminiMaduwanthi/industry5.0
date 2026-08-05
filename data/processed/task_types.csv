@@ -1,0 +1,4 @@
+task,iso8996_class,watt_per_m2,energy_demand_kcal_min,severity_kappa,rula_base,cognitive_base,nominal_time_minutes
+L,1,100,2.581,0.7,2,0.2,8
+M,2,165,4.259,1.0,3,0.4,12
+H,3,230,5.937,1.4,4,0.6,18
