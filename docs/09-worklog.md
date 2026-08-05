@@ -12,7 +12,77 @@
 
 **T5.3 ✅ අවසන්** — SimPy factory skeleton එක වැඩ කරනවා. *(ඇස්තමේන්තුව දින 3ක් — ඉවර වුණේ එක session එකකින්, මොකද Phase 4 හි `config.yaml` සහ `data/processed/` දැනටමත් සූදානම් නිසා.)*
 
-## 📦 හැදුණු ලිපිගොනු 3
+**T5.4 ✅ අවසන්** — MachineTwin. Machine වලට දැන් **health, maintenance, breakdowns සහ scrap** තියෙනවා.
+
+## 🔧 T5.4 · MachineTwin
+
+`src/twins/machine_twin.py` — design §3 හි state variable 4ම:
+
+| | සමීකරණය | තත්ත්වය |
+|---|---|---|
+| **H** health | `H ← max(0, H − Δt·κ_τ/L0)` | ✅ busy මිනිත්තු **හරියටම** අය කරනවා (epoch එකකට නොවේ) |
+| **E** energy | `e_idle + 1[busy]·Δe(τ)` | ✅ |
+| **Q** defect | `σ(β₀ + β₁(1−H) + β₂(1−S) + β₃F̂ + β₄κ)` | ✅ **CP1 (skill) සජීවී** · CP2 (fatigue) T5.7 ට |
+| **A** available | `1[H>0.30] · 1[not maintenance]` | ✅ |
+
+**★ CP1 දැන් ඇත්තටම වැඩ කරනවා:** දක්ෂතාවය අඩු කෙනෙක්ට වැඩේ දුන්නම **defect risk එක වැඩියි**. Scrap එක sample කරලා ගණන් කරනවා → S1 එකේ **scrap 9.6%**.
+
+### ✅ Phase 4 carry-over එක **විසඳුනා**
+
+```
+බය වුණේ  :  L0 = 216 min → machine එකක් shift එකෙන් අඩකට ඉවරයි
+                → downtime එකෙන් මිනිසාගේ කතාව යටපත් වෙයිද?
+
+මැනුවා   :  downtime  =  3.4%  විතරයි   ✅
+හේතුව    :  machine 5යි, operator 3යි — එකවර ඕන 3යි. ඉඩ තියෙනවා.
+තීරණය    :  l0_scale_factor වෙනස් කරන්න ඕන නෑ.
+```
+
+### ⚠️ හම්බුණු ප්‍රශ්නය — **S3 කිසිම බලපෑමක් කරන්නේ නෑ**
+
+Machine **4ක්** කැඩුවත් throughput එක 75.0මයි. හේතුව හොයාගත්තා:
+
+```
+Breakdown එකක් →  maintenance 15 min  →  H ← 1.00
+                   ඒක disruption එකක් නෙවෙයි, ත්‍යාගයක්! 🎁
+```
+
+**විසඳුම:** *tool change* සහ *breakdown* දෙක **වෙන් කළා**:
+
+| | කාලය | කවදා |
+|---|---|---|
+| Tool change | **15 min** | ගෙවීමෙන් H ≤ 0.30 වුණාම |
+| **Breakdown repair** | **90 min** | S3 හි injected failure එකක් |
+
+➜ දැන් downtime **3.4% → 6.9%** ✅
+
+### ⚠️ ඒත් S3 තාම throughput එකට බලපාන්නේ නෑ — **ඒක නිවැරදියි**
+
+S1 එකේ **20%ක ඉඩක්** තියෙනවා (demand 75, capacity ≈94). ඒ නිසා breakdowns අවශෝෂණය වෙනවා.
+
+> ★ **S3 හි ඇත්ත ප්‍රශ්නය මේකයි:** *"Machine කැඩුණම, ඉතුරු වැඩේ කරන්න **B2 මිනිසාව තල්ලු කරනවද**?"*
+> ➜ ඒක පේන්නේ **throughput එකෙන් නෙවෙයි, fatigue එකෙන්** — ඒක තවම නෑ (T5.7).
+> ➜ **T5.7 ට පස්සෙත් S3 නිශ්චලනම් → `S3.demand_multiplier` වැඩි කරන්න.** *(task board එකේ සටහන් කළා)*
+
+### 🎲 එක සියුම් නමුත් වැදගත් තීරණයක්
+
+S3 හි breakdown **වේලාවන් සහ machine තේරීම** වෙනම RNG stream එකකින් (`seed + 10000`):
+
+> ⚠️ එහෙම නොකළොත් **B1, B2, B3 තුනට එකම seed එකේදී වෙනස් breakdowns** ලැබෙනවා
+> (allocator එක RNG එක පාවිච්චි කරන ප්‍රමාණය අනුව) → **S3 සංසන්දනය අර්ථ විරහිත වෙනවා.**
+> දැන් එක seed එකක් = හැම baseline එකකටම **හරියටම එකම** කඩාවැටීම් ✅
+
+## 👀 `watch.py` එකට health bars දැම්මා
+
+```
+    M1  ███  task M       ███████████··· 0.82   12 done
+    M5  ···  idle         █████········· 0.39    6 done   ← 0.30 ට ළං වෙනවා
+    M4  ▓▓▓  repair       ██████████████ 1.00    4 done   ← S3 breakdown
+```
+
+---
+
+## 📦 T5.3 හි හැදුණු ලිපිගොනු 3
 
 | ලිපිගොනුව | කරන්නේ |
 |---|---|

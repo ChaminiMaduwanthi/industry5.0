@@ -214,7 +214,19 @@
 
 | ID | කාර්යය | File | කාලය | තත්ත්වය |
 |---|---|---|---|---|
-| **T5.4** | `MachineTwin` class ලියන්න | `src/twins/machine_twin.py` | 1 දින | ⬜ |
+| **T5.4** | `MachineTwin` class ලියන්න | `src/twins/machine_twin.py` | 1 දින | ✅ **08-05** |
+
+> ✅ **T5.4 හි ලැබුණු දේ:** H (§3.1) · E (§3.2) · Q (§3.3, **CP1 සජීවී**) · A (§3.4) ·
+> maintenance · S3 breakdowns · scrap sampling · `watch.py` එකේ health bars.
+>
+> ✅ **Phase 4 carry-over විසඳුනා — machine downtime 3.4% විතරයි.** `l0_scale_factor`
+> වෙනස් කරන්න ඕන නෑ. (බය වුණේ machine එක shift එකෙන් අඩකට ඉවර වීම ගැන — ඒත් machine 5ක්
+> operator 3කට ඇති නිසා ප්‍රශ්නයක් නෑ.)
+>
+> ⚠️ **T5.7 එකේදී නැවත බලන්න:** S3 හි throughput එකට බලපෑමක් **නෑ** (S1 හි 20%ක ඉඩක්
+> තියෙන නිසා breakdowns අවශෝෂණය වෙනවා). S3 හි ඇත්ත සංඥාව = *"machine කැඩුණම B2 මිනිසාව
+> තල්ලු කරනවද?"* — ඒක **fatigue එකෙන් විතරයි පේන්නේ**. T5.7 ට පස්සෙත් S3 නිශ්චලනම්
+> → `S3.demand_multiplier` වැඩි කරන්න.
 | **T5.5** | M-DT AI models train කරන්න — RUL, Energy, Quality (XGBoost) | `src/models/` | 2 දින | ⬜ |
 | **T5.6** | Model evaluation — RMSE/F1 report කරන්න | `results/model_eval.csv` | 0.5 දින | ⬜ |
 | **T5.7** | ★★ `HumanTwin` class ලියන්න | `src/twins/human_twin.py` | 1.5 දින | ⬜ |
