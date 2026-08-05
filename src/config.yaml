@@ -214,15 +214,37 @@ machines:
 #  Q = sigmoid( b0 + b1*(1-H) + b2*(1-S) + b3*F_hat + b4*kappa )
 #                                 ^CP1      ^CP2
 #  Constraint during fitting: b2 > 0 and b3 > 0.
+#  ⚠️ b2 and b3 CANNOT be fitted from data. SECOM carries anonymised sensor
+#  readings with no operator attributes, so nothing in any available dataset
+#  links skill or fatigue to defects. They are therefore [CALIB], exactly like
+#  the fatigue rates, and must be covered by the CP ablation (T7.8).
+#
+#  Calibration (2026-08-05). Two anchor points were used:
+#    reference      H=1.00  S=0.70  F=0.30  kappa=1.0  ->  6.64%
+#                   (the measured SECOM defect rate)
+#    worst feasible H=0.30  S=0.40  F=0.80  kappa=1.4  -> 25.00%
+#                   (the worst combination HC1-HC4 still permit)
+#  The slopes were scaled by 0.508 and b0 re-solved so both anchors hold.
+#
+#  The earlier hand-picked set (b0 -4.00, b1 2.50, b2 1.50, b3 1.20, b4 0.60)
+#  matched the reference well (6.98%) but implied a 61% defect rate at the
+#  constraint boundary, which no manufacturing line would show. Anchoring on
+#  the boundary as well as the mean is what fixed it.
 quality:
-  fit_from_data: true             # [DATA] fitted on D4 SECOM / D1 in T5.5
-  fallback_coefficients:          # used only until the fit is available
-    b0: -4.00
-    b1: 2.50                      # machine degradation
-    b2: 1.50                      # [FROZEN sign > 0] skill gap        (CP1)
-    b3: 1.20                      # [FROZEN sign > 0] fatigue          (CP2)
-    b4: 0.60                      # task severity
+  fit_from_data: true             # [DATA] b0, b1, b4 refitted on D4/D1 in T5.5
+  fallback_coefficients:
+    b0: -3.360                    # [CALIB] intercept, anchored on SECOM
+    b1: 1.270                     # machine degradation
+    b2: 0.762                     # [CALIB, sign > 0] skill gap        (CP1)
+    b3: 0.610                     # [CALIB, sign > 0] fatigue          (CP2)
+    b4: 0.305                     # task severity
   enforce_positive: [b2, b3]
+
+  # Asserted in build_processed.py so a later edit cannot break the anchors.
+  calibration_anchors:
+    reference: {H: 1.00, S: 0.70, F_hat: 0.30, kappa: 1.0, expected_defect: 0.0664}
+    worst_feasible: {H: 0.30, S: 0.40, F_hat: 0.80, kappa: 1.4, expected_defect: 0.2500}
+    tolerance: 0.005
 
 
 # =============================================================================

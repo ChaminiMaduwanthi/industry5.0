@@ -219,7 +219,24 @@ def sanity_checks(ops: pd.DataFrame, tasks: pd.DataFrame,
         co2 = total * cfg["sustainability"]["emission_factor_kg_co2_per_kwh"]
         print(f"  task {t}:  {total:5.2f} kWh/h  ->  {co2:5.2f} kg CO2e/h")
 
-    # D · every value that feeds the simulation is finite and positive
+    # D · quality model — the two calibration anchors must still hold
+    q = cfg["quality"]["fallback_coefficients"]
+    anchors = cfg["quality"]["calibration_anchors"]
+    tol = anchors["tolerance"]
+    print()
+    print("Quality model anchors (b2, b3 are calibrated, not fitted):")
+    for name in ("reference", "worst_feasible"):
+        a = anchors[name]
+        z = (q["b0"] + q["b1"] * (1 - a["H"]) + q["b2"] * (1 - a["S"])
+             + q["b3"] * a["F_hat"] + q["b4"] * a["kappa"])
+        got = 1 / (1 + np.exp(-z))
+        ok = abs(got - a["expected_defect"]) <= tol
+        print(f"  {name:15s} {got:6.2%}  (expected {a['expected_defect']:.2%})"
+              f"  {'ok' if ok else 'DRIFTED'}")
+        assert ok, f"quality anchor '{name}' drifted: {got:.4f} vs {a['expected_defect']}"
+    assert q["b2"] > 0 and q["b3"] > 0, "design §3.3 requires b2 > 0 and b3 > 0"
+
+    # E · every value that feeds the simulation is finite and positive
     assert machines["L0_minutes"].gt(0).all()
     assert machines.filter(like="kwh").gt(0).all().all()
     assert ops["fatigue_band_kcal_min"].gt(0).all(), \
