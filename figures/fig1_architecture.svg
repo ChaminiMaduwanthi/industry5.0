@@ -1,0 +1,95 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 940 760" width="940" height="760" font-family="Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#111"/>
+    </marker>
+    <marker id="arw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#444"/>
+    </marker>
+  </defs>
+
+  <rect width="940" height="760" fill="#ffffff"/>
+
+  <text x="470" y="30" text-anchor="middle" font-size="17" font-weight="bold" fill="#111">Human-Centric Industry 5.0 Reference Architecture</text>
+  <text x="470" y="50" text-anchor="middle" font-size="12.5" fill="#555">Coupled Machine and Human Digital Twins for Sustainable Task Allocation</text>
+
+  <!-- ================= L5 ================= -->
+  <rect x="120" y="70" width="700" height="96" fill="#f4f4f4" stroke="#111" stroke-width="1.6" rx="4"/>
+  <rect x="120" y="70" width="10" height="96" fill="#111"/>
+  <text x="146" y="92" font-size="13.5" font-weight="bold" fill="#111">L5 · HUMAN INTERFACE LAYER</text>
+  <text x="146" y="112" font-size="11.5" fill="#222">Real-time twin dashboard   ·   Explainable AI (SHAP): "why this assignment?"</text>
+  <text x="146" y="130" font-size="11.5" fill="#222">Operator OVERRIDE — the final decision remains with the human</text>
+  <text x="146" y="152" font-size="11" font-style="italic" fill="#666">human-in-command, not human-in-the-loop</text>
+
+  <!-- ================= L4 ================= -->
+  <rect x="120" y="182" width="700" height="96" fill="#eaeaea" stroke="#111" stroke-width="1.6" rx="4"/>
+  <rect x="120" y="182" width="10" height="96" fill="#111"/>
+  <text x="146" y="204" font-size="13.5" font-weight="bold" fill="#111">L4 · DECISION &amp; OPTIMISATION LAYER</text>
+  <text x="146" y="224" font-size="11.5" fill="#222">Hard-constraint feasibility filter (HC1–HC4)   →   NSGA-II multi-objective search</text>
+  <text x="146" y="242" font-size="11.5" fill="#222">Objective  Z = w₁F̂ + w₂R̂ + w₃Ê + w₄Ŵ − w₅T̂        (People · Planet · Profit)</text>
+  <text x="146" y="264" font-size="11" font-style="italic" fill="#666">decision epoch = 15 min</text>
+
+  <!-- ================= L3 ================= -->
+  <rect x="120" y="294" width="700" height="212" fill="#ffffff" stroke="#111" stroke-width="2.2" rx="4"/>
+  <rect x="120" y="294" width="10" height="212" fill="#111"/>
+  <text x="146" y="316" font-size="13.5" font-weight="bold" fill="#111">L3 · DIGITAL TWIN LAYER</text>
+  <text x="700" y="316" font-size="10.5" font-style="italic" fill="#666" text-anchor="end">★ contribution C1 + C2</text>
+
+  <!-- Machine twin -->
+  <rect x="152" y="330" width="272" height="158" fill="#f7f7f7" stroke="#111" stroke-width="1.5" rx="3"/>
+  <text x="288" y="352" text-anchor="middle" font-size="12.5" font-weight="bold" fill="#111">MACHINE TWIN  (M-DT)</text>
+  <line x1="168" y1="360" x2="408" y2="360" stroke="#bbb" stroke-width="1"/>
+  <text x="170" y="379" font-size="11.5" fill="#222">H_m   health index          [0,1]</text>
+  <text x="170" y="399" font-size="11.5" fill="#222">E_m   energy rate           kWh/h</text>
+  <text x="170" y="419" font-size="11.5" fill="#222">Q_m   defect risk           [0,1]</text>
+  <text x="170" y="439" font-size="11.5" fill="#222">A_m   availability          {0,1}</text>
+  <text x="170" y="459" font-size="11.5" fill="#222">U_m   utilisation           [0,1]</text>
+  <text x="170" y="478" font-size="10.5" font-style="italic" fill="#666">driven by benchmark datasets D1–D4</text>
+
+  <!-- Human twin -->
+  <rect x="516" y="330" width="272" height="158" fill="#f7f7f7" stroke="#111" stroke-width="1.5" rx="3"/>
+  <text x="652" y="352" text-anchor="middle" font-size="12.5" font-weight="bold" fill="#111">HUMAN TWIN  (H-DT)  ★</text>
+  <line x1="532" y1="360" x2="772" y2="360" stroke="#bbb" stroke-width="1"/>
+  <text x="534" y="379" font-size="11.5" fill="#222">F_h   fatigue (λ/μ dynamic) kcal/min</text>
+  <text x="534" y="399" font-size="11.5" fill="#222">S_h,t skill for task t       [0,1]</text>
+  <text x="534" y="419" font-size="11.5" fill="#222">R_h   ergonomic risk (RULA)  [1,7]</text>
+  <text x="534" y="439" font-size="11.5" fill="#222">C_h   cognitive load         [0,1]</text>
+  <text x="534" y="459" font-size="11.5" fill="#222">W_h   workload share         [0,1]</text>
+  <text x="534" y="478" font-size="10.5" font-style="italic" fill="#666">personalised: λ, μ, AWL per operator</text>
+
+  <!-- coupling arrows between twins -->
+  <line x1="424" y1="388" x2="516" y2="388" stroke="#111" stroke-width="1.8"/>
+  <line x1="516" y1="430" x2="424" y2="430" stroke="#111" stroke-width="1.8"/>
+  <text x="470" y="381" text-anchor="middle" font-size="10" fill="#111">CP3–CP5</text>
+  <text x="470" y="448" text-anchor="middle" font-size="10" fill="#111">CP1–CP2</text>
+  <text x="470" y="466" text-anchor="middle" font-size="9.5" font-style="italic" fill="#666">bidirectional</text>
+
+  <!-- ================= L2 ================= -->
+  <rect x="120" y="522" width="700" height="80" fill="#eaeaea" stroke="#111" stroke-width="1.6" rx="4"/>
+  <rect x="120" y="522" width="10" height="80" fill="#111"/>
+  <text x="146" y="544" font-size="13.5" font-weight="bold" fill="#111">L2 · DATA LAYER</text>
+  <text x="146" y="564" font-size="11.5" fill="#222">Ingestion  ·  Cleaning  ·  Time synchronisation  ·  Feature windowing  ·  Storage</text>
+  <text x="146" y="586" font-size="11" font-style="italic" fill="#666">produces time-aligned state vectors at a common simulation clock</text>
+
+  <!-- ================= L1 ================= -->
+  <rect x="120" y="618" width="700" height="80" fill="#f4f4f4" stroke="#111" stroke-width="1.6" rx="4"/>
+  <rect x="120" y="618" width="10" height="80" fill="#111"/>
+  <text x="146" y="640" font-size="13.5" font-weight="bold" fill="#111">L1 · PHYSICAL LAYER</text>
+  <text x="146" y="660" font-size="11.5" fill="#222">5 CNC machines  ·  3 operators  ·  machine sensors  ·  wearables  ·  task queue</text>
+  <text x="146" y="682" font-size="11" font-style="italic" fill="#666">represented in this study by a SimPy discrete-event co-simulation</text>
+
+  <!-- side flow arrows -->
+  <line x1="98" y1="690" x2="98" y2="86" stroke="#444" stroke-width="1.5"/>
+  <text x="88" y="400" font-size="11" fill="#444" text-anchor="middle" transform="rotate(-90 88 400)">state / observation flow  ↑</text>
+
+  <line x1="842" y1="86" x2="842" y2="690" stroke="#444" stroke-width="1.5"/>
+  <text x="856" y="400" font-size="11" fill="#444" text-anchor="middle" transform="rotate(90 856 400)">decision / actuation flow  ↓</text>
+
+  <text x="470" y="730" text-anchor="middle" font-size="10.5" fill="#666">Fig. 1.  Five-layer reference architecture. The novelty is L3: a machine twin and a quantified, personalised</text>
+  <text x="470" y="746" text-anchor="middle" font-size="10.5" fill="#666">human twin exchanging state bidirectionally, both feeding a single constrained multi-objective decision layer.</text>
+  <!-- explicit arrowheads (renderer-independent) -->
+  <polygon points="516.0,388.0 507.0,392.2 507.0,383.8" fill="#111"/>
+  <polygon points="424.0,430.0 433.0,425.8 433.0,434.2" fill="#111"/>
+  <polygon points="98.0,86.0 102.2,95.0 93.8,95.0" fill="#444"/>
+  <polygon points="842.0,690.0 837.8,681.0 846.2,681.0" fill="#444"/>
+</svg>
