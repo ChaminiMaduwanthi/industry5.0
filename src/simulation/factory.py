@@ -48,10 +48,12 @@ class ShiftState:
     machines: dict[str, MachineState]
     operators: dict[str, OperatorState]
     rng: random.Random
+    rng_seed: int
     allocator: object                   # (state, rng) -> [(task, op, machine)]
     queue: list[Task] = field(default_factory=list)
     completed: list[Task] = field(default_factory=list)
     epoch_log: list[dict] = field(default_factory=list)
+    on_epoch: object = None             # optional observer, called each epoch
 
     # Epochs where work waited even though a free operator and a free machine
     # both existed. Design §8 calls this the direct answer to "how much
@@ -96,6 +98,8 @@ def _work(env: simpy.Environment, state: ShiftState,
     op, mac = state.operators[op_id], state.machines[mac_id]
 
     op.busy = mac.busy = True
+    op.current_task_type = mac.current_task_type = task.task_type
+    op.current_machine = mac_id
     task.assigned_operator, task.assigned_machine = op_id, mac_id
     task.started_min = env.now
 
@@ -111,6 +115,8 @@ def _work(env: simpy.Environment, state: ShiftState,
     )
 
     op.busy = mac.busy = False
+    op.current_task_type = mac.current_task_type = None
+    op.current_machine = None
     state.queue.remove(task)
     state.completed.append(task)
 
@@ -175,6 +181,12 @@ def _epoch_loop(env: simpy.Environment, state: ShiftState):
             "completed": len(state.completed),
         })
 
+        # Observation hook. watch.py draws the live view through this, and the
+        # Streamlit dashboard (T5.14) will use the same one. Nothing inside the
+        # simulation depends on it.
+        if state.on_epoch is not None:
+            state.on_epoch(state)
+
         yield env.timeout(setup.epoch_minutes)
 
 
@@ -196,7 +208,7 @@ def build_task_queue(setup: Setup, rng: random.Random) -> list[Task]:
 
 
 def run_shift(setup: Setup, seed: int = 0, allocator=random_allocator,
-              verbose: bool = False) -> dict:
+              verbose: bool = False, on_epoch=None) -> dict:
     # S3 injects mid-shift breakdowns, which need machine health to exist.
     # Until T5.4 lands, S3 is silently identical to S1 — say so out loud rather
     # than let a whole result table be produced from a scenario that never ran.
@@ -216,7 +228,9 @@ def run_shift(setup: Setup, seed: int = 0, allocator=random_allocator,
         machines={m: MachineState(m) for m in setup.machines},
         operators={o: OperatorState(o) for o in setup.operators},
         rng=rng,
+        rng_seed=seed,
         allocator=allocator,
+        on_epoch=on_epoch,
     )
     state.queue = build_task_queue(setup, rng)
     total_demand = len(state.queue)

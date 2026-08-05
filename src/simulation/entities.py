@@ -45,6 +45,7 @@ class MachineState:
     under_maintenance: bool = False
     busy_minutes: float = 0.0
     tasks_done: int = 0
+    current_task_type: str | None = None
 
     # Energy is accumulated here because it is pure bookkeeping over the
     # equation E = e_idle + 1[busy] * delta_e(tau) (design §3.2). The idle
@@ -63,6 +64,8 @@ class OperatorState:
     busy_minutes: float = 0.0
     tasks_done: int = 0
     tasks_by_type: dict[str, int] = field(default_factory=dict)
+    current_task_type: str | None = None
+    current_machine: str | None = None
 
     def available(self) -> bool:
         return not self.busy and not self.on_break
