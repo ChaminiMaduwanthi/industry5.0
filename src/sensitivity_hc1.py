@@ -35,8 +35,16 @@ if hasattr(sys.stdout, "reconfigure"):
 
 SEEDS = 30
 
+# Every policy is judged against ONE fixed yardstick, whatever threshold it was
+# run with. The breach counter inside the simulation uses the threshold in
+# force, which is right for that run but useless for comparing runs: a policy
+# allowed up to 0.90 would report zero breaches of 0.90 while sitting well
+# above 0.80, and would look identical to one held at 0.70. Comparing those
+# would flatter the loosest setting.
+REFERENCE = 0.80
+
 # Lower is better for all of these — they are the human cost of the shift.
-HUMAN_KPIS = ["mean_fatigue", "max_fatigue", "hc1_breaches",
+HUMAN_KPIS = ["mean_fatigue", "max_fatigue", "breaches_vs_reference",
               "mean_rula", "hc3_breaches"]
 
 
@@ -47,9 +55,20 @@ def run(scenario: str, allocator, hc1: float | None) -> dict:
         setup.cfg["constraints"]["hc1_hysteresis"]["enter_rest_at"] = hc1
         setup.cfg["constraints"]["hc1_hysteresis"]["leave_rest_at"] = hc1 - 0.20
 
-    rows = [run_shift(setup, seed=s, allocator=allocator) for s in range(SEEDS)]
+    rows, ref_breaches = [], []
+    for seed in range(SEEDS):
+        box = {}
+        rows.append(run_shift(setup, seed=seed, allocator=allocator,
+                              on_epoch=lambda st: box.setdefault("s", st)))
+        state = box["s"]
+        ref_breaches.append(sum(
+            1 for h in state.humans.values()
+            for f in h.fatigue_trace if f >= REFERENCE))
+
     keys = [k for k, v in rows[0].items() if isinstance(v, (int, float))]
-    return {k: sum(r[k] for r in rows) / SEEDS for k in keys}
+    out = {k: sum(r[k] for r in rows) / SEEDS for k in keys}
+    out["breaches_vs_reference"] = sum(ref_breaches) / SEEDS
+    return out
 
 
 def main() -> None:
@@ -69,10 +88,11 @@ def main() -> None:
                         "hc1": None, **base})
 
         print(f"  {scenario}")
-        print(f"    {'policy':22s} {'meanF':>7s} {'maxF':>7s} {'HC1!':>7s} "
-              f"{'RULA':>6s} {'HC3!':>7s} {'thru':>7s}")
+        print(f"    {'policy':22s} {'meanF':>7s} {'maxF':>7s} "
+              f"{'>=0.80':>7s} {'own!':>6s} {'RULA':>6s} {'HC3!':>7s} {'thru':>7s}")
         print(f"    {'B1 unconstrained':22s} {base['mean_fatigue']:7.3f} "
-              f"{base['max_fatigue']:7.3f} {base['hc1_breaches']:7.1f} "
+              f"{base['max_fatigue']:7.3f} {base['breaches_vs_reference']:7.1f} "
+              f"{base['hc1_breaches']:6.1f} "
               f"{base['mean_rula']:6.2f} {base['hc3_breaches']:7.1f} "
               f"{base['throughput']:7.1f}")
 
@@ -87,14 +107,17 @@ def main() -> None:
             star = " *" if hc1 == default else "  "
             print(f"    {'B3a  HC1 = ' + f'{hc1:.2f}' + star:22s} "
                   f"{r['mean_fatigue']:7.3f} {r['max_fatigue']:7.3f} "
-                  f"{r['hc1_breaches']:7.1f} {r['mean_rula']:6.2f} "
+                  f"{r['breaches_vs_reference']:7.1f} {r['hc1_breaches']:6.1f} "
+                  f"{r['mean_rula']:6.2f} "
                   f"{r['hc3_breaches']:7.1f} {r['throughput']:7.1f}{mark}")
         print()
 
     out = ROOT / "results" / "sensitivity_hc1.csv"
     pd.DataFrame(records).to_csv(out, index=False)
 
-    print("  * = the default threshold")
+    print(f"  * = the default threshold · '>=0.80' = operator-epochs above the")
+    print(f"  fixed reference, the only column comparable across rows.")
+    print(f"  'own!' = breaches of whatever threshold that row itself enforced.")
     print()
     if all(verdicts):
         print("  VERDICT: the constrained policy wins on every human measure at")
