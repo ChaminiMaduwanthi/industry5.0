@@ -1,8 +1,22 @@
 # src/ — Code
 
-> Phase 5 (T5.1 – T5.15) එකේදී මේවා ලියනවා. **දැන් තවම හිස්.**
+> **තත්ත්වය (2026-08-05):** Phase 4 හි ලියපු ලිපිගොනු 3ක් තියෙනවා.
+> Simulation code එක (T5.3 සිට) තවම ලියලා නෑ.
 
-## සැලසුම් කරගත් ව්‍යුහය
+## ✅ දැන් තියෙන ලිපිගොනු
+
+| ලිපිගොනුව | කරන්නේ | Task |
+|---|---|---|
+| **`config.yaml`** ★ | **Parameters සියල්ල** — කොටස් 13ක්. ⛔ code එකේ අගයක් hard-code කරන්න එපා | T5.1 |
+| `eda.py` | D1, D3, D4 වලින් `L0`, `e_idle`, `Δe`, defect rate එළියට ගන්නවා | T4.2 |
+| `build_processed.py` | `data/processed/` හි CSV 4 හදනවා + design සමීකරණ **assert** කරනවා | T4.3/4.5/4.6 |
+
+```bash
+python src/eda.py               # → results/eda_summary.md + eda_params.json
+python src/build_processed.py   # → data/processed/*.csv  (+ sanity checks)
+```
+
+## සැලසුම් කරගත් ව්‍යුහය (ඉතුරු කොටස)
 
 ```
 src/
