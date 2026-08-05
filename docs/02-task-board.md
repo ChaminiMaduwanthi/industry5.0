@@ -199,7 +199,16 @@
 |---|---|---|---|---|
 | **T5.1** | Python environment + `requirements.txt` setup | `requirements.txt` · `src/config.yaml` | 0.5 දින | ✅ **08-05** |
 | **T5.2** | Git repo එකක් හදන්න (`git init`) + `.gitignore` | `.gitignore` | 0.5 දින | ✅ **08-05** |
-| **T5.3** | SimPy factory skeleton — clock, machines, operators, task queue | `src/simulation/factory.py` | 3 දින | ⬜ |
+| **T5.3** | SimPy factory skeleton — clock, machines, operators, task queue | `src/loader.py` · `src/simulation/` | 3 දින | ✅ **08-05** |
+
+> ✅ **T5.3 හි ලැබුණු දේ:** `loader.py` (config + CSV එක තැනකින්, validation සමඟ) ·
+> `entities.py` (Task/Machine/Operator + Gini) · `factory.py` (SimPy clock, epoch 32,
+> break policy, B1 random allocator, deterministic).
+>
+> ⚠️ **T5.4 එකේදී මුලින්ම කරන්න ඕන දේ 2:**
+> 1. `factory.py` හි `_FAILURES_SUPPORTED = False` → **`True`** කරන්න.
+>    ⛔ දැන් **S3 = S1** (machine failures නෑ). ඒක නොදැනුවත්ව results හදන්න එපා — warning එකක් print වෙනවා.
+> 2. Machine **downtime කොටස** මනින්න (Phase 4 හි carry-over) → වැඩි නම් `l0_scale_factor`.
 
 ### 5B · Digital Twins (සති 1.5)
 

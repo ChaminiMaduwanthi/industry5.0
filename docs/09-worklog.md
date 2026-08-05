@@ -6,6 +6,76 @@
 
 ---
 
+# 🗓️ 2026-08-05 (බදාදා) — Session 4 · Phase 5 පටන් ගත්තා
+
+## ⏱️ සාරාංශය
+
+**T5.3 ✅ අවසන්** — SimPy factory skeleton එක වැඩ කරනවා. *(ඇස්තමේන්තුව දින 3ක් — ඉවර වුණේ එක session එකකින්, මොකද Phase 4 හි `config.yaml` සහ `data/processed/` දැනටමත් සූදානම් නිසා.)*
+
+## 📦 හැදුණු ලිපිගොනු 3
+
+| ලිපිගොනුව | කරන්නේ |
+|---|---|
+| **`src/loader.py`** ★ | `config.yaml` + CSV 4 **එක තැනකින්** load කරනවා + **validation 12ක්** |
+| `src/simulation/entities.py` | `Task` · `MachineState` · `OperatorState` + workload Gini |
+| **`src/simulation/factory.py`** ★ | SimPy clock · epoch 32 · break policy · B1 allocator |
+
+## ▶️ දැන් run කරන්න පුළුවන්
+
+```bash
+python src/loader.py               # config + data load වෙනවද බලන්න
+python src/simulation/factory.py   # shift එකක් run කරලා trace එක බලන්න
+```
+
+**S1 (normal) එකේ ප්‍රතිඵලය:**
+```
+demand 75 → completed 75  ·  energy 113.5 kWh → 37.5 kg CO2e
+machine util 48.8%  ·  operator util 81.4%  ·  Gini 0.008
+```
+
+**Scenario 3ම (seeds 30 බැගින්):**
+```
+S1: throughput 75.0   unfinished  0.0    ← සුවපහසුයි ✅
+S2: throughput 91.2   unfinished 20.8    ← ★ ඇත්තටම පීඩනයයි ✅
+S3: throughput 75.0   unfinished  0.0    ← ⚠️ තවම S1 වගේමයි (පහත බලන්න)
+```
+> ★ **S2 හරියටම ඕන විදිහට හැඩ වෙලා** — demand ×1.5 දුන්නම capacity එක ඉක්මවනවා.
+> **එතනයි B2 සහ B3 වෙනස් වෙන්න ඕන තැන.**
+
+## ⚠️ හදාගත්ත bug 3ක් (හම්බුණේ trace එක බැලුවම)
+
+| # | Bug | හේතුව | විසඳුම |
+|---|---|---|---|
+| 1 | Epoch log එකේ machine/operator ගණන **පරණ** අගය පෙන්නනවා | `env.process()` දාපු ගමන් ඒවා run වෙන්නේ නෑ | log කරන්න කලින් `yield env.timeout(0)` |
+| 2 | ★ Operator util **66%** විතරයි, S1 එකේ 17ක් ඉතුරු | Epoch මැද වැඩේ ඉවර වුණාම ඊළඟ epoch එක වෙනකම් නිකම් ඉන්නවා (mean task ≈ 15 min = epoch එකම!) | වැඩක් ඉවර වුණාම **වහාම** ආයෙත් dispatch. **util 66% → 81%** |
+| 3 | `deferrals` **481**ක් — වැරදියි | හැමෝම busy වුණාමත් "deferral" ලෙස ගණන් වුණා | නිදහස් operator **සහ** machine තියෙද්දී විතරක් ගණන් කරන්න → දැන් **0** ✅ |
+
+> ⚠️ **#3 වැදගත් ඇයි:** design §8 අනුව `constraint_deferrals` කියන්නේ *"මිනිසා රැක ගන්න throughput කීයක් අත්හැරියාද"* කියන ප්‍රශ්නයට **සෘජු උත්තරය**. ඒක වැරදියට ගණන් වුණා නම් **paper එකේ ප්‍රධාන සංඛ්‍යාවක්** වැරදෙනවා.
+> දැන් constraints නෑ → **0 විය යුතුයි**, සහ 0යි ✅. T5.11 එකෙන් පස්සේ ඒක ධන විය යුතුයි.
+
+## ⛔ T5.4 එකේදී **මුලින්ම** කරන්න ඕන දේ 2
+
+```
+1. factory.py හි  _FAILURES_SUPPORTED = False  →  True
+      ⛔ දැන් S3 = S1 (machine breakdowns නෑ)
+      ✅ run කරනකොට warning එකක් print වෙනවා — නොදැනුවත්ව results හදන්න බෑ
+
+2. Machine downtime කොටස මනින්න  (Phase 4 carry-over)
+      වැඩි නම් → config.yaml → machines.l0_scale_factor
+```
+
+## 🆕 config.yaml එකට එකතු කළා
+
+```yaml
+simulation:
+  tasks_per_shift: 75        # [TUNABLE] ~capacity එකෙන් 80%
+  task_type_mix: {L: 0.35, M: 0.40, H: 0.25}
+```
+> 75 තෝරාගත්තේ ඇයි: operator 3 × 480 min = 1440 operator-min; සාමාන්‍ය task එකක් ≈15 min
+> ➜ 100% capacity ≈ 94. S1 සුවපහසු වෙන්න 75 (80%), එවිට S2 (×1.5 = 112) **ඇත්තටම** ඉක්මවනවා.
+
+---
+
 # 🗓️ 2026-08-05 (බදාදා) — Session 3
 
 ## ⏱️ සාරාංශය
