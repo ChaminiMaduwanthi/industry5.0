@@ -32,6 +32,8 @@ from loader import Setup, load_setup                       # noqa: E402
 from simulation.entities import (                          # noqa: E402
     MachineState, OperatorState, Task, workload_gini,
 )
+from models.human.ergonomics import machine_speed_hat      # noqa: E402
+from twins.human_twin import HumanTwin                     # noqa: E402
 from twins.machine_twin import MachineTwin                 # noqa: E402
 
 if hasattr(sys.stdout, "reconfigure"):
@@ -52,6 +54,7 @@ class ShiftState:
     machines: dict[str, MachineState]
     operators: dict[str, OperatorState]
     twins: dict[str, MachineTwin]
+    humans: dict[str, HumanTwin]
     rng: random.Random
     rng_seed: int
     allocator: object                   # (state, rng) -> [(task, op, machine)]
@@ -125,7 +128,29 @@ def _work(env: simpy.Environment, state: ShiftState,
     op.current_machine = mac_id
     task.assigned_operator, task.assigned_machine = op_id, mac_id
     task.started_min = env.now
-    task.machine_health_at_start = state.twins[mac_id].health
+
+    twin, human = state.twins[mac_id], state.humans[op_id]
+    spec = setup.tasks[task.task_type]
+    task.machine_health_at_start = twin.health
+    task.fatigue_at_start = human.fatigue_hat
+
+    # --- exposure while this task runs (CP3, CP5) -------------------------
+    lo, hi = setup.energy_range()
+    speed_hat = machine_speed_hat(
+        twin.energy_rate(task.task_type), lo, hi)          # CP5 input
+    rula = human.rula(spec.rula_base, speed_hat)           # §4.7
+    load = human.cognition(                                # §4.8, CP3
+        task_base=spec.cognitive_base,
+        machine_health=twin.health,
+        defect_risk=twin.defect_risk(
+            skill=setup.operators[op_id].skill[task.task_type],
+            kappa=spec.severity_kappa,
+            fatigue_hat=human.fatigue_hat),
+        machines_watched=1,
+        machines_total=len(state.machines),
+    )
+    human.observe(rula, load)
+    task.rula_score = rula
 
     minutes = setup.processing_time(task.task_type, op_id)
     yield env.timeout(minutes)
@@ -138,23 +163,23 @@ def _work(env: simpy.Environment, state: ShiftState,
         setup.machines[mac_id].delta_e_kwh_per_h[task.task_type] * minutes / 60
     )
 
-    # --- quality (design §3.3) -------------------------------------------
-    # Evaluated against the machine condition the task was actually run under,
-    # so wear is charged afterwards. fatigue_hat stays 0 until T5.7 exists;
-    # the CP2 term is already in the equation waiting for it.
-    twin = state.twins[mac_id]
-    spec = setup.tasks[task.task_type]
+    # --- quality (design §3.3) — both couplings live ---------------------
+    # Evaluated against the conditions the task actually ran under: the machine
+    # health and the operator fatigue at the moment work started, hence wear is
+    # charged afterwards. CP1 (skill) and CP2 (fatigue) both feed this.
     risk = twin.defect_risk(
         skill=setup.operators[op_id].skill[task.task_type],
         kappa=spec.severity_kappa,
-        fatigue_hat=0.0,
+        fatigue_hat=task.fatigue_at_start,                 # CP2
     )
+    task.defect_risk = risk
     task.defective = state.rng.random() < risk
     if task.defective:
         state.scrap_units += 1
 
-    # --- wear (design §3.1) ----------------------------------------------
+    # --- wear and effort (design §3.1, §4.1) ------------------------------
     twin.degrade(minutes, spec.severity_kappa)
+    human.record_work(minutes, spec.energy_demand_kcal_min)   # CP4
 
     op.busy = mac.busy = False
     op.current_task_type = mac.current_task_type = None
@@ -258,7 +283,13 @@ def _epoch_loop(env: simpy.Environment, state: ShiftState):
         for o in state.operators.values():
             o.on_break = on_break
 
-        # --- twin updates (T5.4 machine; T5.7 human still to come) ------
+        # --- twin updates (design §9, step 1) ---------------------------
+        # Fatigue advances for every operator, whether they worked this epoch
+        # or rested. Only the first epoch is skipped, since no time has passed.
+        if state.epoch_log:
+            for human in state.humans.values():
+                human.advance(setup.epoch_minutes)
+
         # Anything that wore past its floor while idle, or was knocked out by
         # the S3 disruption while busy, goes into maintenance now.
         for mac_id, twin in state.twins.items():
@@ -334,6 +365,8 @@ def run_shift(setup: Setup, seed: int = 0, allocator=random_allocator,
         operators={o: OperatorState(o) for o in setup.operators},
         twins={m: MachineTwin(spec=s, cfg=setup.cfg)
                for m, s in setup.machines.items()},
+        humans={o: HumanTwin(spec=s, cfg=setup.cfg)
+                for o, s in setup.operators.items()},
         rng=rng,
         rng_seed=seed,
         allocator=allocator,
@@ -382,6 +415,27 @@ def summarise(state: ShiftState, total_demand: int, seed: int,
         "downtime_share": round(maint_min / machine_time, 4),
         "mean_health_end": round(
             sum(t.health for t in state.twins.values()) / len(state.twins), 4),
+
+        # --- human-centric KPIs (design §4) ------------------------------
+        "mean_fatigue": round(
+            sum(sum(h.fatigue_trace) / len(h.fatigue_trace)
+                for h in state.humans.values() if h.fatigue_trace)
+            / len(state.humans), 4),
+        "max_fatigue": round(
+            max(h.peak_fatigue_hat for h in state.humans.values()), 4),
+        "hc1_breaches": sum(
+            1 for h in state.humans.values()
+            for f in h.fatigue_trace
+            if f >= setup.cfg["constraints"]["hard"]["HC1_fatigue_max"]),
+        "mean_rula": round(
+            sum(h.mean_rula for h in state.humans.values())
+            / len(state.humans), 4),
+        "hc3_breaches": sum(
+            1 for h in state.humans.values() for r in h.rula_samples
+            if r > setup.cfg["constraints"]["hard"]["HC3_rula_max"]),
+        "mean_cognitive_load": round(
+            sum(h.mean_cognitive for h in state.humans.values())
+            / len(state.humans), 4),
         "energy_kwh": round(energy, 3),
         "energy_per_unit": round(energy / units, 4) if units else None,
         "co2e_kg": round(energy * ef, 3),

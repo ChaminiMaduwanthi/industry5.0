@@ -99,8 +99,14 @@ def draw(state: ShiftState) -> None:
     out.append("")
 
     # --- operators -------------------------------------------------------
-    out.append(f"  {DIM}OPERATORS{OFF}")
+    hc1 = setup.cfg["constraints"]["hard"]["HC1_fatigue_max"]
+    out.append(f"  {DIM}OPERATORS{OFF}"
+               f"{GREY}                                   fatigue "
+               f"(HC1 = {hc1:.2f} of personal AWL){OFF}")
     for o in state.operators.values():
+        human = state.humans[o.operator_id]
+        f = human.fatigue_hat
+
         if o.on_break:
             mark, label = f"{BLUE}▒▒▒{OFF}", f"{BLUE}on break{OFF}"
         elif o.busy:
@@ -109,9 +115,12 @@ def draw(state: ShiftState) -> None:
             label = f"{c}task {o.current_task_type}{OFF} on {o.current_machine}"
         else:
             mark, label = f"{GREY}···{OFF}", f"{GREY}waiting{OFF}"
-        share = o.busy_minutes / now if now else 0
+
+        fc = RED if f >= hc1 else YELLOW if f >= 0.6 else GREEN
+        flag = f" {RED}OVER HC1{OFF}" if f >= hc1 else ""
         out.append(f"    {o.operator_id}  {mark}  {label:26s}"
-                   f"{GREY}{o.tasks_done:3d} done · {share:4.0%} busy{OFF}")
+                   f"{fc}{_bar(round(f * 100), 100, 14)} {f:4.2f}{OFF}"
+                   f"{GREY}  AWL {human.spec.awl_kcal_min:4.2f}{OFF}{flag}")
 
     # --- totals ----------------------------------------------------------
     out.append("")
@@ -129,8 +138,14 @@ def draw(state: ShiftState) -> None:
         out.append(f"  {YELLOW}DEFERRALS  {state.deferral_epochs} "
                    f"epochs blocked by constraints{OFF}")
     out.append("")
-    out.append(f"  {GREY}operator fatigue is not modelled yet (T5.7) — "
-               f"nobody here gets tired{OFF}")
+    breaches = sum(1 for h in state.humans.values() if h.fatigue_hat >= hc1)
+    if breaches:
+        out.append(f"  {RED}{breaches} operator(s) past HC1 and still working — "
+                   f"nothing stops them until the decision layer exists "
+                   f"(T5.11){OFF}")
+    else:
+        out.append(f"  {GREY}fatigue is modelled but not yet acted on "
+                   f"(T5.11 adds the constraints){OFF}")
 
     print("\n".join(out), flush=True)
 
