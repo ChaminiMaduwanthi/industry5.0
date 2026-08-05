@@ -6,6 +6,102 @@
 
 ---
 
+# 🗓️ 2026-08-05 (බදාදා) — Session 5 · ★★ Human Twin
+
+**T5.7 + T5.8 + T5.9 ✅** — ඔබේ **novelty එක දැන් ක්‍රියාත්මකයි**.
+
+## 📦 හැදුණු ලිපිගොනු 4
+
+| ලිපිගොනුව | කරන්නේ |
+|---|---|
+| **`src/twins/human_twin.py`** ★★ | F · F̂ · S · R · C · W (design §4) |
+| `src/models/human/fatigue.py` | §4.1 exponential work–recovery · §4.4 normalize |
+| `src/models/human/ergonomics.py` | §4.7 RULA + ψ₁F̂ + ψ₂v̂ |
+| `src/models/human/cognitive.py` | §4.8 NASA-TLX proxy |
+
+## ★★ Design §4.10 එකට එරෙහිව **තහවුරු කළා**
+
+Design එකේ අතින් ගණනය කරලා තිබුණා: *"OP1 continuous medium work → F̂ = 0.74, rest 0"*.
+
+```
+Code එකෙන් ආපු අගය :  0.739     ✅ හරියටම ගැලපෙනවා
+```
+➜ `tests/test_human_twin.py::test_op1_matches_the_design_validation_figure`
+
+## ★★ පුද්ගලීකරණය — **පේනවා**
+
+එකම medium task එක පැය 4ක් දුන්නම:
+
+```
+OP2  F̂ 0.87   (AWL 3.62 · ගැහැනු, 35, 62kg)   ← වේගෙන් වෙහෙසෙනවා
+OP3  F̂ 0.71   (AWL 4.55 · පිරිමි, 47, 80kg)
+OP1  F̂ 0.55   (AWL 5.35 · පිරිමි, 28, 72kg)   ← අඩුවෙන්
+```
+> ⛔ **Code එකේ operator කෙනෙකුට වෙනම නීතියක් නෑ.** මේ වෙනස එන්නේ **Mifflin-St Jeor
+> සහ Price සමීකරණ** වයස/ස්ත්‍රී-පුරුෂ/බර මත ක්‍රියා කිරීමෙන් විතරයි.
+> ➜ ඒක test එකකින් තහවුරු කරනවා: `test_the_same_task_tires_operators_differently`
+
+## 🔗 T5.9 — Coupling CP1–CP5 **සියල්ල සජීවී**
+
+| CP | සම්බන්ධය | තත්ත්වය |
+|---|---|---|
+| CP1 | Skill → Quality | ✅ (T5.4 සිට) |
+| **CP2** | **Fatigue → Quality** | ✅ **අලුත්** — scrap **9.29% → 11.38%** |
+| **CP3** | Machine health → Cognitive load | ✅ **අලුත්** |
+| **CP4** | Task intensity → Fatigue | ✅ **අලුත්** (E'_w = asymptote) |
+| **CP5** | Machine speed → Ergonomics | ✅ **අලුත්** |
+
+> ★ **CP2 ඇත්තටම වැඩ කරනවා කියලා test එකකින් ඔප්පු කරනවා** (`test_cp2_actually_changes_the_outcome`) — fatigue term එක ඉවත් කලාම defect risk එක 5%කට වඩා අඩු වෙන්න ඕන. එහෙම නැත්නම් coupling එක අලංකාරයක් විතරයි.
+
+### ⚠️ v̂_m (machine speed) — design එකේ නිර්වචනය කරලා තිබුණේ නෑ
+
+Machine twin එකේ speed variable එකක් නෑ. **Power draw එක proxy එකක් ලෙස** ගත්තා — උපරිමයට ළං machine එකක් තමයි operator ව වේගවත් කරන්නේ. `ergonomics.machine_speed_hat()` එකේ ලේඛනගත කළා. **§VI Limitations එකේ ලියන්න.**
+
+### ⚠️ γ₃ (multi-machine) පදය **නිද්‍රාශීලීයි**
+
+අපේ model එකේ operator කෙනෙක් එකවර බලාගන්නේ machine **1යි** → `(n−1)/(|M|−1) = 0`. ➜ γ₃ ට බලපෑමක් නෑ. **Limitations එකේ ලියන්න.**
+
+## 📊 දැන් හම්බුණු පින්තූරය (fatigue එක්ක, seeds 30)
+
+```
+     thru  unfin  meanF  HC1!  RULA  down%  scrap%
+S1   75.0    0.0  0.447   8.4  4.26   3.3%  11.38%
+S2   91.5   20.5  0.507  11.6  4.30   3.9%  10.69%
+S3   90.1    3.9  0.504  10.5  4.30   7.1%  11.93%
+```
+
+> ⚠️ **HC1 breaches 8–12ක්!** මිනිස්සු AWL එකෙන් 80% ඉක්මවලා **තාමත් වැඩ කරනවා**.
+> ➜ **ඒක bug එකක් නෙවෙයි — ඒක තමයි Industry 4.0.** T5.11 එකෙන් constraints දාන කම් නවත්තන්නේ නෑ.
+> ➜ **මේ සංඛ්‍යා තමයි B2 හි "පෙර" චිත්‍රය.** B3 එකේදී මේවා **0** විය යුතුයි.
+
+## ★ S3 නිර්වචනය **හදාගත්තා** (T6.4)
+
+T5.4 එකේදී සටහන් කළා: *"T5.7 ට පස්සේ S3 නිශ්චලද කියලා බලන්න"*. **බැලුවා — නිශ්චලයි:**
+
+```
+                     meanF   HC1!  unfin
+S1 normal            0.447    8.4    0.0
+S3 demand 1.00       0.452    8.6    0.0   ← වෙනසක් නෑ ⛔
+S3 demand 1.25       0.504   10.5    3.9   ← ★ බලපානවා ✅
+S3 demand 1.50       0.507   11.3   20.5   ← S2 එකට සමානම ⛔
+S2 high demand       0.507   11.6   20.5
+```
+
+**තීරණය: `S3.demand_multiplier = 1.25`.** ×1.5 එකේදී breakdowns overload එකේ නැති වෙනවා; ×1.0 එකේදී ඉඩෙන් අවශෝෂණය වෙනවා. **×1.25 එකේදී විතරයි කඩාවැටීම කළමනාකරණය කරන්නම වෙන්නේ** — ඒක තමයි S3 අහන ප්‍රශ්නය.
+
+## 🧪 Tests: **161** (කලින් 124)
+
+`tests/test_human_twin.py` — checks 37ක්:
+```
+✅ μ > λ  ·  light වැඩෙන් කවදාවත් සම්පූර්ණ වෙහෙසක් නෑ
+✅ OP1 = design §4.10 හි 0.74
+✅ පුද්ගලීකරණය: OP2 > OP3 > OP1, පරතරය > 0.2
+✅ විවේකයෙන් fatigue අඩු වෙනවා  ·  F̂ ∈ [0,1]  ·  RULA ∈ [1,7]
+✅ CP2 ඇත්තටම defect risk එක වෙනස් කරනවා
+```
+
+---
+
 # 🗓️ 2026-08-05 (බදාදා) — Session 4 · Phase 5 පටන් ගත්තා
 
 ## ⏱️ සාරාංශය

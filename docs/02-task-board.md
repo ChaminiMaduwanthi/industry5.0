@@ -229,9 +229,9 @@
 > → `S3.demand_multiplier` වැඩි කරන්න.
 | **T5.5** | M-DT AI models train කරන්න — RUL, Energy, Quality (XGBoost) | `src/models/` | 2 දින | ⬜ |
 | **T5.6** | Model evaluation — RMSE/F1 report කරන්න | `results/model_eval.csv` | 0.5 දින | ⬜ |
-| **T5.7** | ★★ `HumanTwin` class ලියන්න | `src/twins/human_twin.py` | 1.5 දින | ⬜ |
-| **T5.8** | ★ Fatigue + Ergonomic + Cognitive load models | `src/models/human/` | 2 දින | ⬜ |
-| **T5.9** | Twin දෙක simulation clock එකට සම්බන්ධ කරන්න (co-simulation) | `src/simulation/` | 1 දින | ⬜ |
+| **T5.7** | ★★ `HumanTwin` class ලියන්න | `src/twins/human_twin.py` | 1.5 දින | ✅ **08-05** |
+| **T5.8** | ★ Fatigue + Ergonomic + Cognitive load models | `src/models/human/` | 2 දින | ✅ **08-05** |
+| **T5.9** | Twin දෙක simulation clock එකට සම්බන්ධ කරන්න (co-simulation) | `src/simulation/` | 1 දින | ✅ **08-05** |
 
 ### 5C · තීරණ ස්ථරය (සති 1)
 
@@ -275,7 +275,7 @@
 | **T6.1** | **B1** — Random / Round-robin baseline | `src/baselines/b1_random.py` | 0.5 දින | ⬜ |
 | **T6.2** | ★★ **B2** — Industry 4.0 baseline (machine twin විතරයි, throughput විතරක් optimize) | `src/baselines/b2_industry40.py` | 1 දින | ⬜ |
 | **T6.3** | **B3** — ඔබේ framework එක (Phase 5 එකෙන් එනවා) | `src/decision/` | — | ⬜ |
-| **T6.4** | Scenario 3 නිර්වචනය — Normal / High-demand / Breakdown | expplan §5 | 0.5 දින | ⬜ |
+| **T6.4** | Scenario 3 නිර්වචනය — Normal / High-demand / Breakdown | expplan §5 | 0.5 දින | ✅ **08-05** |
 | **T6.5** | Experiment runner ලියන්න — 30 seeds × 3 baselines × 3 scenarios | `src/run_experiments.py` | 1 දින | ⬜ |
 | **T6.6** | සියලු runs ධාවනය + logging | `results/raw_results.csv` | 1 දින | ⬜ |
 | **T6.7** | Reproducibility check — seed එකම දුන්නම එකම උත්තරයද? | — | 0.5 දින | ⬜ |
