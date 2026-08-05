@@ -68,6 +68,23 @@ class ShiftState:
     deferral_epochs: int = 0
     scrap_units: int = 0
 
+    # --- availability, in one place ---------------------------------------
+    # Every allocator must go through these. Availability is not just "is it
+    # idle": design §3.4 makes it A = 1[H > H_min] AND 1[not maintenance], and
+    # the health half of that lives on the twin. An allocator that filtered on
+    # the entity alone would happily start work on a machine that had just worn
+    # through its floor, because `env.process` only queues the maintenance
+    # routine — it does not run it before the next synchronous dispatch.
+    def free_machines(self) -> list[str]:
+        return [m for m, s in self.machines.items()
+                if s.available() and self.twins[m].available()]
+
+    def free_operators(self) -> list[str]:
+        return [o for o, s in self.operators.items() if s.available()]
+
+    def pending_tasks(self) -> list[Task]:
+        return [t for t in self.queue if t.assigned_operator is None]
+
 
 # =============================================================================
 # Allocators — the seam the decision layer plugs into
@@ -79,9 +96,9 @@ def random_allocator(state: ShiftState, rng: random.Random
     No twin state is consulted and no constraint is applied. T5.11 replaces
     this with the constrained weighted-sum decision, keeping the signature.
     """
-    free_ops = [o for o, s in state.operators.items() if s.available()]
-    free_machines = [m for m, s in state.machines.items() if s.available()]
-    pending = [t for t in state.queue if t.assigned_operator is None]
+    free_ops = state.free_operators()
+    free_machines = state.free_machines()
+    pending = state.pending_tasks()
 
     rng.shuffle(free_ops)
     rng.shuffle(free_machines)
@@ -108,6 +125,7 @@ def _work(env: simpy.Environment, state: ShiftState,
     op.current_machine = mac_id
     task.assigned_operator, task.assigned_machine = op_id, mac_id
     task.started_min = env.now
+    task.machine_health_at_start = state.twins[mac_id].health
 
     minutes = setup.processing_time(task.task_type, op_id)
     yield env.timeout(minutes)
@@ -148,7 +166,7 @@ def _work(env: simpy.Environment, state: ShiftState,
     # task, so this is checked before dispatching rather than waiting for the
     # epoch tick.
     if twin.needs_maintenance():
-        env.process(_maintain(env, state, mac_id))
+        _start_maintenance(env, state, mac_id)
 
     # An operator who finishes mid-epoch must not stand idle until the next
     # epoch boundary: the decision epoch sets how often the plan is recomputed,
@@ -158,15 +176,31 @@ def _work(env: simpy.Environment, state: ShiftState,
     _dispatch(env, state)
 
 
+def _start_maintenance(env: simpy.Environment, state: ShiftState, mac_id: str,
+                       breakdown: bool = False) -> None:
+    """Mark the machine out of service NOW, then run the repair as a process.
+
+    The flag must be set synchronously. `env.process` only schedules the
+    generator; its first line does not execute until the calling process
+    yields, and a dispatch can happen in between.
+    """
+    twin, mac = state.twins[mac_id], state.machines[mac_id]
+    if twin.under_maintenance:
+        return
+    twin.under_maintenance = mac.under_maintenance = True
+    env.process(_maintain(env, state, mac_id, breakdown))
+
+
 def _maintain(env: simpy.Environment, state: ShiftState, mac_id: str,
               breakdown: bool = False):
-    """Take a machine out of service, then return it to nominal health."""
+    """Hold the machine for the repair time, then return it to nominal."""
     twin, mac = state.twins[mac_id], state.machines[mac_id]
     key = "breakdown_repair_minutes" if breakdown else "maintenance_minutes"
     duration = state.setup.cfg["simulation"][key]
 
-    twin.under_maintenance = mac.under_maintenance = True
     twin.maintenance_events += 1
+    if breakdown:
+        twin.breakdown_events += 1
 
     yield env.timeout(duration)
 
@@ -200,7 +234,7 @@ def _inject_failures(env: simpy.Environment, state: ShiftState):
         state.twins[mac_id].broken = True
         state.twins[mac_id].fail_now()
         if not state.machines[mac_id].busy:
-            env.process(_maintain(env, state, mac_id, breakdown=True))
+            _start_maintenance(env, state, mac_id, breakdown=True)
 
 
 def _dispatch(env: simpy.Environment, state: ShiftState) -> int:
@@ -229,8 +263,8 @@ def _epoch_loop(env: simpy.Environment, state: ShiftState):
         # the S3 disruption while busy, goes into maintenance now.
         for mac_id, twin in state.twins.items():
             if twin.needs_maintenance() and not state.machines[mac_id].busy:
-                env.process(_maintain(env, state, mac_id,
-                                      breakdown=twin.broken))
+                _start_maintenance(env, state, mac_id,
+                                   breakdown=twin.broken)
             twin.health_trace.append(twin.health)
 
         # --- decide ------------------------------------------------------

@@ -72,6 +72,62 @@ S3 හි breakdown **වේලාවන් සහ machine තේරීම** ව
 > (allocator එක RNG එක පාවිච්චි කරන ප්‍රමාණය අනුව) → **S3 සංසන්දනය අර්ථ විරහිත වෙනවා.**
 > දැන් එක seed එකක් = හැම baseline එකකටම **හරියටම එකම** කඩාවැටීම් ✅
 
+## 🔍 T5.4 ට පස්සේ කරපු DOUBLE-CHECK එක — ★ **ලොකු bug එකක් හම්බුණා**
+
+`tests/test_invariants.py` ලියලා invariant 5ක් පරීක්ෂා කළා (scenario 3 × seed 8 = runs 24).
+
+### ⛔ Bug: **HC4 ක්‍රියාත්මක වෙලාම නෑ**
+
+```
+[FAIL] work on an unavailable machine    2/24 runs clean
+       S1/seed0: M3 හි health 0.275 වෙද්දී වැඩක් පටන් අරන්
+       S1/seed1: M2 හි health 0.234 · M1 හි health 0.278
+```
+
+**runs 24න් 22ක** health floor එකට **යටින්** වැඩ පටන් අරන්. HC4 (H > 0.30) **නිකම් අලංකාරයක්** විතරයි.
+
+### හේතුව — SimPy හි සියුම් හැසිරීමක්
+
+```python
+if twin.needs_maintenance():
+    env.process(_maintain(...))    # ← මේකෙන් maintenance පටන් ගන්නේ නෑ!
+                                   #   ඒක schedule කරනවා විතරයි
+_dispatch(env, state)              # ← මේක වහාම run වෙනවා
+                                   #   එතකොට under_maintenance තාම False
+```
+➜ ගෙවිච්ච machine එකට **ඊළඟ වැඩේ දෙනවා**.
+
+### විසඳුම් 2 (දෙකම දැම්මා)
+
+```
+1. ★ Availability එක design §3.4 එකට ගැලපුවා:
+      A = 1[H > H_min] · 1[not maintenance]
+   දැන් allocator එක twin එකෙන්ම අහනවා → ShiftState.free_machines()
+   ➜ T5.11, T5.12 වලදීත් මේ bug එක නැවත එන්නේ නෑ
+
+2. under_maintenance flag එක **synchronously** set කරනවා
+   (_start_maintenance), process එක ඊට පස්සේ
+```
+
+### ප්‍රතිඵලය
+
+```
+කලින් :  [FAIL]  2/24 runs clean
+දැන්  :  [ok]   24/24 runs clean  ·  pytest 124/124 pass  ✅
+```
+
+| KPI | bug එක්ක | හදපු පස්සේ |
+|---|---|---|
+| S1 scrap | 9.64% | **9.29%** |
+| S1 maintenance events | 5.4 | **5.2** |
+
+> ⚠️ **වෙනස කුඩායි — ඒත් ඒක වැදගත් නෑ කියන එක නෙවෙයි.** HC4 කියන්නේ **hard constraint** එකක්.
+> *"අපේ hard constraints කැඩෙන්නේම නෑ"* කියලා paper එකේ ලියනවා නම්, ඒක **ඇත්තටම** එහෙම විය යුතුයි.
+> Reviewer කෙනෙක් code එක බැලුවොත් මේක අල්ලනවා.
+
+> ★ **පාඩම:** මේ bug එක **ප්‍රතිඵල දිහා බැලුවම පේන්නේ නෑ** — සංඛ්‍යා සාමාන්‍ය විදිහට පෙනුණා.
+> **Invariant test එකකින් විතරයි අල්ලන්න පුළුවන් වුණේ.** T5.15 (GATE 4) මේ නිසා **කලින්ම පටන් ගත්තා**.
+
 ## 👀 `watch.py` එකට health bars දැම්මා
 
 ```

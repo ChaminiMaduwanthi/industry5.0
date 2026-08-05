@@ -247,7 +247,14 @@
 |---|---|---|---|---|
 | **T5.13** | SHAP integration — AI තීරණය පැහැදිලි කිරීම (XAI) | `src/decision/explain.py` | 1 දින | ⬜ |
 | **T5.14** | ★ Streamlit dashboard + **operator override button** | `src/dashboard/app.py` | 2 දින | ⬜ |
-| **T5.15** | 🚪 Unit tests + sanity checks (fatigue 0–1 අතරද? energy ධනද?) | `tests/` | 1 දින | ⬜ |
+| **T5.15** | 🚪 Unit tests + sanity checks (fatigue 0–1 අතරද? energy ධනද?) | `tests/` | 1 දින | 🟨 **පටන් ගත්තා 08-05** |
+
+> 🟨 **T5.15 කලින්ම පටන් ගත්තා** — `tests/test_invariants.py` (checks 124, ඔක්කොම pass).
+> **හේතුව:** T5.4 එකේ **HC4 ක්‍රියාත්මක වෙලාම නැති bug එකක්** තිබුණා, සහ ඒක **ප්‍රතිඵල දිහා
+> බැලුවම පේන්නේ නෑ** — invariant test එකකින් විතරයි අල්ලුනේ. *(worklog බලන්න.)*
+>
+> ⬜ **තව එකතු කරන්න ඕන (twins ආවම):** fatigue `[0,1]` ද · HC1 කැඩෙනවද ·
+> AWL ට යටින්ද · energy ධනද · CP1–CP5 ක්‍රියාත්මකද.
 | **T5.16** | ★ **GATE 3 carry-over:** `constraint_deferrals` අනුපාතය මනින්න (epochs 640) | `results/feasibility.csv` | 0.5 දින | ⬜ |
 
 > ⚠️ **T5.16 (design §12 එකෙන් එනවා):** deferrals **>15%** නම් → HC1 එක 0.85 දක්වා ලිහිල් කරන්න
