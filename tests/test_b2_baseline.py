@@ -128,9 +128,96 @@ def test_the_disruption_is_identical_for_both():
     assert b["maintenance_events"] > 0
 
 
+def test_b2_decisions_ignore_the_operator_entirely():
+    """Not enforcing the human constraints is weaker than being blind to them.
+
+    Exhaust every operator mid-run and B2 must schedule exactly as before,
+    while the human-aware policy must visibly change course. Asserting the
+    contrast pins down what separates the two: information, not effort.
+    """
+    def exhaust(state):
+        for h in state.humans.values():
+            h.fatigue = h.spec.awl_kcal_min * 0.99
+
+    normal = _run("S2", industry40_allocator, 3)
+    tired = run_shift(load_setup("S2"), seed=3, allocator=industry40_allocator,
+                      on_epoch=exhaust)
+    assert tired["throughput"] == normal["throughput"], (
+        "B2 reacted to operator fatigue — it is not machine-only")
+
+    b3_normal = _run("S2", weighted_allocator, 3)
+    b3_tired = run_shift(load_setup("S2"), seed=3, allocator=weighted_allocator,
+                         on_epoch=exhaust)
+    assert b3_tired["throughput"] < b3_normal["throughput"], (
+        "B3 ignored exhausted operators — the constraints are not binding")
+
+
+def test_b2_is_not_a_straw_man():
+    """A weakened baseline would understate what the human policy costs.
+
+    Greedy shortest-first is compared against an optimal per-epoch assignment.
+    If the optimum were meaningfully better, B2 would be leaving throughput on
+    the table and every reported trade-off would flatter the proposal.
+    """
+    import numpy as np
+    from scipy.optimize import linear_sum_assignment
+
+    def optimal(state, rng):
+        setup = state.setup
+        ops, macs = state.free_operators(), state.free_machines()
+        tasks = state.pending_tasks()
+        if not ops or not macs or not tasks:
+            return []
+        tasks = tasks[:len(ops)]
+        cost = np.array([[setup.processing_time(t.task_type, o) for o in ops]
+                         for t in tasks])
+        ti, oi = linear_sum_assignment(cost)
+        pairs = sorted(zip(ti, oi), key=lambda p: cost[p[0], p[1]])
+        n = min(len(ops), len(macs), len(tasks))
+        by_health = sorted(macs, key=lambda m: state.twins[m].health)
+        return [(tasks[t], ops[o], by_health[k])
+                for k, (t, o) in enumerate(pairs[:n])]
+    optimal.enforces = frozenset()
+
+    greedy = _mean("S2", industry40_allocator, "throughput")
+    best = sum(_run("S2", optimal, s)["throughput"] for s in range(SEEDS)) / SEEDS
+    assert greedy >= best - 1.0, (
+        f"an optimal assignment beats B2 by {best - greedy:.1f} units — "
+        f"B2 is leaving throughput unclaimed")
+
+
 # =============================================================================
 # The result the paper rests on
 # =============================================================================
+def test_the_headline_holds_on_a_different_seed_block():
+    """The reported gap must not be an artefact of the evaluation seeds.
+
+    Design §6 keeps seeds 0-29 for evaluation and 100-129 for calibration.
+    Running the comparison on both must give the same story, or the numbers
+    are noise dressed up as a finding.
+    """
+    n = 15
+
+    def delta(seeds):
+        out = {}
+        for kpi in ("mean_fatigue", "throughput"):
+            b2 = sum(run_shift(load_setup("S2"), seed=s,
+                               allocator=industry40_allocator)[kpi]
+                     for s in seeds) / len(seeds)
+            b3 = sum(run_shift(load_setup("S2"), seed=s,
+                               allocator=weighted_allocator)[kpi]
+                     for s in seeds) / len(seeds)
+            out[kpi] = (b3 - b2) / b2 * 100
+        return out
+
+    a, b = delta(range(n)), delta(range(100, 100 + n))
+    for kpi in a:
+        assert abs(a[kpi] - b[kpi]) < 5.0, (
+            f"{kpi} gap moves from {a[kpi]:.1f}% to {b[kpi]:.1f}% between "
+            f"seed blocks — not a stable result")
+
+
+
 @pytest.mark.parametrize("scenario", ["S1", "S2", "S3"])
 def test_b3_protects_the_operator_better_than_b2(scenario):
     """The central claim, asserted rather than admired."""
