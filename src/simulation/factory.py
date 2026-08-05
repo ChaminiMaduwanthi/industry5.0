@@ -111,8 +111,15 @@ class ShiftState:
 # Allocators — the seam the decision layer plugs into
 # =============================================================================
 def build_candidates(state: ShiftState, task: Task, operators: list[str],
-                     machines: list[str]) -> list[Candidate]:
-    """Cost every way this task could be run, for the decision layer to weigh."""
+                     machines: list[str], ablate: frozenset = frozenset()
+                     ) -> list[Candidate]:
+    """Cost every way this task could be run, for the decision layer to weigh.
+
+    `ablate` hides a coupling from the SCHEDULER. The factory is unchanged: a
+    tired operator still makes more mistakes with CP2 ablated, the decision
+    simply cannot take that into account. Removing a coupling from the physics
+    as well would score each ablation in a different world.
+    """
     setup = state.setup
     spec = setup.tasks[task.task_type]
     lo, hi = setup.pace_range()
@@ -126,6 +133,10 @@ def build_candidates(state: ShiftState, task: Task, operators: list[str],
         for mac_id in machines:
             twin = state.twins[mac_id]
             speed = machine_speed_hat(twin.spec.efficiency_factor, lo, hi)
+            # What the scheduler is allowed to notice.
+            seen_speed = 0.0 if "CP5" in ablate else speed
+            seen_skill = 1.0 if "CP1" in ablate else skill
+            seen_fatigue = 0.0 if "CP2" in ablate else human.fatigue_hat
             out.append(Candidate(
                 task=task, operator=op_id, machine=mac_id,
                 processing_minutes=minutes,
@@ -133,10 +144,10 @@ def build_candidates(state: ShiftState, task: Task, operators: list[str],
                 fatigue_hat=human.fatigue_hat,
                 fatigue_after=human.predict_fatigue_hat(
                     minutes, spec.energy_demand_kcal_min),
-                rula=human.rula(spec.rula_base, speed),
+                rula=human.rula(spec.rula_base, seen_speed),
                 defect_risk=twin.defect_risk(
-                    skill=skill, kappa=spec.severity_kappa,
-                    fatigue_hat=human.fatigue_hat),
+                    skill=seen_skill, kappa=spec.severity_kappa,
+                    fatigue_hat=seen_fatigue),
                 marginal_kwh=marginal_energy_kwh(
                     twin.spec.delta_e_kwh_per_h[task.task_type], minutes),
             ))
@@ -169,12 +180,13 @@ def weighted_allocator(state: ShiftState, rng: random.Random
               for o, s in state.operators.items()}
     current = {o: s.current_machine for o, s in state.operators.items()}
 
+    ablate = getattr(state.allocator, "ablate", frozenset())
     assignments = []
     for task in state.pending_tasks():
         if not free_ops or not free_macs:
             break
         chosen = decide(
-            build_candidates(state, task, free_ops, free_macs),
+            build_candidates(state, task, free_ops, free_macs, ablate),
             setup.cfg, scales, shares, current, state.violations)
         if chosen is None:
             continue                       # deferred: no feasible pairing

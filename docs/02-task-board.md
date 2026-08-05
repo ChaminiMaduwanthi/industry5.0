@@ -299,7 +299,7 @@
 | **T7.5** | **Fig 5:** Dashboard screenshot + SHAP explanation | `figures/fig5_dashboard.png` | 0.5 දින | ⬜ |
 | **T7.6** | Sensitivity analysis — weights (w₁…w₅) වෙනස් කලාම මොකද වෙන්නේ? | `results/sensitivity.csv` | 1.5 දින | ⬜ |
 | **T7.6b** | ★★ **GATE 3 carry-over:** **λ, μ** sensitivity — 0.5× · 1× · 2× | `results/sensitivity_fatigue.csv` | 0.5 දින | ✅ **08-05** |
-| **T7.8** | ★★ **Ablation:** CP1–CP5 ක්‍රියා විරහිත කර B3 run කරන්න | `results/ablation.csv` | 1 දින | ⬜ |
+| **T7.8** | ★★ **Ablation:** CP1–CP5 ක්‍රියා විරහිත කර B3 run කරන්න | `results/ablation.csv` | 1 දින | ✅ **08-05** |
 | **T7.7** | ප්‍රතිඵල අර්ථ නිරූපණය — **trade-off කතාව** ලියන්න | notes | 0.5 දින | ⬜ |
 
 > ⚠️ **T7.6b අනිවාර්යයි.** λ, μ **calibrated** parameters (measured නෙවෙයි) නිසා, scaling එකෙන්
