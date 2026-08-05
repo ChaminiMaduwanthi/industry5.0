@@ -177,9 +177,13 @@ fatigue:
 # =============================================================================
 #  R = clip(RULA_base(tau) + psi1 * F_hat + psi2 * v_hat, 1, 7)   <- CP5
 #  C = clip(c_tau + gamma1*(1-H) + gamma2*Q + gamma3*(n-1)/(M-1), 0, 1)  <- CP3
+#  psi1 and psi2 are [CALIB] for the same reason as the constraint thresholds:
+#  the RULA scale is published, the amount a fatigued operator or a fast machine
+#  adds to it is not. They are covered by the CP ablation (T7.8), which removes
+#  the terms entirely.
 ergonomics:
-  psi1_fatigue: 2.0               # [TUNABLE] fatigue -> worse posture
-  psi2_machine_speed: 1.0         # [TUNABLE] CP5
+  psi1_fatigue: 2.0               # [CALIB] fatigue -> worse posture
+  psi2_machine_speed: 1.0         # [CALIB] CP5 pace term
   rula_min: 1
   rula_max: 7
 
@@ -284,11 +288,28 @@ sustainability:
 #  Hard constraints filter the feasible set BEFORE the optimiser runs.
 #  They can never be "bought" with a penalty term. That is the real difference
 #  between Industry 4.0 and Industry 5.0 in this framework.
+#  ⚠️ THE THRESHOLDS BELOW ARE [CALIB], NOT PUBLISHED CONSTANTS.
+#
+#  What IS published is the quantity each one is a fraction of:
+#    AWL, the sustainable 8-hour work level   -> Price (1990), Silva et al. (2016)
+#    the 1-7 RULA scale                       -> McAtamney & Corlett (1993)
+#
+#  The fractions themselves — 0.80 of AWL, a ceiling of 5 on the RULA scale —
+#  are our safety margins. No source states them. Writing "HC1 = 0.80 following
+#  Price (1990)" would be the same error as attributing the fatigue rates to
+#  Calzavara: true about the base quantity, false about the number.
+#
+#  Correct wording for the paper:
+#    "The fatigue limit was set at 80% of each operator's acceptable work
+#     level, a safety margin chosen for this study rather than a published
+#     constant. Its influence is assessed in §V-D."
+#
+#  Covered by the HC1 sensitivity sweep declared under `sensitivity` below.
 constraints:
   hard:
-    HC1_fatigue_max: 0.80         # [TUNABLE] fraction of personal AWL
-    HC2_skill_min: 0.40           # [TUNABLE]
-    HC3_rula_max: 5               # [TUNABLE] RULA action level
+    HC1_fatigue_max: 0.80         # [CALIB] fraction of personal AWL — OUR choice
+    HC2_skill_min: 0.40           # [CALIB] competence floor — our choice
+    HC3_rula_max: 5               # [CALIB] ceiling on the RULA scale — our choice
     HC4_health_min: 0.30          # [TUNABLE] = machines.health_min_operational
 
   # Hysteresis stops the operator flipping between work and rest every epoch.
@@ -383,6 +404,14 @@ sensitivity:
   fatigue_baselines: [B2, B3]
   output_csv: "results/sensitivity_fatigue.csv"
   weight_output_csv: "results/sensitivity.csv"
+
+  # --- HC1 threshold sweep -------------------------------------------------
+  # Same treatment as the fatigue rates, for the same reason: 0.80 is our
+  # safety margin, not a published constant, so the conclusion must survive
+  # reasonable alternatives. Pass criterion: the constrained policy still beats
+  # the unconstrained one on every human-centric measure at every threshold.
+  hc1_thresholds: [0.70, 0.80, 0.90]
+  hc1_output_csv: "results/sensitivity_hc1.csv"
 
 
 # =============================================================================
