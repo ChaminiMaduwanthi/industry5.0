@@ -1,0 +1,41 @@
+# Human-Centric Industry 5.0 Digital Twin Framework
+# Python 3.13.14
+#
+# Install:  python -m pip install -r requirements.txt
+#
+# Versions are pinned so that the 270 experiment runs are reproducible
+# (experiment-plan §11). Verified working on Windows 11 / Python 3.13.14
+# on 2026-08-05.
+
+# --- data ---
+pandas==2.3.2
+numpy==2.3.3
+
+# --- discrete-event simulation ---
+simpy==4.1.2
+
+# --- machine-twin models (RUL / energy / quality) ---
+scikit-learn==1.9.0
+xgboost==3.4.0
+
+# --- multi-objective optimisation (NSGA-II, Pareto front) ---
+pymoo==0.6.2
+
+# --- explainability ---
+shap==0.52.0
+
+# --- statistics (Mann-Whitney U, Shapiro-Wilk, effect sizes) ---
+scipy==1.16.2
+
+# --- figures ---
+matplotlib==3.10.6
+seaborn==0.13.2
+
+# --- dashboard with operator override ---
+streamlit==1.61.0
+
+# --- configuration ---
+PyYAML==6.0.2
+
+# --- tests (GATE 4) ---
+pytest==9.1.1
