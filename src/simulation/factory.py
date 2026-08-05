@@ -183,6 +183,58 @@ def weighted_allocator(state: ShiftState, rng: random.Random
     return assignments
 
 
+def industry40_allocator(state: ShiftState, rng: random.Random
+                         ) -> list[tuple[Task, str, str]]:
+    """B2 — the Industry 4.0 baseline (design §11).
+
+    Deliberately the SAME framework under restrictions, not separate code, so
+    the comparison cannot be accused of pitting two different simulators
+    against each other. What it keeps and what it drops:
+
+        machine twin   full strength. HC4 still removes a machine that has
+                       worn past its floor, so B2 protects its equipment as
+                       well as B3 does.
+        human twin     still running. Fatigue, ergonomic risk and cognitive
+                       load are all computed and reported — otherwise there
+                       would be no B2 figures to compare against. They simply
+                       do not enter the decision.
+        objective      throughput alone: take the fastest pairing available.
+        constraints    HC4 only. No fatigue limit, no skill floor, no
+                       ergonomic ceiling, no mandatory rest.
+
+    ⚠️ The physical couplings are NOT switched off under B2. A tired operator
+    still makes more mistakes here, because that happens in the factory whether
+    or not the scheduler models it. Disabling CP2 for B2 would simulate a
+    different, kinder world for it and flatter its quality figures. Design §11
+    says the human twin is invisible to the OPTIMISER; it does not say the
+    physics changes. This reading is what keeps the comparison honest, and it
+    is the one to state in the methodology.
+    """
+    setup = state.setup
+    free_ops = state.free_operators()
+    free_macs = state.free_machines()
+
+    assignments = []
+    for task in state.pending_tasks():
+        if not free_ops or not free_macs:
+            break
+        # Fastest operator for this task. Machine choice does not change the
+        # rate, so it is made on service timing: run down whatever is closest
+        # to its floor and keep fresh capacity in reserve. Taking the
+        # HEALTHIEST instead equalises wear across the fleet, which sounds
+        # tidy and is worse — the machines then reach the floor together and
+        # go out of service together. Measured, that cost B2 enough throughput
+        # to fall behind random assignment, which would have made it a straw
+        # opponent. Staggering service is also exactly what a machine twin is
+        # for, so this is the Industry 4.0 strategy rather than a patch.
+        op = min(free_ops, key=lambda o: setup.processing_time(task.task_type, o))
+        mac = min(free_macs, key=lambda m: state.twins[m].health)
+        assignments.append((task, op, mac))
+        free_ops.remove(op)
+        free_macs.remove(mac)
+    return assignments
+
+
 def random_allocator(state: ShiftState, rng: random.Random
                      ) -> list[tuple[Task, str, str]]:
     """Baseline B1: pair pending tasks with whoever and whatever is free.
@@ -211,6 +263,7 @@ def random_allocator(state: ShiftState, rng: random.Random
 # separate a human-aware scheduler from a throughput-only one, so they belong
 # to the policy and are declared here.
 random_allocator.enforces = frozenset()                       # B1
+industry40_allocator.enforces = frozenset()                   # B2 — HC4 only
 weighted_allocator.enforces = frozenset({"HC1", "HC2", "HC3"})  # B3a
 
 

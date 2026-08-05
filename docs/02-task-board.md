@@ -272,8 +272,8 @@
 
 | ID | කාර්යය | File | කාලය | තත්ත්වය |
 |---|---|---|---|---|
-| **T6.1** | **B1** — Random / Round-robin baseline | `src/baselines/b1_random.py` | 0.5 දින | ⬜ |
-| **T6.2** | ★★ **B2** — Industry 4.0 baseline (machine twin විතරයි, throughput විතරක් optimize) | `src/baselines/b2_industry40.py` | 1 දින | ⬜ |
+| **T6.1** | **B1** — Random / Round-robin baseline | `src/baselines/b1_random.py` | 0.5 දින | ✅ **08-05** |
+| **T6.2** | ★★ **B2** — Industry 4.0 baseline (machine twin විතරයි, throughput විතරක් optimize) | `src/baselines/b2_industry40.py` | 1 දින | ✅ **08-05** |
 | **T6.3** | **B3** — ඔබේ framework එක (Phase 5 එකෙන් එනවා) | `src/decision/` | — | ⬜ |
 | **T6.4** | Scenario 3 නිර්වචනය — Normal / High-demand / Breakdown | expplan §5 | 0.5 දින | ✅ **08-05** |
 | **T6.5** | Experiment runner ලියන්න — 30 seeds × 3 baselines × 3 scenarios | `src/run_experiments.py` | 1 දින | ⬜ |
