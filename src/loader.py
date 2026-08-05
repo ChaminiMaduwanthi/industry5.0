@@ -92,6 +92,17 @@ class Setup:
     def epochs_per_shift(self) -> int:
         return self.shift_minutes // self.epoch_minutes
 
+    def energy_range(self) -> tuple[float, float]:
+        """Fleet-wide [lowest idle draw, highest full-load draw], for CP5.
+
+        Normalising machine 'speed' needs a scale, and the fleet's own range is
+        the only one that does not import an arbitrary constant.
+        """
+        lo = min(m.e_idle_kwh_per_h for m in self.machines.values())
+        hi = max(m.e_idle_kwh_per_h + max(m.delta_e_kwh_per_h.values())
+                 for m in self.machines.values())
+        return lo, hi
+
     def processing_time(self, task_type: str, operator: str) -> float:
         """p = p0 / (0.5 + 0.5 * S)  — design §4.6. Skilled operators are faster."""
         p0 = self.tasks[task_type].nominal_time_minutes
