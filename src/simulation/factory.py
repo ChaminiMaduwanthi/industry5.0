@@ -151,9 +151,11 @@ def _work(env: simpy.Environment, state: ShiftState,
     )
     human.observe(rula, load)
     task.rula_score = rula
+    human.begin_task(env.now, spec.energy_demand_kcal_min)     # CP4
 
     minutes = setup.processing_time(task.task_type, op_id)
     yield env.timeout(minutes)
+    human.end_task(env.now)
 
     task.finished_min = env.now
     op.record(task.task_type, minutes)
@@ -179,7 +181,6 @@ def _work(env: simpy.Environment, state: ShiftState,
 
     # --- wear and effort (design §3.1, §4.1) ------------------------------
     twin.degrade(minutes, spec.severity_kappa)
-    human.record_work(minutes, spec.energy_demand_kcal_min)   # CP4
 
     op.busy = mac.busy = False
     op.current_task_type = mac.current_task_type = None
@@ -288,7 +289,7 @@ def _epoch_loop(env: simpy.Environment, state: ShiftState):
         # or rested. Only the first epoch is skipped, since no time has passed.
         if state.epoch_log:
             for human in state.humans.values():
-                human.advance(setup.epoch_minutes)
+                human.advance(env.now, setup.epoch_minutes)
 
         # Anything that wore past its floor while idle, or was knocked out by
         # the S3 disruption while busy, goes into maintenance now.
@@ -378,6 +379,30 @@ def run_shift(setup: Setup, seed: int = 0, allocator=random_allocator,
     env.process(_epoch_loop(env, state))
     env.process(_inject_failures(env, state))
     env.run(until=setup.shift_minutes)
+
+    # Work still in flight when the clock stops was really performed, so its
+    # elapsed minutes count towards utilisation and energy even though the unit
+    # never came off the line. Only counters are credited — the task stays
+    # unfinished, and no output is claimed for it.
+    for task in state.queue:
+        if task.started_min is None or task.finished_min is not None:
+            continue
+        elapsed = setup.shift_minutes - task.started_min
+        if elapsed <= 0:
+            continue
+        state.operators[task.assigned_operator].busy_minutes += elapsed
+        mac = state.machines[task.assigned_machine]
+        mac.busy_minutes += elapsed
+        mac.variable_energy_kwh += (
+            setup.machines[task.assigned_machine]
+            .delta_e_kwh_per_h[task.task_type] * elapsed / 60)
+
+    # The epoch loop advances fatigue for the window that has just closed, so
+    # the final epoch of the shift is still outstanding when the clock stops.
+    # Without this the last fifteen minutes of every shift are never charged.
+    for human in state.humans.values():
+        human.end_task(setup.shift_minutes)
+        human.advance(setup.shift_minutes, setup.epoch_minutes)
 
     return summarise(state, total_demand, seed, verbose)
 

@@ -39,9 +39,14 @@ class HumanTwin:
     ergonomic_risk: float = 1.0
     cognitive_load: float = 0.0
 
-    # accumulated within the current epoch, cleared by `advance`
-    epoch_busy_minutes: float = 0.0
-    epoch_energy_minutes: float = 0.0     # sum of E_w * minutes
+    # Work intervals as (start, end, demand); end is None while still running.
+    # Fatigue is integrated over these rather than credited when a task ends,
+    # because tasks routinely outlast an epoch — a heavy task takes 19 to 28
+    # minutes against a 15 minute epoch. Crediting on completion and then
+    # capping at the epoch length silently discarded about a quarter of all
+    # worked minutes and understated fatigue by the same margin.
+    work_intervals: list[list] = field(default_factory=list)
+    charged_minutes: float = 0.0          # audit trail: what fatigue was told
 
     fatigue_trace: list[float] = field(default_factory=list)
     peak_fatigue_hat: float = 0.0
@@ -60,33 +65,54 @@ class HumanTwin:
                              self.spec.awl_kcal_min)
 
     # --- bookkeeping fed by the simulation --------------------------------
-    def record_work(self, minutes: float, energy_demand: float) -> None:
-        """Called when the operator finishes a task within this epoch."""
-        self.epoch_busy_minutes += minutes
-        self.epoch_energy_minutes += energy_demand * minutes
+    def begin_task(self, at: float, energy_demand: float) -> None:
+        self.work_intervals.append([at, None, energy_demand])
+
+    def end_task(self, at: float) -> None:
+        for interval in reversed(self.work_intervals):
+            if interval[1] is None:
+                interval[1] = at
+                return
 
     # --- §4.1 the fatigue step -------------------------------------------
-    def advance(self, epoch_minutes: float) -> None:
-        """Move fatigue on by one decision epoch."""
+    def advance(self, now: float, epoch_minutes: float) -> None:
+        """Move fatigue on over the epoch that just ended, [now - dt, now].
+
+        Work is integrated across the window, so a task spanning three epochs
+        contributes its real minutes to each of them.
+        """
         lam = self.cfg["fatigue"]["lambda_per_min"]
         mu = self.cfg["fatigue"]["mu_per_min"]
+        lo, hi = now - epoch_minutes, now
 
-        worked = min(self.epoch_busy_minutes, epoch_minutes)
+        worked = 0.0
+        energy_minutes = 0.0
+        for start, end, demand in self.work_intervals:
+            finish = hi if end is None else end
+            overlap = min(finish, hi) - max(start, lo)
+            if overlap > 0:
+                worked += overlap
+                energy_minutes += demand * overlap
+
+        worked = min(worked, epoch_minutes)     # cannot exceed the window
         rested = max(0.0, epoch_minutes - worked)
 
         if worked > 0:
             # CP4 — the task's own metabolic demand is the asymptote. Where
             # several tasks fell in one epoch, their time-weighted demand is
             # the equivalent constant.
-            e_star = self.epoch_energy_minutes / self.epoch_busy_minutes
+            e_star = energy_minutes / worked
             self.fatigue = fat.step(self.fatigue, e_star, worked, lam, mu)
+            self.charged_minutes += worked
 
         if rested > 0:
             self.fatigue = fat.step(self.fatigue, self.spec.e_rest_kcal_min,
                                     rested, lam, mu)
 
-        self.epoch_busy_minutes = 0.0
-        self.epoch_energy_minutes = 0.0
+        # Drop intervals that closed before this window; keep anything still
+        # running or straddling the boundary.
+        self.work_intervals = [iv for iv in self.work_intervals
+                               if iv[1] is None or iv[1] > lo]
 
         f_hat = self.fatigue_hat
         self.fatigue_trace.append(f_hat)

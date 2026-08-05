@@ -28,14 +28,30 @@ def _twin(op: str) -> HumanTwin:
     return HumanTwin(spec=SETUP.operators[op], cfg=CFG)
 
 
-def _work_for(twin: HumanTwin, task: str, minutes: float, epoch: float) -> None:
+def _work_for(twin: HumanTwin, task: str, minutes: float,
+              epoch: float, start: float = 0.0) -> float:
+    """Work continuously from `start` for `minutes`, advancing epoch by epoch.
+
+    Returns the clock time reached, so a test can carry on with rest.
+    """
     demand = SETUP.tasks[task].energy_demand_kcal_min
-    done = 0.0
-    while done < minutes:
-        chunk = min(epoch, minutes - done)
-        twin.record_work(chunk, demand)
-        twin.advance(epoch)
-        done += chunk
+    twin.begin_task(start, demand)
+    twin.end_task(start + minutes)
+
+    now = start
+    while now < start + minutes:
+        now += epoch
+        twin.advance(now, epoch)
+    return now
+
+
+def _rest_for(twin: HumanTwin, minutes: float, epoch: float,
+              start: float) -> float:
+    now = start
+    while now < start + minutes:
+        now += epoch
+        twin.advance(now, epoch)
+    return now
 
 
 # =============================================================================
@@ -87,12 +103,29 @@ def test_the_same_task_tires_operators_differently():
 
 def test_resting_sheds_fatigue():
     twin = _twin("OP2")
-    _work_for(twin, "H", 120, 15)
+    now = _work_for(twin, "H", 120, 15)
     tired = twin.fatigue_hat
-    for _ in range(8):                    # two hours of rest
-        twin.advance(15)
+    _rest_for(twin, 120, 15, now)         # two hours of rest
     assert twin.fatigue_hat < tired
     assert twin.fatigue >= twin.spec.e_rest_kcal_min - 1e-9
+
+
+def test_every_worked_minute_reaches_the_fatigue_model():
+    """A task longer than an epoch must still be charged in full.
+
+    Heavy work takes 19 to 28 minutes against a 15 minute epoch. Crediting
+    those minutes only when the task ends, then capping at the epoch length,
+    discarded about a quarter of all work and understated fatigue to match.
+    """
+    setup = load_setup("S2")
+    box = {}
+    run_shift(setup, seed=0, on_epoch=lambda st: box.setdefault("s", st))
+    state = box["s"]
+    for op_id, op in state.operators.items():
+        charged = state.humans[op_id].charged_minutes
+        assert charged == pytest.approx(op.busy_minutes, rel=0.02), (
+            f"{op_id}: worked {op.busy_minutes:.1f} min but only "
+            f"{charged:.1f} min reached the fatigue model")
 
 
 def test_normalised_fatigue_stays_in_range():
