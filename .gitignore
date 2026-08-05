@@ -1,0 +1,51 @@
+# =============================================================================
+#  Industry 5.0 research project — .gitignore
+# =============================================================================
+
+# --- Raw datasets -------------------------------------------------------------
+# Not committed: large, and each has its own licence and canonical source.
+# Provenance is recorded in docs/10-data-card.md so anyone can re-download them.
+data/raw/*
+!data/raw/.gitkeep
+
+# --- Literature ---------------------------------------------------------------
+# Copyrighted PDFs. Downloaded for reading only — must NOT be redistributed
+# through a public repository. Full citations live in paper/references.bib.
+literature/*.pdf
+
+# --- Archives -----------------------------------------------------------------
+*.zip
+*.tar.gz
+*.7z
+
+# --- Python -------------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ipynb_checkpoints/
+.venv/
+venv/
+env/
+
+# --- Streamlit ----------------------------------------------------------------
+.streamlit/secrets.toml
+
+# --- OS -----------------------------------------------------------------------
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# --- Editors ------------------------------------------------------------------
+.vscode/
+.idea/
+*.swp
+
+# =============================================================================
+#  DELIBERATELY TRACKED (do not add these to the ignore list)
+# =============================================================================
+#   data/processed/   simulation inputs — small, and needed to reproduce results
+#   results/          raw_results.csv and analysis outputs
+#   figures/          paper figures
+#   src/config.yaml   every parameter used in the experiments
+# =============================================================================
