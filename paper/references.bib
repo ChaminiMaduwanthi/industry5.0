@@ -1,0 +1,811 @@
+% =====================================================================
+%  A Human-Centric Industry 5.0 Framework for Sustainable Smart
+%  Manufacturing Using AI and Digital Twins
+%
+%  References — round 3 · FINAL (2026-08-03)
+%  T2.4 / T2.9 / T2.10 අවසන්.
+%
+%  තත්ත්ව සලකුණු:
+%    [READ]   = metadata + abstract/full-text කියවා අන්තර්ගතය තහවුරු කර ඇත
+%    [OK]     = OpenAlex වලින් metadata තහවුරු කර ඇත
+%    [CHECK]  = තවම තහවුරු නොකළ — submit කරන්න කලින් බලන්න
+%
+%  සාරාංශය: entries 43 · [READ] 8 · [OK] 31 · [CHECK] 4
+% =====================================================================
+
+
+% =====================================================================
+%  A · ළඟම COMPETITORS  ★★  (gap statement එකේ පදනම)
+% =====================================================================
+
+% [READ] gap citation [1] — machine DT ✅, human state quantified ❌
+@article{modoni2023hdt,
+  author  = {Modoni, Gianfranco E. and Sacco, Marco},
+  title   = {A Human Digital-Twin-Based Framework Driving Human Centricity towards {Industry} 5.0},
+  journal = {Sensors},
+  volume  = {23},
+  number  = {13},
+  pages   = {6054},
+  year    = {2023},
+  doi     = {10.3390/s23136054},
+  note    = {59 cites. VIM හි biographic/capability/attitude data පමණයි. ★ Fatigue modelling සහ ergonomic assessment ""remain unaddressed"" --- කර්තෘන්ගේම future work.}
+}
+
+% [READ] gap citation [2] — සම්පූර්ණයෙන් conceptual
+@article{toth2023i5arc,
+  author  = {T{\'o}th, Attila and Nagy, L{\'a}szl{\'o} and Kennedy, Roderick and Bohu{\v s}, Belej and Abonyi, J{\'a}nos and Ruppert, Tam{\'a}s},
+  title   = {The Human-Centric {Industry} 5.0 Collaboration Architecture},
+  journal = {MethodsX},
+  volume  = {11},
+  pages   = {102260},
+  year    = {2023},
+  doi     = {10.1016/j.mex.2023.102260},
+  note    = {112 cites. Quantified human parameters නෑ. Machine DT සංවර්ධනය නොකෙරේ. Energy metrics නෑ. Experimental validation නෑ.}
+}
+
+% [READ] gap citation [3] ★★ — ළඟම METHODOLOGICAL competitor
+@article{tan2021fatigue,
+  author  = {Tan, Weihua and Yuan, Xiaofang and Wang, Jinlei and Zhang, Xizheng},
+  title   = {A Fatigue-Conscious Dual Resource Constrained Flexible Job Shop Scheduling Problem by Enhanced {NSGA-II}: An Application from Casting Workshop},
+  journal = {Computers \& Industrial Engineering},
+  volume  = {160},
+  pages   = {107557},
+  year    = {2021},
+  doi     = {10.1016/j.cie.2021.107557},
+  note    = {108 cites. Fatigue + makespan multi-objective NSGA-II. ★ Digital twin නෑ --- machine health/energy/quality state තීරණයට යොදාගත නොහැක. Sustainability නෑ.}
+}
+
+% [READ] gap citation [4] ★★ — fatigue quantified, නමුත් DETECTION පමණයි
+@article{sharotry2022fatigue,
+  author  = {Sharotry, Abhimanyu and Jimenez, Jesus A. and M{\'e}ndez Mediavilla, Francis A. and Wierschem, David and Koldenhoven, Rachel M. and Valles, Damian},
+  title   = {Manufacturing Operator Ergonomics: A Conceptual Digital Twin Approach to Detect Biomechanical Fatigue},
+  journal = {IEEE Access},
+  volume  = {10},
+  pages   = {12774--12791},
+  year    = {2022},
+  doi     = {10.1109/ACCESS.2022.3145984},
+  note    = {40 cites. Fatigue QUANTIFY කරයි (joint angles + DTW + EWMA). නමුත් DETECTION පමණයි --- තීරණයකට යොදන්නේ නෑ. Machine DT නෑ. Lab, subjects 2. ★ උද්ධෘතය: ""the need for a true personalized DT for an operator"".}
+}
+
+% [READ] gap citation [5] — ergonomics DT, decision SUPPORT පමණයි
+@article{greco2020ergonomics,
+  author  = {Greco, Alessandro and Caterino, Mario and Fera, Marcello and Gerbino, Salvatore},
+  title   = {Digital Twin for Monitoring Ergonomics during Manufacturing Production},
+  journal = {Applied Sciences},
+  volume  = {10},
+  number  = {21},
+  pages   = {7758},
+  year    = {2020},
+  doi     = {10.3390/app10217758},
+  note    = {107 cites. ""supports the monitoring and the decision making"" --- automated optimisation නෑ. Machine DT coupling නෑ. Lab case study.}
+}
+
+% [READ] gap citation [6] ★★★ — bi-directional flow අවශ්‍යතාවය හඳුනාගනී
+@article{locklin2021hdt,
+  author  = {L{\"o}cklin, Andreas and Jung, Tobias and Jazdi, Nasser and Ruppert, Tam{\'a}s and Weyrich, Michael},
+  title   = {Architecture of a Human-Digital Twin as Common Interface for Operator 4.0 Applications},
+  journal = {Procedia CIRP},
+  volume  = {104},
+  pages   = {458--463},
+  year    = {2021},
+  doi     = {10.1016/j.procir.2021.11.077},
+  note    = {78 cites. ★★ උද්ධෘතය: ""Such applications require a bi-directional flow of information and need data, models and simulations of machines as well as humans."" --- අවශ්‍යතාවය කියයි, නමුත් architecture proposal පමණයි. ★ අපගේ CP1--CP5 coupling points සඳහා පදනම.}
+}
+
+% [READ] gap citation [7] — sustainability වචනයෙන් පමණයි
+@article{crnjac2025assembly,
+  author  = {Crnjac {\v Z}i{\v z}i{\'c}, Marina and Gjeldum, Nikola and Mladineo, Marko and Bili{\'c}, Bo{\v z}enko and Aljinovi{\'c} Me{\v s}trovi{\'c}, Amanda},
+  title   = {Towards Sustainable Personalized Assembly Through Human-Centric Digital Twins},
+  journal = {Sensors},
+  volume  = {25},
+  number  = {18},
+  pages   = {5662},
+  year    = {2025},
+  doi     = {10.3390/s25185662},
+  note    = {Unidirectional human observation (IR sensors --- task duration පමණයි). Energy/carbon දත්ත නෑ. Single-objective line balancing. ⚠️ කර්තෘ නාමය PDF එකෙන් තහවුරු කරන්න (OpenAlex ""Crnjac"" / ලිපිය ""Crnjac Zizic"").}
+}
+
+
+% =====================================================================
+%  B · පදනම් CITATIONS  (අනිවාර්ය)
+% =====================================================================
+
+% [OK] කර්තෘ නාම web search වලින් තහවුරු. ප්‍රකාශනය 2021-01-05.
+@techreport{breque2021industry50,
+  author      = {Breque, Maija and De Nul, Lars and Petridis, Athanasios},
+  title       = {Industry 5.0: Towards a Sustainable, Human-Centric and Resilient European Industry},
+  institution = {European Commission, Directorate-General for Research and Innovation},
+  address     = {Luxembourg},
+  year        = {2021},
+  doi         = {10.2777/308407},
+  url         = {https://op.europa.eu/en/publication-detail/-/publication/468a892a-5097-11eb-b59f-01aa75ed71a1/},
+  note        = {කුලුනු 3: human-centricity, sustainability, resilience.}
+}
+
+% [OK] 2358 cites --- Industry 4.0 vs 5.0 වෙනස
+@article{xu2021industry45,
+  author  = {Xu, Xun and Lu, Yuqian and Vogel-Heuser, Birgit and Wang, Lihui},
+  title   = {{Industry} 4.0 and {Industry} 5.0---Inception, Conception and Perception},
+  journal = {Journal of Manufacturing Systems},
+  volume  = {61},
+  pages   = {530--535},
+  year    = {2021},
+  doi     = {10.1016/j.jmsy.2021.10.006}
+}
+
+% [OK] 48367 cites
+@article{deb2002nsga2,
+  author  = {Deb, Kalyanmoy and Pratap, Amrit and Agarwal, Sakshi and Meyarivan, T.},
+  title   = {A Fast and Elitist Multiobjective Genetic Algorithm: {NSGA-II}},
+  journal = {IEEE Transactions on Evolutionary Computation},
+  volume  = {6},
+  number  = {2},
+  pages   = {182--197},
+  year    = {2002},
+  doi     = {10.1109/4235.996017}
+}
+
+% [OK] 7622 cites
+@inproceedings{lundberg2017shap,
+  author    = {Lundberg, Scott M. and Lee, Su-In},
+  title     = {A Unified Approach to Interpreting Model Predictions},
+  booktitle = {Advances in Neural Information Processing Systems (NeurIPS)},
+  volume    = {30},
+  year      = {2017},
+  doi       = {10.48550/arXiv.1705.07874}
+}
+
+% [OK] 3285 cites
+@article{mcatamney1993rula,
+  author  = {McAtamney, Lynn and Corlett, E. Nigel},
+  title   = {{RULA}: A Survey Method for the Investigation of Work-Related Upper Limb Disorders},
+  journal = {Applied Ergonomics},
+  volume  = {24},
+  number  = {2},
+  pages   = {91--99},
+  year    = {1993},
+  doi     = {10.1016/0003-6870(93)90080-S}
+}
+
+
+% =====================================================================
+%  C · FATIGUE MODEL  ★★  (H-DT එකේ ගණිතමය පදනම)
+% =====================================================================
+
+% [READ] ★★ lambda = accumulation, mu = alleviation. දෙකම operator-specific.
+@article{calzavara2019rest,
+  author  = {Calzavara, Martina and Persona, Alessandro and Sgarbossa, Fabio and Visentin, Valentina},
+  title   = {A Model for Rest Allowance Estimation to Improve Tasks Assignment to Operators},
+  journal = {International Journal of Production Research},
+  volume  = {57},
+  number  = {3},
+  pages   = {948--962},
+  year    = {2019},
+  doi     = {10.1080/00207543.2018.1497816},
+  note    = {★★ H-DT fatigue model එකේ ප්‍රාථමික citation. Exponential accumulation (lambda) + recovery (mu); දෙකම operator-specific. Heart-rate/energy-expenditure calibrated. Task assignment optimisation එකට යොදා ඇත. (Online first 2018; issue 57(3) = 2019.)}
+}
+
+% [CHECK] විකල්ප / cross-check fatigue model
+@article{ma2010muscle,
+  author  = {Ma, Liang and Chablat, Damien and Bennis, Fouad and Zhang, Wei},
+  title   = {A New Muscle Fatigue and Recovery Model and Its Ergonomics Application in Human Simulation},
+  journal = {arXiv preprint arXiv:1010.5891},
+  year    = {2010}
+}
+
+
+% =====================================================================
+%  D · HUMAN DIGITAL TWIN  (Related Work §II-C)
+% =====================================================================
+
+% [OK] ★★★ 393 cites, refs 174 --- ක්ෂේත්‍රයේ ප්‍රධානම reference එක
+@article{wang2023hdt,
+  author  = {Wang, Baicun and Zhou, Huiying and Li, Xingyu and Yang, Geng and Zheng, Pai and Ci, Song and Yuan, Yixiu and Wuest, Thorsten and Yang, Huayong and Wang, Lihui},
+  title   = {Human Digital Twin in the Context of {Industry} 5.0},
+  journal = {Robotics and Computer-Integrated Manufacturing},
+  volume  = {85},
+  pages   = {102626},
+  year    = {2023},
+  doi     = {10.1016/j.rcim.2023.102626}
+}
+
+% [OK] ★ 57 cites --- HDM / HDS / HDT / aHDT වර්ගීකරණය
+@article{gaffinet2025hdtslr,
+  author  = {Gaffinet, Ben and Al Haj Ali, Jana and Naudet, Yannick and Panetto, Herv{\'e}},
+  title   = {Human Digital Twins: A Systematic Literature Review and Concept Disambiguation for {Industry} 5.0},
+  journal = {Computers in Industry},
+  volume  = {166},
+  pages   = {104230},
+  year    = {2025},
+  doi     = {10.1016/j.compind.2024.104230},
+  note    = {★ Data integration මට්ටම අනුව වර්ගීකරණය. අපගේ twin එක කුමන කාණ්ඩයටද කියා paper එකේ පැහැදිලි කරන්න. OA: hal.science/hal-04864742}
+}
+
+% [OK] 119 cites
+@article{wang2022hdthcps,
+  author  = {Wang, Baicun and Zhou, Huiying and Yang, Geng and Li, Xingyu and Yang, Huayong},
+  title   = {Human Digital Twin ({HDT}) Driven Human-Cyber-Physical Systems: Key Technologies and Applications},
+  journal = {Chinese Journal of Mechanical Engineering},
+  volume  = {35},
+  number  = {1},
+  year    = {2022},
+  doi     = {10.1186/s10033-022-00680-w}
+}
+
+% [OK] 82 cites
+@article{lin2024hdtsurvey,
+  author  = {Lin, Yujia and Chen, Liming and Ali, Aftab and Nugent, Chris and Cleland, Ian and Li, Rongyang and Ding, Jianguo and Ning, Huansheng},
+  title   = {Human Digital Twin: A Survey},
+  journal = {Journal of Cloud Computing},
+  volume  = {13},
+  number  = {1},
+  pages   = {131},
+  year    = {2024},
+  doi     = {10.1186/s13677-024-00691-z}
+}
+
+% [OK] 50 cites
+@article{bucci2024hdt,
+  author  = {Bucci, Ilaria and Fani, Virginia and Bandinelli, Romeo},
+  title   = {Towards Human-Centric Manufacturing: Exploring the Role of Human Digital Twins in {Industry} 5.0},
+  journal = {Sustainability},
+  volume  = {17},
+  number  = {1},
+  pages   = {129},
+  year    = {2024},
+  doi     = {10.3390/su17010129}
+}
+
+% [OK] 34 cites --- human-aware factory DT platform
+@article{montini2022iiot,
+  author  = {Montini, Elias and Cutrona, Vincenzo and Bonomi, Niko and Landolfi, Giuseppe and Bettoni, Andrea and Rocco, Paolo and Carpanzano, Emanuele},
+  title   = {An {IIoT} Platform for Human-Aware Factory Digital Twins},
+  journal = {Procedia CIRP},
+  volume  = {107},
+  pages   = {661--667},
+  year    = {2022},
+  doi     = {10.1016/j.procir.2022.05.042}
+}
+
+
+% =====================================================================
+%  E · ERGONOMICS / OPERATOR 4.0 + DT  (T2.10 citation chasing)
+% =====================================================================
+
+% [OK] 86 cites
+@article{ramasubramanian2022hrc,
+  author  = {Ramasubramanian, Aswin K. and Mathew, Robins and Kelly, Matthew and Hargaden, Vincent and Papakostas, Nikolaos},
+  title   = {Digital Twin for Human-Robot Collaboration in Manufacturing: Review and Outlook},
+  journal = {Applied Sciences},
+  volume  = {12},
+  number  = {10},
+  pages   = {4811},
+  year    = {2022},
+  doi     = {10.3390/app12104811}
+}
+
+% [OK] 79 cites
+@article{liu2022assembly,
+  author  = {Liu, Xinyu and Zheng, Lianyu and Wang, Yiwei and Yang, Weiwei and Jiang, Zhengyuan and Wang, Binbin and Tao, Fei and Li, Yun},
+  title   = {Human-Centric Collaborative Assembly System for Large-Scale Space Deployable Mechanism Driven by Digital Twins and Wearable {AR} Devices},
+  journal = {Journal of Manufacturing Systems},
+  volume  = {65},
+  pages   = {720--742},
+  year    = {2022},
+  doi     = {10.1016/j.jmsy.2022.11.007}
+}
+
+% [OK] 85 cites
+@article{bousdekis2020hcps,
+  author  = {Bousdekis, Alexandros and Apostolou, Dimitris and Mentzas, Gregoris},
+  title   = {A Human Cyber Physical System Framework for Operator 4.0---Artificial Intelligence Symbiosis},
+  journal = {Manufacturing Letters},
+  volume  = {25},
+  pages   = {10--15},
+  year    = {2020},
+  doi     = {10.1016/j.mfglet.2020.06.001}
+}
+
+% [OK] 190 cites
+@article{malik2018hrcdt,
+  author  = {Malik, Ali Ahmad and Bilberg, Arne},
+  title   = {Digital Twins of Human Robot Collaboration in a Production Setting},
+  journal = {Procedia Manufacturing},
+  volume  = {17},
+  pages   = {278--285},
+  year    = {2018},
+  doi     = {10.1016/j.promfg.2018.10.047}
+}
+
+% [OK] 70 cites. ⚠️ construction domain --- scope එකට ගැලපේද කියා බලන්න.
+@article{ogunseiju2021ergonomic,
+  author  = {Ogunseiju, Omobolanle and Olayiwola, Johnson and Akanmu, Abiola and Nnaji, Chukwuma},
+  title   = {Digital Twin-Driven Framework for Improving Self-Management of Ergonomic Risks},
+  journal = {Smart and Sustainable Built Environment},
+  volume  = {10},
+  number  = {3},
+  pages   = {403--419},
+  year    = {2021},
+  doi     = {10.1108/SASBE-03-2021-0035}
+}
+
+% [OK] 11 cites --- cognitive workload
+@article{vitti2025cognitive,
+  author  = {Vitti, Micaela and Padovano, Antonio and Facchini, Francesco},
+  title   = {A Review on Cognitive Workload for {Industry} 5.0},
+  journal = {Computers \& Industrial Engineering},
+  volume  = {207},
+  pages   = {111350},
+  year    = {2025},
+  doi     = {10.1016/j.cie.2025.111350}
+}
+
+
+% =====================================================================
+%  F · MULTI-OBJECTIVE / SUSTAINABLE SCHEDULING  (§II-D)
+% =====================================================================
+
+% [OK] ★★★ 232 cites --- අපගේ ගැටලු අවකාශයේම survey එක. §II-D මුලින්ම cite කරන්න.
+@article{destouet2023survey,
+  author  = {Destouet, Candice and Tlahig, Houda and Bettayeb, Belgacem and Mazari, B{\'e}lahc{\`e}ne},
+  title   = {Flexible Job Shop Scheduling Problem under {Industry} 5.0: A Survey on Human Reintegration, Environmental Consideration and Resilience Improvement},
+  journal = {Journal of Manufacturing Systems},
+  volume  = {67},
+  pages   = {155--173},
+  year    = {2023},
+  doi     = {10.1016/j.jmsy.2023.01.004},
+  note    = {★★★ Industry 5.0 කුලුනු තුනම (human reintegration + environmental + resilience) FJSP සන්දර්භයේ. ★ අපගේ positioning: මෙම survey එකේ scope එකට DIGITAL TWIN layer එක ඇතුළත් නොවේ --- ඒක අපගේ එකතුව.}
+}
+
+% [OK] ★ 33 cites --- triple bottom line
+@article{destouet2024sustainable,
+  author  = {Destouet, Candice and Tlahig, Houda and Bettayeb, Belgacem and Mazari, B{\'e}lahc{\`e}ne},
+  title   = {Multi-Objective Sustainable Flexible Job Shop Scheduling Problem: Balancing Economic, Ecological, and Social Criteria},
+  journal = {Computers \& Industrial Engineering},
+  volume  = {195},
+  pages   = {110419},
+  year    = {2024},
+  doi     = {10.1016/j.cie.2024.110419},
+  note    = {★ People/Planet/Profit තුනම. [READ 2026-08-04] MOP1: min{Cmax, energy, OCRA_max}; MOP2: min{Cmax, energy, -Sat_min}. OCRA = ස්ථිතික task attribute; rest = ස්ථිර 8%; fatigue state නෑ; digital twin නෑ; quality නෑ; machine health නෑ. Runs 10. විස්තර: docs/08-competitor-destouet.md}
+}
+
+% [OK] ★★ 2026 --- ළඟම තරඟකරුවාගේ අලුත්ම එක. Dynamic + carbon, ඒත් DT නෑ, fatigue state නෑ.
+@article{destouet2026dynamic,
+  author  = {Destouet, Candice and Tlahig, Houda and Bettayeb, Belgacem and Mazari, B{\'e}lahc{\`e}ne},
+  title   = {Machine Learning-Driven Solutions for Sustainable and Dynamic Flexible Job Shop
+             Scheduling under Worker Absences and Renewable Energy Variability},
+  journal = {Computers \& Operations Research},
+  volume  = {186},
+  pages   = {107323},
+  year    = {2026},
+  doi     = {10.1016/j.cor.2025.107323},
+  note    = {★★ [READ 2026-08-04] f1 Cmax, f2 carbon emissions, f3 OCRA_max. Disruptions = worker absence + solar variability (machine breakdown නෑ). DQL rescheduling. Digital twin තවම නෑ (reference list එකේ පමණයි). ★★ තමන්ගේම සීමාව ලෙස "worker fatigue levels" ඕන කියයි --- අපගේ H-DT එකට කෙලින්ම සාධාරණීකරණය. ⚠️ වර්ෂය තහවුරු කරන්න (OpenAlex: 2025 online).}
+}
+
+% [OK] 41 cites --- energy-aware NSGA-II
+@article{burmeister2023memetic,
+  author  = {Burmeister, Sascha Christian and Guericke, Daniela and Schryen, Guido},
+  title   = {A Memetic {NSGA-II} for the Multi-Objective Flexible Job Shop Scheduling Problem with Real-Time Energy Tariffs},
+  journal = {Flexible Services and Manufacturing Journal},
+  volume  = {36},
+  number  = {4},
+  pages   = {1530--1570},
+  year    = {2023},
+  doi     = {10.1007/s10696-023-09517-7}
+}
+
+
+% =====================================================================
+%  G · DIGITAL TWIN පදනම  (§II-B --- M-DT එකට)
+% =====================================================================
+
+% [OK] 2808 cites
+@article{tao2018dtdriven,
+  author  = {Tao, Fei and Cheng, Jiangfeng and Qi, Qinglin and Zhang, Meng and Zhang, He and Sui, Fangyuan},
+  title   = {Digital Twin-Driven Product Design, Manufacturing and Service with Big Data},
+  journal = {International Journal of Advanced Manufacturing Technology},
+  volume  = {94},
+  number  = {9--12},
+  pages   = {3563--3576},
+  year    = {2018},
+  doi     = {10.1007/s00170-017-0233-1}
+}
+
+% [OK] 1510 cites
+@article{qi2021enabling,
+  author  = {Qi, Qinglin and Tao, Fei and Hu, Tianliang and Anwer, Nabil and Liu, Ang and Wei, Yongli and Wang, Lihui and Nee, A. Y. C.},
+  title   = {Enabling Technologies and Tools for Digital Twin},
+  journal = {Journal of Manufacturing Systems},
+  volume  = {58},
+  pages   = {3--21},
+  year    = {2021},
+  doi     = {10.1016/j.jmsy.2019.10.001},
+  note    = {Online first 2019; issue vol 58 = 2021.}
+}
+
+% [OK] 2612 cites
+@article{fuller2020dt,
+  author  = {Fuller, Aidan and Fan, Zhong and Day, Charles and Barlow, Chris},
+  title   = {Digital Twin: Enabling Technologies, Challenges and Open Research},
+  journal = {IEEE Access},
+  volume  = {8},
+  pages   = {108952--108971},
+  year    = {2020},
+  doi     = {10.1109/ACCESS.2020.2998358}
+}
+
+% [OK] 2226 cites
+@article{jones2020characterising,
+  author  = {Jones, David and Snider, Chris and Nassehi, Aydin and Yon, Jason and Hicks, Ben},
+  title   = {Characterising the Digital Twin: A Systematic Literature Review},
+  journal = {CIRP Journal of Manufacturing Science and Technology},
+  volume  = {29},
+  pages   = {36--52},
+  year    = {2020},
+  doi     = {10.1016/j.cirpj.2020.02.002}
+}
+
+% [OK] 1770 cites
+@article{rasheed2020dt,
+  author  = {Rasheed, Adil and San, Omer and Kvamsdal, Trond},
+  title   = {Digital Twin: Values, Challenges and Enablers from a Modeling Perspective},
+  journal = {IEEE Access},
+  volume  = {8},
+  pages   = {21980--22012},
+  year    = {2020},
+  doi     = {10.1109/ACCESS.2020.2970143}
+}
+
+% [OK] 424 cites --- M-DT predictive maintenance module එකට
+@article{aivaliotis2019pdm,
+  author  = {Aivaliotis, Panagiotis and Georgoulias, Konstantinos and Chryssolouris, George},
+  title   = {The Use of Digital Twin for Predictive Maintenance in Manufacturing},
+  journal = {International Journal of Computer Integrated Manufacturing},
+  volume  = {32},
+  number  = {11},
+  pages   = {1067--1080},
+  year    = {2019},
+  doi     = {10.1080/0951192X.2019.1686173}
+}
+
+% [OK] 401 cites --- cognitive digital twin
+@article{zheng2022cognitive,
+  author  = {Zheng, Xiaochen and Lu, Jinzhi and Kiritsis, Dimitris},
+  title   = {The Emergence of Cognitive Digital Twin: Vision, Challenges and Opportunities},
+  journal = {International Journal of Production Research},
+  volume  = {60},
+  number  = {24},
+  pages   = {7610--7632},
+  year    = {2022},
+  doi     = {10.1080/00207543.2021.2014591},
+  note    = {Online first 2021.}
+}
+
+
+% =====================================================================
+%  H · DIGITAL TWIN + SUSTAINABILITY  (§II-B)
+% =====================================================================
+
+% [OK] 66 cites
+@article{ba2025energyslr,
+  author  = {Ba, Labouda and Tangour, Fatma and El Abbassi, Ikram and Absi, Rafik},
+  title   = {Analysis of Digital Twin Applications in Energy Efficiency: A Systematic Review},
+  journal = {Sustainability},
+  volume  = {17},
+  number  = {8},
+  pages   = {3560},
+  year    = {2025},
+  doi     = {10.3390/su17083560}
+}
+
+% [CHECK]
+@article{aidt2026critical,
+  title   = {{AI}-Driven Digital Twins in Sustainable Manufacturing: A Critical Review},
+  journal = {Sustainability},
+  volume  = {18},
+  number  = {11},
+  pages   = {5785},
+  year    = {2026}
+}
+
+% [CHECK]
+@article{dtcarbon2025,
+  title   = {Digital Twin-Driven Carbon Emissions Management in Manufacturing},
+  year    = {2025},
+  note    = {ScienceDirect: S2213846325002275. Journal/volume/කර්තෘ තහවුරු කරන්න.}
+}
+
+
+% =====================================================================
+%  I · ETHICS + PRIVACY  ★  (§III-G සහ §VI)
+% =====================================================================
+
+% [OK] ★★ 19 cites --- Privacy ඡේදයට ප්‍රාථමික citation
+@article{cardin2022ethics,
+  author  = {Cardin, Olivier and Trentesaux, Damien},
+  title   = {Design and Use of Human Operator Digital Twins in Industrial Cyber-Physical Systems: Ethical Implications},
+  journal = {IFAC-PapersOnLine},
+  volume  = {55},
+  number  = {2},
+  pages   = {360--365},
+  year    = {2022},
+  doi     = {10.1016/j.ifacol.2022.04.220}
+}
+
+
+% =====================================================================
+%  J · EXPLAINABLE AI  (§II + §III-G)
+% =====================================================================
+
+% [OK] 9337 cites --- XAI පදනම
+@article{arrieta2020xai,
+  author  = {Barredo Arrieta, Alejandro and D{\'i}az-Rodr{\'i}guez, Natalia and Del Ser, Javier and Bennetot, Adrien and Tabik, Siham and Barbado, Alberto and Garc{\'i}a, Salvador and Gil-L{\'o}pez, Sergio and Molina, Daniel and Benjamins, Richard and Chatila, Raja and Herrera, Francisco},
+  title   = {Explainable Artificial Intelligence ({XAI}): Concepts, Taxonomies, Opportunities and Challenges toward Responsible {AI}},
+  journal = {Information Fusion},
+  volume  = {58},
+  pages   = {82--115},
+  year    = {2020},
+  doi     = {10.1016/j.inffus.2019.12.012}
+}
+
+% [OK] 91 cites
+@article{moosavi2024xai,
+  author  = {Moosavi, Sajad and Farajzadeh-Zanjani, Maryam and Razavi-Far, Roozbeh and Palade, Vasile and Saif, Mehrdad},
+  title   = {Explainable {AI} in Manufacturing and Industrial Cyber--Physical Systems: A Survey},
+  journal = {Electronics},
+  volume  = {13},
+  number  = {17},
+  pages   = {3497},
+  year    = {2024},
+  doi     = {10.3390/electronics13173497}
+}
+
+% [CHECK]
+@article{xai2026quality,
+  title   = {Explainable {AI}-Driven Quality and Condition Monitoring in Smart Manufacturing},
+  journal = {Sensors},
+  volume  = {26},
+  number  = {3},
+  pages   = {911},
+  year    = {2026},
+  doi     = {10.3390/s26030911}
+}
+
+
+% =====================================================================
+%  K · INDUSTRY 4.0/5.0 පුළුල් සන්දර්භය
+% =====================================================================
+
+% [OK] 829 cites
+@article{adel2022industry50,
+  author  = {Adel, Amr},
+  title   = {Future of {Industry} 5.0 in Society: Human-Centric Solutions, Challenges and Prospective Research Areas},
+  journal = {Journal of Cloud Computing},
+  volume  = {11},
+  number  = {1},
+  pages   = {40},
+  year    = {2022},
+  doi     = {10.1186/s13677-022-00314-5}
+}
+
+% [OK] 2823 cites
+@article{zhong2017intelligent,
+  author  = {Zhong, Ray Y. and Xu, Xun and Klotz, Eberhard and Newman, Stephen T.},
+  title   = {Intelligent Manufacturing in the Context of {Industry} 4.0: A Review},
+  journal = {Engineering},
+  volume  = {3},
+  number  = {5},
+  pages   = {616--630},
+  year    = {2017},
+  doi     = {10.1016/j.eng.2017.05.015}
+}
+
+% [OK] 335 cites
+@article{rajasanthi2023industry50,
+  author  = {Raja Santhi, Abirami and Muthuswamy, Padmakumar},
+  title   = {{Industry} 5.0 or {Industry} 4.0{S}? Introduction to {Industry} 4.0 and a Peek into the Prospective {Industry} 5.0 Technologies},
+  journal = {International Journal on Interactive Design and Manufacturing},
+  volume  = {17},
+  number  = {2},
+  pages   = {947--979},
+  year    = {2023},
+  doi     = {10.1007/s12008-023-01217-8}
+}
+
+
+% =====================================================================
+%  ★ PHASE 3 — HUMAN TWIN පුද්ගලීකරණය (2026-08-04 · OpenAlex verified)
+%  මේවා docs/04-framework-design.md §4.2 සහ §4.3 වල පාවිච්චි වෙනවා
+% =====================================================================
+
+% [OK] E'_r --- operator ගේ විවේක ශක්ති පරිභෝජනය (H-DT personalisation)
+@article{mifflin1990ree,
+  author  = {Mifflin, Mark D. and St Jeor, Sachiko T. and Hill, Lisa A. and
+             Scott, Barbara J. and Daugherty, Sandra A. and Koh, Young O.},
+  title   = {A New Predictive Equation for Resting Energy Expenditure in Healthy Individuals},
+  journal = {The American Journal of Clinical Nutrition},
+  volume  = {51},
+  number  = {2},
+  pages   = {241--247},
+  year    = {1990},
+  doi     = {10.1093/ajcn/51.2.241},
+  note    = {H-DT හි E'_r,h සමීකරණය. Operator ගේ වයස/බර/උස/ස්ත්‍රී-පුරුෂභාවය අනුව පුද්ගලීකරණය.}
+}
+
+% [OK] AWL --- පැය 8ක් තිරසාරව දරාගත හැකි උපරිම වැඩ මට්ටම (HC1 එකේ පදනම)
+@article{price1990relaxation,
+  author  = {Price, Andrew D. F.},
+  title   = {Calculating Relaxation Allowances for Construction Operatives ---
+             Part 1: Metabolic Cost},
+  journal = {Applied Ergonomics},
+  volume  = {21},
+  number  = {4},
+  pages   = {311--317},
+  year    = {1990},
+  doi     = {10.1016/0003-6870(90)90202-9},
+  note    = {★ AWL සමීකරණය. HC1 (F_hat < 0.80) එකට භෞතික අර්ථය දෙන්නේ මේකෙන් --- 0.80 කියන්නේ පෞද්ගලික AWL එකෙන් 80%.}
+}
+
+% [OK] AWL හි වයස් සාධකය
+@article{silva2016age,
+  author  = {de Souza e Silva, Christina Grüne and Franklin, Barry A. and
+             Forman, Daniel E. and de Araújo, Cláudio Gil Soares},
+  title   = {Influence of Age in Estimating Maximal Oxygen Uptake},
+  journal = {Journal of Geriatric Cardiology},
+  volume  = {13},
+  number  = {2},
+  pages   = {126--131},
+  year    = {2016},
+  doi     = {10.11909/j.issn.1671-5411.2016.02.010},
+  note    = {AWL එකේ වයස් අනුව අඩුවීම. Operator 3 දෙනාගේ වෙනස්කම් සාධාරණීකරණය කරයි.}
+}
+
+% [OK] 9,000+ cites --- cognitive load proxy
+@incollection{hart1988tlx,
+  author    = {Hart, Sandra G. and Staveland, Lowell E.},
+  title     = {Development of {NASA-TLX} (Task Load Index):
+               Results of Empirical and Theoretical Research},
+  booktitle = {Human Mental Workload},
+  series    = {Advances in Psychology},
+  volume    = {52},
+  pages     = {139--183},
+  publisher = {North-Holland},
+  year      = {1988},
+  doi       = {10.1016/S0166-4115(08)62386-9},
+  note      = {H-DT හි C_h (cognitive load) සඳහා proxy. CP3 එකට පදනම.}
+}
+
+% [CHECK] ISO අවසන් සංස්කරණයේ වර්ෂය තහවුරු කරන්න (2004 vs 2021)
+@misc{iso8996,
+  author       = {{International Organization for Standardization}},
+  title        = {{ISO} 8996: Ergonomics of the Thermal Environment ---
+                  Determination of Metabolic Rate},
+  howpublished = {Standard},
+  organization = {ISO},
+  year         = {2021},
+  note         = {Task වර්ග 3 (Light/Medium/Heavy) වලට metabolic classes 1--3. E'_w(tau) අගයන් 2.6 / 4.2 / 5.9 kcal/min.}
+}
+
+% [OK] Calzavara ගේ සමීකරණ (3), (4), (9) තහවුරු කරන open-access ප්‍රභවය
+@inproceedings{sgarbossa2020ifac,
+  author    = {Sgarbossa, Fabio and Vijayakumar, Vivek},
+  title     = {Reducing Fatigue Level through Tasks and Breaks Assignment
+               in Order Picking System},
+  booktitle = {Preprints of the 21st IFAC World Congress},
+  address   = {Berlin, Germany},
+  pages     = {10758--10761},
+  year      = {2020},
+  note      = {calzavara2019rest හි fatigue/recovery සමීකරණ verbatim උපුටා දක්වයි (Eq. 3, 4, 9). Paywall නැති තහවුරු කිරීමේ ප්‍රභවය.}
+}
+
+% =====================================================================
+%  ★ GATE 3 — T3.9 සහ T3.10 විසඳීම (2026-08-04)
+% =====================================================================
+
+% [OK] ★ CO2 emission factor --- ශ්‍රී ලංකා grid.  T3.10 විසඳුම.
+@misc{ember2025electricity,
+  author       = {{Ember}},
+  title        = {Yearly Electricity Data: Carbon Intensity of Electricity, {Sri Lanka}},
+  howpublished = {Dataset, accessed via Our World in Data},
+  url          = {https://ourworldindata.org/grapher/carbon-intensity-electricity},
+  year         = {2025},
+  note         = {★ 2025: 329 gCO2/kWh --> EF = 0.33 kgCO2/kWh. ⚠️ v1 හි තිබූ 0.53 කල් ඉකුත් (ඒක ≈2016--17 මට්ටම). පරාසය 2013--2025: 0.30--0.53 (ජල විදුලිය මත රඳා පවතී). CO2e = kWh × EF නිසා baseline ranking එක EF තේරීමෙන් INVARIANT වේ.}
+}
+
+% [OK] ★ Exponential recovery rate --- empirically fitted.  T3.9 හි literature bound.
+@article{yi2022demolition,
+  author  = {Yi, Cannan and Tang, Fan and Li, Kai Way and Hu, Hong and
+             Zuo, Huali and Zhao, Caijun},
+  title   = {Modeling and Validation of Fatigue and Recovery of Muscles for
+             Manual Demolition Tasks},
+  journal = {International Journal of Environmental Research and Public Health},
+  volume  = {19},
+  number  = {2},
+  pages   = {930},
+  year    = {2022},
+  doi     = {10.3390/ijerph19020930},
+  note    = {★ Recovery rate RR = 0.132 min^-1, exponential ආකෘතියේ, n=17 මගින් empirically fit කර ඇත. අපගේ mu = 0.046 min^-1 (whole-body metabolic) එකට සාහිත්‍යගත ඉහළ සීමාව --- localized muscle recovery වේගවත් බැවින් අපගේ අගය අඩු වීම නිවැරදියි.}
+}
+
+% =====================================================================
+%  ★ PHASE 4 — Dataset citations (T4.7, 2026-08-05)
+%  License තුනම 2026-08-05 දින UCI පිටුවෙන් සෘජුව තහවුරු කර ඇත: CC BY 4.0.
+%  විස්තර: docs/10-data-card.md
+% =====================================================================
+
+% [OK] ★ D1 --- machine health / L0.  ⚠️ SYNTHETIC dataset එකක්.
+@misc{matzka2020ai4i,
+  author       = {Matzka, Stephan},
+  title        = {{AI4I} 2020 Predictive Maintenance Dataset},
+  howpublished = {{UCI} Machine Learning Repository, dataset 601},
+  url          = {https://archive.ics.uci.edu/dataset/601},
+  year         = {2020},
+  note         = {License: CC BY 4.0. ⚠️ SYNTHETIC --- ඇත්ත මිනුම් ලොගයක් නොවේ; "real-world data" කියා ලියන්න එපා. Rows 10,000, missing 0. එළියට ගත්තේ L0 = 216 busy-min (TWF සිදුවීම්වල මධ්‍යන්‍ය tool wear) --> design §3.1.}
+}
+
+% [OK] ★ D1 හි intro paper --- dataset එක හඳුන්වා දෙන ප්‍රකාශනය.
+@inproceedings{matzka2020xai,
+  author    = {Matzka, Stephan},
+  title     = {Explainable Artificial Intelligence for Predictive
+               Maintenance Applications},
+  booktitle = {2020 Third International Conference on Artificial
+               Intelligence for Industries ({AI4I})},
+  pages     = {69--74},
+  year      = {2020},
+  doi       = {10.1109/AI4I49448.2020.00023}
+}
+
+% [OK] ★ D3 --- බලශක්තිය.  ඇත්ත මිනුම් (දකුණු කොරියාව).
+@misc{sathishkumar2021steel,
+  author       = {Sathishkumar, V. E. and Shin, Changsun and Cho, Yongyun},
+  title        = {Steel Industry Energy Consumption Dataset},
+  howpublished = {{UCI} Machine Learning Repository, dataset 851},
+  url          = {https://archive.ics.uci.edu/dataset/851},
+  year         = {2021},
+  note         = {License: CC BY 4.0. ඇත්ත මිනුම් --- දකුණු කොරියාවේ කුඩා පරිමාණ වානේ කම්හලක්. Rows 35,040, missing 0, නියැදි පරතරය විනාඩි 15 (= අපගේ decision epoch). Load_Type (Light/Medium/Maximum) --> අපගේ task types L/M/H. එළියට ගත්තේ e_idle සහ Δe(τ) --> design §3.2.}
+}
+
+% [OK] ★ D3 හි intro paper.
+@article{sathishkumar2021energy,
+  author  = {Sathishkumar, V. E. and Shin, Changsun and Cho, Yongyun},
+  title   = {Efficient Energy Consumption Prediction Model for a Data
+             Analytic-Enabled Industry Building in a Smart City},
+  journal = {Building Research \& Information},
+  volume  = {49},
+  number  = {1},
+  pages   = {127--143},
+  year    = {2021},
+  doi     = {10.1080/09613218.2020.1809983}
+}
+
+% [OK] ★ D4 --- quality / defect rate.  ඇත්ත මිනුම්.
+@misc{mccann2008secom,
+  author       = {McCann, Michael and Johnston, Adrian},
+  title        = {{SECOM}},
+  howpublished = {{UCI} Machine Learning Repository, dataset 179},
+  url          = {https://archive.ics.uci.edu/dataset/179},
+  year         = {2008},
+  note         = {License: CC BY 4.0. ඇත්ත semiconductor නිෂ්පාදන පෙළක් . 1,567 × 591, missing 4.5%, defect rate 6.64% --> quality model එකේ β0 anchor (design §3.3). ⚠️ operator features නෑ --> β2, β3 මෙයින් fit කළ නොහැක.}
+}
+
+% [~] D2 --- බාගත්තා, තවම භාවිතා නෑ (Phase 5 හි RUL model එකට optional).
+@inproceedings{saxena2008cmapss,
+  author    = {Saxena, Abhinav and Goebel, Kai and Simon, Don and
+               Eklund, Neil},
+  title     = {Damage Propagation Modeling for Aircraft Engine
+               Run-to-Failure Simulation},
+  booktitle = {International Conference on Prognostics and Health
+               Management ({PHM})},
+  pages     = {1--9},
+  year      = {2008},
+  doi       = {10.1109/PHM.2008.4711414},
+  note      = {NASA Prognostics Data Repository. Public domain (US Gov). ⚠️ data.nasa.gov බිඳී ඇත --- S3 mirror පාවිච්චි කරන්න (docs/10-data-card.md §4).}
+}
+
+% =====================================================================
+%  ⬜ තවම එකතු කරන්න ඕන (Phase 5 වලදී)
+% =====================================================================
+%  - Software: SimPy, pymoo, XGBoost, SHAP (python package)
+%  ⛔ WESAD --- භාවිතා නොකරන බව තීරණය කළා (2026-08-05).
+%     හේතුව: λ, μ දැන් T7.6b sensitivity එකෙන් ආවරණය වේ. docs/10-data-card.md §5.
+% =====================================================================
