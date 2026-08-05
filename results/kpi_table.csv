@@ -1,0 +1,34 @@
+scenario,pillar,kpi,column,B1_mean,B1_std,B2_mean,B2_std,B3_mean,B3_std,delta_abs,pct_meaningful,delta_pct,improved,p_value,alpha,significant,effect,effect_label,normal,test
+S1,People,Mean fatigue,mean_fatigue,0.6244,0.04796,0.61698,0.04914,0.4556,0.02215,-0.16138,True,-26.16,True,0.0,0.004545,True,-1.0,large,True,Mann-Whitney U
+S1,People,Peak fatigue,max_fatigue,1.0,0.0,1.0,0.0,0.77989,0.01018,-0.22011,True,-22.01,True,0.0,0.004545,True,-1.0,large,False,Mann-Whitney U
+S1,People,Mean RULA,mean_rula,4.74841,0.14726,4.66984,0.14361,4.05498,0.08901,-0.61486,True,-13.17,True,0.0,0.004545,True,-1.0,large,True,Mann-Whitney U
+S1,People,Constraint breaches,constraint_violations,62.96667,11.00308,61.2,10.45978,0.0,0.0,-61.2,True,-100.0,True,0.0,0.004545,True,-1.0,large,False,Mann-Whitney U
+S1,People,Workload Gini,workload_gini,0.00894,0.00462,0.00875,0.00448,0.08428,0.01899,0.07553,False,863.2,False,0.0,0.004545,True,1.0,large,True,Mann-Whitney U
+S1,Planet,Energy per unit,energy_per_unit,1.37311,0.11463,1.34362,0.11437,1.13967,0.05754,-0.20395,True,-15.18,True,0.0,0.004545,True,-0.9133,large,True,Mann-Whitney U
+S1,Planet,CO2e,co2e_kg,33.98467,2.8371,33.2547,2.83068,25.3599,1.01314,-7.8948,True,-23.74,True,0.0,0.004545,True,-1.0,large,True,Mann-Whitney U
+S1,Planet,Scrap rate,scrap_rate,0.12622,0.04228,0.13688,0.04097,0.12736,0.04111,-0.00952,True,-6.95,True,0.317746,0.004545,False,-0.1511,negligible,True,Mann-Whitney U
+S1,Profit,Throughput,throughput,75.0,0.0,75.0,0.0,67.53333,3.17026,-7.46667,True,-9.96,False,0.0,0.004545,True,-1.0,large,False,Mann-Whitney U
+S1,Profit,Downtime,downtime_hrs,1.30833,0.10755,1.53333,0.08644,1.1,0.14081,-0.43333,True,-28.26,True,0.0,0.004545,True,-1.0,large,False,Mann-Whitney U
+S1,Profit,OEE,oee,0.68629,0.03489,0.68206,0.03791,0.69545,0.03243,0.01339,True,1.96,True,0.137317,0.004545,False,0.2244,small,True,Mann-Whitney U
+S2,People,Mean fatigue,mean_fatigue,0.74512,0.02952,0.74118,0.0306,0.54113,0.02733,-0.20005,True,-26.99,True,0.0,0.004545,True,-1.0,large,True,Mann-Whitney U
+S2,People,Peak fatigue,max_fatigue,1.0,0.0,1.0,0.0,0.78103,0.00959,-0.21897,True,-21.9,True,0.0,0.004545,True,-1.0,large,False,Mann-Whitney U
+S2,People,Mean RULA,mean_rula,4.79873,0.14851,4.7176,0.14425,4.02799,0.10001,-0.68961,True,-14.62,True,0.0,0.004545,True,-1.0,large,False,Mann-Whitney U
+S2,People,Constraint breaches,constraint_violations,81.2,10.94311,79.5,10.9095,0.0,0.0,-79.5,True,-100.0,True,0.0,0.004545,True,-1.0,large,False,Mann-Whitney U
+S2,People,Workload Gini,workload_gini,0.00483,0.00251,0.00494,0.00245,0.02434,0.00978,0.0194,False,392.71,False,0.0,0.004545,True,0.9756,large,True,Mann-Whitney U
+S2,Planet,Energy per unit,energy_per_unit,1.34339,0.12382,1.32078,0.13324,0.91463,0.06254,-0.40615,True,-30.75,True,0.0,0.004545,True,-0.9956,large,True,Mann-Whitney U
+S2,Planet,CO2e,co2e_kg,40.43837,2.24062,39.87973,2.27409,27.18097,1.30426,-12.69876,True,-31.84,True,0.0,0.004545,True,-1.0,large,True,Mann-Whitney U
+S2,Planet,Scrap rate,scrap_rate,0.12387,0.03954,0.13206,0.04611,0.12167,0.04051,-0.01039,True,-7.87,True,0.407666,0.004545,False,-0.1256,negligible,True,Mann-Whitney U
+S2,Profit,Throughput,throughput,91.53333,3.70213,91.9,4.24548,90.23333,3.85677,-1.66667,True,-1.81,False,0.147851,0.004545,False,-0.2178,small,True,Mann-Whitney U
+S2,Profit,Downtime,downtime_hrs,1.55,0.19028,1.85833,0.19346,1.35833,0.126,-0.5,True,-26.91,True,0.0,0.004545,True,-0.9422,large,False,Mann-Whitney U
+S2,Profit,OEE,oee,0.67449,0.03652,0.66663,0.03931,0.68385,0.03483,0.01722,True,2.58,True,0.111977,0.004545,False,0.24,small,True,Mann-Whitney U
+S3,People,Mean fatigue,mean_fatigue,0.73854,0.03272,0.73546,0.03615,0.50061,0.02377,-0.23485,True,-31.93,True,0.0,0.004545,True,-1.0,large,True,Mann-Whitney U
+S3,People,Peak fatigue,max_fatigue,1.0,0.0,1.0,0.0,0.77928,0.00991,-0.22072,True,-22.07,True,0.0,0.004545,True,-1.0,large,False,Mann-Whitney U
+S3,People,Mean RULA,mean_rula,4.78806,0.15127,4.70938,0.15885,4.03494,0.09486,-0.67444,True,-14.32,True,0.0,0.004545,True,-1.0,large,True,Mann-Whitney U
+S3,People,Constraint breaches,constraint_violations,79.66667,11.57981,77.66667,12.084,0.0,0.0,-77.66667,True,-100.0,True,0.0,0.004545,True,-1.0,large,False,Mann-Whitney U
+S3,People,Workload Gini,workload_gini,0.00507,0.00338,0.00548,0.003,0.04764,0.01446,0.04216,False,769.34,False,0.0,0.004545,True,1.0,large,True,Mann-Whitney U
+S3,Planet,Energy per unit,energy_per_unit,1.35445,0.13701,1.31777,0.13217,1.01041,0.06449,-0.30736,True,-23.32,True,0.0,0.004545,True,-0.9844,large,True,Mann-Whitney U
+S3,Planet,CO2e,co2e_kg,40.14297,2.61947,39.46497,2.72916,26.42897,1.13955,-13.036,True,-33.03,True,0.0,0.004545,True,-1.0,large,True,Mann-Whitney U
+S3,Planet,Scrap rate,scrap_rate,0.13229,0.04248,0.13557,0.03934,0.12036,0.03761,-0.01521,True,-11.22,True,0.18326,0.004545,False,-0.2011,small,True,Mann-Whitney U
+S3,Profit,Throughput,throughput,90.13333,3.42137,91.03333,3.13471,79.43333,3.83885,-11.6,True,-12.74,False,0.0,0.004545,True,-0.98,large,False,Mann-Whitney U
+S3,Profit,Downtime,downtime_hrs,2.825,0.98513,2.775,0.97678,2.825,1.00462,0.05,True,1.8,False,0.905497,0.004545,False,0.0189,negligible,False,Mann-Whitney U
+S3,Profit,OEE,oee,0.64658,0.04161,0.65292,0.03901,0.66544,0.03194,0.01252,True,1.92,True,0.290465,0.004545,False,0.16,negligible,False,Mann-Whitney U
