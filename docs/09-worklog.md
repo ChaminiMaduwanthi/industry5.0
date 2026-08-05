@@ -6,6 +6,62 @@
 
 ---
 
+# 🗓️ 2026-08-05 (බදාදා) — Session 9 · 🎉 **PHASE 6 අවසන් — runs 270**
+
+**T6.5 ✅ · T6.6 ✅ · T6.7 ✅** — `results/raw_results.csv` **තියෙනවා**.
+
+## 📦 හැදුණු ලිපිගොනු
+
+| ලිපිගොනුව | කරන්නේ |
+|---|---|
+| `tests/test_experiment_runner.py` | **මුලින්ම ලිව්වා** — checks 9 |
+| `src/run_experiments.py` | 3 baselines × 3 scenarios × 30 seeds = **270 runs** |
+| `results/raw_results.csv` | **rows 270 · columns 39 · NaN 0** |
+
+## ★★ සම්පූර්ණ ප්‍රතිඵල මාපිටිය (runs 270)
+
+```
+  scen  pol     thru   meanF    maxF   RULA   viol   scrap   kWh/u    OEE
+  S1    B1      75.0   0.624   1.000   4.75   63.0   0.126   1.373  0.686
+  S1    B2      75.0   0.617   1.000   4.67   61.2   0.137   1.344  0.682
+  S1    B3      67.5   0.456   0.780   4.05    0.0   0.127   1.140  0.695
+  S2    B1      91.5   0.745   1.000   4.80   81.2   0.124   1.343  0.674
+  S2    B2      91.9   0.741   1.000   4.72   79.5   0.132   1.321  0.667
+  S2    B3      90.2   0.541   0.781   4.03    0.0   0.122   0.915  0.684
+  S3    B2      91.0   0.735   1.000   4.71   77.7   0.136   1.318  0.653
+  S3    B3      79.4   0.501   0.779   4.03    0.0   0.120   1.010  0.665
+```
+
+### 🎁 බලාපොරොත්තු නොවූ සොයාගැනීමක් — **B3 OEE එකෙනුත් ජය ගන්නවා**
+
+```
+S1: B2 0.682  →  B3 0.695   (+1.9%)
+S2: B2 0.667  →  B3 0.684   (+2.5%)
+S3: B2 0.653  →  B3 0.665   (+1.8%)
+```
+
+> ★★ **OEE කියන්නේ Industry 4.0 හි ම ප්‍රධාන මිනුම.** B3 throughput අත්හැරියත්,
+> **වඩා හොඳ skill ගැලපීම (performance) සහ අඩු scrap (quality)** ඒක පියවනවා.
+>
+> ➜ *"මිනිසා රැක ගැනීම **උපකරණ කාර්යක්ෂමතාවයටත්** හොඳයි"* — ඒක **ඉතාම ප්‍රබල** තර්කයක්.
+> Industry 4.0 පාර්ශවයේ අයටත් අදාළ භාෂාවෙන් කතා කරනවා.
+
+## ✅ T6.7 · Reproducibility (experiment-plan §11)
+
+```
+[ok] Seeds ස්ථිර                    [ok] config.yaml — hard-code නෑ
+[ok] requirements.txt pin කර ඇත      [ok] raw_results.csv save කර ඇත
+[ok] Dataset versions සටහන් කර ඇත    [ok] Code GitHub එකේ
+[ok] ★ එකම seed → එකම ප්‍රතිඵලය
+
+  run 1 hash : d0e7ba3b70e756f1b18699de22acad05
+  run 2 hash : d0e7ba3b70e756f1b18699de22acad05   →  BYTE-IDENTICAL ✅
+```
+
+> 270 runs **තත්පර 9.5යි** (එකකට 35ms) ➜ sensitivity, ablation ඔක්කොම **ලාභයි**.
+
+---
+
 # 🗓️ 2026-08-05 (බදාදා) — Session 8 · ★★ B2 සහ ප්‍රධාන ප්‍රතිඵලය
 
 **T6.1 ✅ · T6.2 ✅** — **Industry 4.0 baseline එක හැදුවා. Paper එකේ ප්‍රධාන සංඛ්‍යා දැන් තියෙනවා.**

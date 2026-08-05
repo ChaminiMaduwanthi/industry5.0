@@ -276,9 +276,9 @@
 | **T6.2** | ★★ **B2** — Industry 4.0 baseline (machine twin විතරයි, throughput විතරක් optimize) | `src/baselines/b2_industry40.py` | 1 දින | ✅ **08-05** |
 | **T6.3** | **B3** — ඔබේ framework එක (Phase 5 එකෙන් එනවා) | `src/decision/` | — | ⬜ |
 | **T6.4** | Scenario 3 නිර්වචනය — Normal / High-demand / Breakdown | expplan §5 | 0.5 දින | ✅ **08-05** |
-| **T6.5** | Experiment runner ලියන්න — 30 seeds × 3 baselines × 3 scenarios | `src/run_experiments.py` | 1 දින | ⬜ |
-| **T6.6** | සියලු runs ධාවනය + logging | `results/raw_results.csv` | 1 දින | ⬜ |
-| **T6.7** | Reproducibility check — seed එකම දුන්නම එකම උත්තරයද? | — | 0.5 දින | ⬜ |
+| **T6.5** | Experiment runner ලියන්න — 30 seeds × 3 baselines × 3 scenarios | `src/run_experiments.py` | 1 දින | ✅ **08-05** |
+| **T6.6** | සියලු runs ධාවනය + logging | `results/raw_results.csv` | 1 දින | ✅ **08-05** |
+| **T6.7** | Reproducibility check — seed එකම දුන්නම එකම උත්තරයද? | — | 0.5 දින | ✅ **08-05** |
 
 > ⚠️ **T6.2 (Industry 4.0 baseline) එක නැත්නම් paper එකට අගයක් නෑ.** "5.0 හොඳයි" කියන්න "4.0" එකට එරෙහිව පෙන්නන්නම ඕන.
 > ⚠️ **එක run එකක ප්‍රතිඵල දාන්න එපා.** Runs 30ක් + mean ± std අවශ්‍යයි.

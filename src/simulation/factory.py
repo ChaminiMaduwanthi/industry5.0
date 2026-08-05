@@ -73,6 +73,7 @@ class ShiftState:
     # allocator is dropping work it could have done.
     deferral_epochs: int = 0
     scrap_units: int = 0
+    ideal_minutes: float = 0.0     # nominal time of completed work, for OEE
     violations: Violations = field(default_factory=Violations)
 
     # --- availability, in one place ---------------------------------------
@@ -333,6 +334,7 @@ def _work(env: simpy.Environment, state: ShiftState,
 
     # --- wear and effort (design §3.1, §4.1) ------------------------------
     twin.degrade(minutes, spec.severity_kappa)
+    state.ideal_minutes += spec.nominal_time_minutes
 
     op.busy = mac.busy = False
     op.current_task_type = mac.current_task_type = None
@@ -652,6 +654,34 @@ def summarise(state: ShiftState, total_demand: int, seed: int,
         "mean_cognitive_load": round(
             sum(h.mean_cognitive for h in state.humans.values())
             / len(state.humans), 4),
+        # OEE, the classic equipment measure, in this model's terms:
+        #   availability  uptime after maintenance, over planned machine time
+        #   performance   nominal cycle time over the time actually taken, so
+        #                 it measures how well work was matched to skill
+        #   quality       good units over units started
+        # Reported for completeness (experiment-plan §6); the pillars the
+        # argument rests on are the human and sustainability columns.
+        "availability": round(1 - maint_min / machine_time, 4),
+        "performance": round(
+            state.ideal_minutes
+            / sum(m.busy_minutes for m in state.machines.values()), 4)
+        if sum(m.busy_minutes for m in state.machines.values()) else 0.0,
+        "quality_rate": round(good / units, 4) if units else 0.0,
+        "oee": round(
+            (1 - maint_min / machine_time)
+            * (state.ideal_minutes
+               / max(sum(m.busy_minutes for m in state.machines.values()), 1e-9))
+            * (good / units if units else 0.0), 4),
+
+        # Hard-constraint breaches actually observed. HC2 and HC4 cannot appear
+        # here: they filter availability, so a breach is impossible by
+        # construction rather than by policy.
+        "constraint_violations": sum(
+            1 for h in state.humans.values() for f in h.fatigue_trace
+            if f >= setup.cfg["constraints"]["hard"]["HC1_fatigue_max"]) + sum(
+            1 for h in state.humans.values() for r in h.rula_samples
+            if r > setup.cfg["constraints"]["hard"]["HC3_rula_max"]),
+
         "rest_episodes": sum(h.rest_episodes for h in state.humans.values()),
         "rest_minutes": sum(h.rest_minutes for h in state.humans.values()),
         **state.violations.as_dict(),
