@@ -30,17 +30,27 @@ def rula(base: int, fatigue_hat: float, machine_speed_hat: float,
     return max(RULA_MIN, min(RULA_MAX, score))
 
 
-def machine_speed_hat(energy_rate: float, idle_rate: float,
-                      max_rate: float) -> float:
-    """CP5 input — how hard the machine is being driven, on [0,1].
+def machine_speed_hat(efficiency_factor: float, slowest: float,
+                      fastest: float) -> float:
+    """CP5 input — how fast THIS machine paces its operator, on [0,1].
 
     The design leaves 'normalised machine speed' abstract because the machine
-    twin carries no explicit speed variable. Power draw is used as the stand-in:
-    a machine pulling close to its maximum is running its heaviest duty, which
-    is exactly the condition that paces the operator. It is a modelling choice,
-    recorded here rather than buried, and it only ever scales the psi2 term.
+    twin carries no explicit speed variable, so a stand-in is needed. It has to
+    be a property of the machine.
+
+    Power draw was tried first and is wrong: draw is dominated by the task
+    class, so every heavy task scored 1.0. Task intensity is already in the
+    equation twice over — as RULA_base(tau) here and as kappa in the wear
+    model — so feeding it in a third time through CP5 double counts it. The
+    effect was not subtle. RULA_base(H) is 4 and psi2 is 1.0, so heavy work
+    started at 5 before any fatigue and HC3 (R <= 5) rejected it for anyone not
+    perfectly fresh. Heavy tasks became almost unassignable, and the whole team
+    sat blocked in a quarter of all epochs.
+
+    The per-machine efficiency spread is used instead. It varies by machine and
+    not by task, which is what a pace term should do.
     """
-    span = max_rate - idle_rate
+    span = fastest - slowest
     if span <= 0:
         return 0.0
-    return max(0.0, min(1.0, (energy_rate - idle_rate) / span))
+    return max(0.0, min(1.0, (efficiency_factor - slowest) / span))

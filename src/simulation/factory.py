@@ -32,7 +32,10 @@ from loader import Setup, load_setup                       # noqa: E402
 from simulation.entities import (                          # noqa: E402
     MachineState, OperatorState, Task, workload_gini,
 )
+from decision.constraints import Candidate, Violations, update_rest_state  # noqa: E402
+from decision.weighted import decide                       # noqa: E402
 from models.human.ergonomics import machine_speed_hat      # noqa: E402
+from models.sustainability import account, marginal_energy_kwh  # noqa: E402
 from twins.human_twin import HumanTwin                     # noqa: E402
 from twins.machine_twin import MachineTwin                 # noqa: E402
 
@@ -70,6 +73,7 @@ class ShiftState:
     # allocator is dropping work it could have done.
     deferral_epochs: int = 0
     scrap_units: int = 0
+    violations: Violations = field(default_factory=Violations)
 
     # --- availability, in one place ---------------------------------------
     # Every allocator must go through these. Availability is not just "is it
@@ -83,7 +87,20 @@ class ShiftState:
                 if s.available() and self.twins[m].available()]
 
     def free_operators(self) -> list[str]:
-        return [o for o, s in self.operators.items() if s.available()]
+        """Idle, not on a scheduled break, and not on a mandatory HC1 rest."""
+        return [o for o, s in self.operators.items()
+                if s.available() and not self.humans[o].resting]
+
+    def enforces(self, constraint: str) -> bool:
+        """Whether the ACTIVE POLICY enforces a constraint.
+
+        Constraints belong to the baseline, not to the factory. A mandatory
+        rest is something a human-aware scheduler decides to grant; a
+        throughput-only scheduler does not, and if the simulation granted it
+        anyway the comparison would measure nothing. Each allocator declares
+        what it enforces.
+        """
+        return constraint in getattr(self.allocator, "enforces", frozenset())
 
     def pending_tasks(self) -> list[Task]:
         return [t for t in self.queue if t.assigned_operator is None]
@@ -92,6 +109,80 @@ class ShiftState:
 # =============================================================================
 # Allocators — the seam the decision layer plugs into
 # =============================================================================
+def build_candidates(state: ShiftState, task: Task, operators: list[str],
+                     machines: list[str]) -> list[Candidate]:
+    """Cost every way this task could be run, for the decision layer to weigh."""
+    setup = state.setup
+    spec = setup.tasks[task.task_type]
+    lo, hi = setup.pace_range()
+    out = []
+
+    for op_id in operators:
+        human = state.humans[op_id]
+        skill = setup.operators[op_id].skill[task.task_type]
+        minutes = setup.processing_time(task.task_type, op_id)
+
+        for mac_id in machines:
+            twin = state.twins[mac_id]
+            speed = machine_speed_hat(twin.spec.efficiency_factor, lo, hi)
+            out.append(Candidate(
+                task=task, operator=op_id, machine=mac_id,
+                processing_minutes=minutes,
+                skill=skill,
+                fatigue_hat=human.fatigue_hat,
+                fatigue_after=human.predict_fatigue_hat(
+                    minutes, spec.energy_demand_kcal_min),
+                rula=human.rula(spec.rula_base, speed),
+                defect_risk=twin.defect_risk(
+                    skill=skill, kappa=spec.severity_kappa,
+                    fatigue_hat=human.fatigue_hat),
+                marginal_kwh=marginal_energy_kwh(
+                    twin.spec.delta_e_kwh_per_h[task.task_type], minutes),
+            ))
+    return out
+
+
+def weighted_allocator(state: ShiftState, rng: random.Random
+                       ) -> list[tuple[Task, str, str]]:
+    """B3a — hard constraints filter, then the weighted sum picks (design §9).
+
+    Greedy across the pending queue: each task takes the best assignment still
+    available, then the pair it used is withdrawn. A task with no feasible
+    option is left in the queue, which is the deferral the design asks to be
+    reported rather than hidden.
+    """
+    setup = state.setup
+    free_ops = state.free_operators()
+    free_macs = state.free_machines()
+
+    scales = {
+        "max_minutes": max(setup.processing_time(t, o)
+                           for t in setup.tasks for o in setup.operators),
+        "max_marginal_kwh": max(
+            marginal_energy_kwh(m.delta_e_kwh_per_h[t],
+                                setup.processing_time(t, o))
+            for m in setup.machines.values()
+            for t in setup.tasks for o in setup.operators),
+    }
+    shares = {o: s.busy_minutes / setup.shift_minutes
+              for o, s in state.operators.items()}
+    current = {o: s.current_machine for o, s in state.operators.items()}
+
+    assignments = []
+    for task in state.pending_tasks():
+        if not free_ops or not free_macs:
+            break
+        chosen = decide(
+            build_candidates(state, task, free_ops, free_macs),
+            setup.cfg, scales, shares, current, state.violations)
+        if chosen is None:
+            continue                       # deferred: no feasible pairing
+        assignments.append((task, chosen.operator, chosen.machine))
+        free_ops.remove(chosen.operator)
+        free_macs.remove(chosen.machine)
+    return assignments
+
+
 def random_allocator(state: ShiftState, rng: random.Random
                      ) -> list[tuple[Task, str, str]]:
     """Baseline B1: pair pending tasks with whoever and whatever is free.
@@ -112,6 +203,15 @@ def random_allocator(state: ShiftState, rng: random.Random
             break
         assignments.append((task, free_ops.pop(), free_machines.pop()))
     return assignments
+
+
+# What each policy enforces. HC4 is not listed because it is not a scheduling
+# preference — a machine below its floor is under maintenance and physically
+# unavailable to every policy alike. The human constraints are the ones that
+# separate a human-aware scheduler from a throughput-only one, so they belong
+# to the policy and are declared here.
+random_allocator.enforces = frozenset()                       # B1
+weighted_allocator.enforces = frozenset({"HC1", "HC2", "HC3"})  # B3a
 
 
 # =============================================================================
@@ -135,9 +235,8 @@ def _work(env: simpy.Environment, state: ShiftState,
     task.fatigue_at_start = human.fatigue_hat
 
     # --- exposure while this task runs (CP3, CP5) -------------------------
-    lo, hi = setup.energy_range()
-    speed_hat = machine_speed_hat(
-        twin.energy_rate(task.task_type), lo, hi)          # CP5 input
+    lo, hi = setup.pace_range()
+    speed_hat = machine_speed_hat(twin.spec.efficiency_factor, lo, hi)  # CP5
     rula = human.rula(spec.rula_base, speed_hat)           # §4.7
     load = human.cognition(                                # §4.8, CP3
         task_base=spec.cognitive_base,
@@ -263,8 +362,42 @@ def _inject_failures(env: simpy.Environment, state: ShiftState):
             _start_maintenance(env, state, mac_id, breakdown=True)
 
 
+def _refresh_rest_state(state: ShiftState, charge_minutes: float = 0.0) -> None:
+    """Apply the HC1 hysteresis band (design §8), if the policy enforces it.
+
+    Crossing the limit starts a mandatory rest that runs until fatigue has
+    fallen to the lower band. A single threshold would make an operator flip
+    between working and resting every epoch either side of it.
+
+    `charge_minutes` is only added on the epoch tick, so calling this before a
+    mid-epoch dispatch keeps the rest accounting honest.
+    """
+    if not state.enforces("HC1"):
+        return
+    hys = state.setup.cfg["constraints"]["hc1_hysteresis"]
+    for human in state.humans.values():
+        was = human.resting
+        human.resting = update_rest_state(
+            human.fatigue_hat, was,
+            hys["enter_rest_at"], hys["leave_rest_at"])
+        if human.resting:
+            human.rest_minutes += charge_minutes
+            if not was:
+                human.rest_episodes += 1
+
+
 def _dispatch(env: simpy.Environment, state: ShiftState) -> int:
-    """Run the current allocator and start work on whatever it returns."""
+    """Run the current allocator and start work on whatever it returns.
+
+    Fatigue is brought up to the current instant first. Dispatch happens the
+    moment a pair frees up, which is usually mid-epoch, and deciding against
+    the fatigue value left over from the last epoch boundary lets work through
+    that HC1 should have stopped.
+    """
+    for human in state.humans.values():
+        human.sync(env.now)
+    _refresh_rest_state(state)
+
     assignments = state.allocator(state, state.rng)
     for task, op_id, mac_id in assignments:
         env.process(_work(env, state, task, op_id, mac_id))
@@ -290,6 +423,11 @@ def _epoch_loop(env: simpy.Environment, state: ShiftState):
         if state.epoch_log:
             for human in state.humans.values():
                 human.advance(env.now, setup.epoch_minutes)
+
+        # HC1 hysteresis (design §8). Evaluated after the fatigue update and
+        # before the decision, so a mandatory rest takes effect in the same
+        # epoch the limit is reached rather than one epoch late.
+        _refresh_rest_state(state, charge_minutes=setup.epoch_minutes)
 
         # Anything that wore past its floor while idle, or was knocked out by
         # the S3 disruption while busy, goes into maintenance now.
@@ -461,6 +599,9 @@ def summarise(state: ShiftState, total_demand: int, seed: int,
         "mean_cognitive_load": round(
             sum(h.mean_cognitive for h in state.humans.values())
             / len(state.humans), 4),
+        "rest_episodes": sum(h.rest_episodes for h in state.humans.values()),
+        "rest_minutes": sum(h.rest_minutes for h in state.humans.values()),
+        **state.violations.as_dict(),
         "energy_kwh": round(energy, 3),
         "energy_per_unit": round(energy / units, 4) if units else None,
         "co2e_kg": round(energy * ef, 3),

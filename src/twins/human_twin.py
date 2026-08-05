@@ -39,6 +39,13 @@ class HumanTwin:
     ergonomic_risk: float = 1.0
     cognitive_load: float = 0.0
 
+    # HC1 hysteresis: set when fatigue reaches the limit, cleared only once it
+    # has fallen back to the lower band. While set, the operator is resting and
+    # cannot be given work — this is the mandatory rest of design §8.
+    resting: bool = False
+    rest_episodes: int = 0
+    rest_minutes: float = 0.0
+
     # Work intervals as (start, end, demand); end is None while still running.
     # Fatigue is integrated over these rather than credited when a task ends,
     # because tasks routinely outlast an epoch — a heavy task takes 19 to 28
@@ -47,6 +54,7 @@ class HumanTwin:
     # worked minutes and understated fatigue by the same margin.
     work_intervals: list[list] = field(default_factory=list)
     charged_minutes: float = 0.0          # audit trail: what fatigue was told
+    last_update: float = 0.0              # clock time fatigue is current to
 
     fatigue_trace: list[float] = field(default_factory=list)
     peak_fatigue_hat: float = 0.0
@@ -75,15 +83,32 @@ class HumanTwin:
                 return
 
     # --- §4.1 the fatigue step -------------------------------------------
-    def advance(self, now: float, epoch_minutes: float) -> None:
-        """Move fatigue on over the epoch that just ended, [now - dt, now].
+    def sync(self, now: float) -> None:
+        """Bring fatigue up to `now` from wherever it was last evaluated.
 
-        Work is integrated across the window, so a task spanning three epochs
-        contributes its real minutes to each of them.
+        Called before every decision, not only at epoch boundaries. Work is
+        dispatched the moment a pair frees up, which can be mid-epoch, and a
+        decision taken against a stale fatigue value can hand someone a task
+        that the constraint should have stopped. That is not hypothetical: it
+        let roughly one and a half breaches per shift through.
         """
+        if now <= self.last_update:
+            return
+        self._integrate(self.last_update, now)
+        self.last_update = now
+
+    def advance(self, now: float, epoch_minutes: float) -> None:
+        """Epoch tick: bring fatigue current, then record the trace."""
+        self.sync(now)
+        f_hat = self.fatigue_hat
+        self.fatigue_trace.append(f_hat)
+        self.peak_fatigue_hat = max(self.peak_fatigue_hat, f_hat)
+
+    def _integrate(self, lo: float, hi: float) -> None:
+        """Apply the fatigue equation over the window [lo, hi]."""
         lam = self.cfg["fatigue"]["lambda_per_min"]
         mu = self.cfg["fatigue"]["mu_per_min"]
-        lo, hi = now - epoch_minutes, now
+        window = hi - lo
 
         worked = 0.0
         energy_minutes = 0.0
@@ -94,8 +119,8 @@ class HumanTwin:
                 worked += overlap
                 energy_minutes += demand * overlap
 
-        worked = min(worked, epoch_minutes)     # cannot exceed the window
-        rested = max(0.0, epoch_minutes - worked)
+        worked = min(worked, window)            # cannot exceed the window
+        rested = max(0.0, window - worked)
 
         if worked > 0:
             # CP4 — the task's own metabolic demand is the asymptote. Where
@@ -114,9 +139,17 @@ class HumanTwin:
         self.work_intervals = [iv for iv in self.work_intervals
                                if iv[1] is None or iv[1] > lo]
 
-        f_hat = self.fatigue_hat
-        self.fatigue_trace.append(f_hat)
-        self.peak_fatigue_hat = max(self.peak_fatigue_hat, f_hat)
+    def predict_fatigue_hat(self, minutes: float, energy_demand: float) -> float:
+        """What F_hat would be if this operator took this task now.
+
+        The decision layer needs to compare options before committing, so the
+        same equation is run forward without touching the twin's own state.
+        """
+        lam = self.cfg["fatigue"]["lambda_per_min"]
+        mu = self.cfg["fatigue"]["mu_per_min"]
+        projected = fat.step(self.fatigue, energy_demand, minutes, lam, mu)
+        return fat.normalise(projected, self.spec.e_rest_kcal_min,
+                             self.spec.awl_kcal_min)
 
     # --- §4.7 ergonomic risk ---------------------------------------------
     def rula(self, task_rula_base: int, machine_speed_hat: float) -> float:

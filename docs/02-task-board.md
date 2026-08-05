@@ -237,8 +237,8 @@
 
 | ID | කාර්යය | File | කාලය | තත්ත්වය |
 |---|---|---|---|---|
-| **T5.10** | Sustainability tracker — kWh/unit, CO₂e, scrap % | `src/models/sustainability.py` | 1 දින | ⬜ |
-| **T5.11** | Decision layer **v1: Weighted sum** (සරල එක — මුලින්ම මේක) | `src/decision/weighted.py` | 2 දින | ⬜ |
+| **T5.10** | Sustainability tracker — kWh/unit, CO₂e, scrap % | `src/models/sustainability.py` | 1 දින | ✅ **08-05** |
+| **T5.11** | Decision layer **v1: Weighted sum** (සරල එක — මුලින්ම මේක) | `src/decision/weighted.py` | 2 දින | ✅ **08-05** |
 | **T5.12** | Decision layer **v2: NSGA-II** (pymoo) → Pareto front | `src/decision/nsga2.py` | 2 දින | ⬜ |
 
 ### 5D · මානුෂීය අතුරුමුහුණත (සති 0.5)
@@ -255,7 +255,7 @@
 >
 > ⬜ **තව එකතු කරන්න ඕන (twins ආවම):** fatigue `[0,1]` ද · HC1 කැඩෙනවද ·
 > AWL ට යටින්ද · energy ධනද · CP1–CP5 ක්‍රියාත්මකද.
-| **T5.16** | ★ **GATE 3 carry-over:** `constraint_deferrals` අනුපාතය මනින්න (epochs 640) | `results/feasibility.csv` | 0.5 දින | ⬜ |
+| **T5.16** | ★ **GATE 3 carry-over:** `constraint_deferrals` අනුපාතය මනින්න (epochs 640) | `results/feasibility.csv` | 0.5 දින | 🟨 **මැනුවා 08-05 — තීරණය ඉතුරුයි** |
 
 > ⚠️ **T5.16 (design §12 එකෙන් එනවා):** deferrals **>15%** නම් → HC1 එක 0.85 දක්වා ලිහිල් කරන්න
 > **හෝ** operator profiles සකසන්න. **තීරණය `config.yaml` එකේ ලේඛනගත කරන්න.**
