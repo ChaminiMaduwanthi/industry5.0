@@ -32,13 +32,17 @@ from loader import Setup, load_setup                       # noqa: E402
 from simulation.entities import (                          # noqa: E402
     MachineState, OperatorState, Task, workload_gini,
 )
+from twins.machine_twin import MachineTwin                 # noqa: E402
 
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
-# Flip to True in T5.4, once machine health can drive a breakdown.
-_FAILURES_SUPPORTED = False
-_warned: set[str] = set()
+# Offset for the disruption stream. Breakdown times and victims must be drawn
+# from a generator the allocator never touches, otherwise B1, B2 and B3 would
+# each face a different disruption on the same seed and S3 would compare
+# nothing. With this, one seed means one identical set of failures for every
+# baseline.
+_FAILURE_SEED_OFFSET = 10_000
 
 
 # =============================================================================
@@ -47,6 +51,7 @@ class ShiftState:
     setup: Setup
     machines: dict[str, MachineState]
     operators: dict[str, OperatorState]
+    twins: dict[str, MachineTwin]
     rng: random.Random
     rng_seed: int
     allocator: object                   # (state, rng) -> [(task, op, machine)]
@@ -61,6 +66,7 @@ class ShiftState:
     # yet, so this must read 0 until T5.11 — if it ever does not, the
     # allocator is dropping work it could have done.
     deferral_epochs: int = 0
+    scrap_units: int = 0
 
 
 # =============================================================================
@@ -114,11 +120,35 @@ def _work(env: simpy.Environment, state: ShiftState,
         setup.machines[mac_id].delta_e_kwh_per_h[task.task_type] * minutes / 60
     )
 
+    # --- quality (design §3.3) -------------------------------------------
+    # Evaluated against the machine condition the task was actually run under,
+    # so wear is charged afterwards. fatigue_hat stays 0 until T5.7 exists;
+    # the CP2 term is already in the equation waiting for it.
+    twin = state.twins[mac_id]
+    spec = setup.tasks[task.task_type]
+    risk = twin.defect_risk(
+        skill=setup.operators[op_id].skill[task.task_type],
+        kappa=spec.severity_kappa,
+        fatigue_hat=0.0,
+    )
+    task.defective = state.rng.random() < risk
+    if task.defective:
+        state.scrap_units += 1
+
+    # --- wear (design §3.1) ----------------------------------------------
+    twin.degrade(minutes, spec.severity_kappa)
+
     op.busy = mac.busy = False
     op.current_task_type = mac.current_task_type = None
     op.current_machine = None
     state.queue.remove(task)
     state.completed.append(task)
+
+    # A machine that has just worn past its floor must not be handed the next
+    # task, so this is checked before dispatching rather than waiting for the
+    # epoch tick.
+    if twin.needs_maintenance():
+        env.process(_maintain(env, state, mac_id))
 
     # An operator who finishes mid-epoch must not stand idle until the next
     # epoch boundary: the decision epoch sets how often the plan is recomputed,
@@ -126,6 +156,51 @@ def _work(env: simpy.Environment, state: ShiftState,
     # length (~15 min) and the epoch length (15 min) interact to waste roughly
     # a third of the available capacity, purely as an artefact of the clock.
     _dispatch(env, state)
+
+
+def _maintain(env: simpy.Environment, state: ShiftState, mac_id: str,
+              breakdown: bool = False):
+    """Take a machine out of service, then return it to nominal health."""
+    twin, mac = state.twins[mac_id], state.machines[mac_id]
+    key = "breakdown_repair_minutes" if breakdown else "maintenance_minutes"
+    duration = state.setup.cfg["simulation"][key]
+
+    twin.under_maintenance = mac.under_maintenance = True
+    twin.maintenance_events += 1
+
+    yield env.timeout(duration)
+
+    twin.maintenance_minutes += duration
+    twin.restore()
+    mac.under_maintenance = False
+    _dispatch(env, state)
+
+
+def _inject_failures(env: simpy.Environment, state: ShiftState):
+    """Scenario S3: knock machines out partway through the shift.
+
+    A machine that is mid-task keeps running until that task finishes; the
+    breakdown is picked up the moment it frees up. Interrupting work in flight
+    would be harsher, and is left out because nothing in the design calls for
+    it — noted in the limitations rather than assumed away.
+    """
+    n = state.setup.scenario_cfg.get("machine_failures", 0)
+    if not n:
+        return
+
+    rng = random.Random(state.rng_seed + _FAILURE_SEED_OFFSET)
+    shift = state.setup.shift_minutes
+    victims = rng.sample(sorted(state.machines), min(n, len(state.machines)))
+    times = sorted(rng.uniform(0.25 * shift, 0.75 * shift) for _ in victims)
+
+    previous = 0.0
+    for when, mac_id in zip(times, victims):
+        yield env.timeout(when - previous)
+        previous = when
+        state.twins[mac_id].broken = True
+        state.twins[mac_id].fail_now()
+        if not state.machines[mac_id].busy:
+            env.process(_maintain(env, state, mac_id, breakdown=True))
 
 
 def _dispatch(env: simpy.Environment, state: ShiftState) -> int:
@@ -149,7 +224,14 @@ def _epoch_loop(env: simpy.Environment, state: ShiftState):
         for o in state.operators.values():
             o.on_break = on_break
 
-        # --- twin updates go here (T5.4, T5.7, T5.9) --------------------
+        # --- twin updates (T5.4 machine; T5.7 human still to come) ------
+        # Anything that wore past its floor while idle, or was knocked out by
+        # the S3 disruption while busy, goes into maintenance now.
+        for mac_id, twin in state.twins.items():
+            if twin.needs_maintenance() and not state.machines[mac_id].busy:
+                env.process(_maintain(env, state, mac_id,
+                                      breakdown=twin.broken))
+            twin.health_trace.append(twin.health)
 
         # --- decide ------------------------------------------------------
         n_assigned = _dispatch(env, state)
@@ -209,17 +291,6 @@ def build_task_queue(setup: Setup, rng: random.Random) -> list[Task]:
 
 def run_shift(setup: Setup, seed: int = 0, allocator=random_allocator,
               verbose: bool = False, on_epoch=None) -> dict:
-    # S3 injects mid-shift breakdowns, which need machine health to exist.
-    # Until T5.4 lands, S3 is silently identical to S1 — say so out loud rather
-    # than let a whole result table be produced from a scenario that never ran.
-    if (setup.scenario_cfg.get("machine_failures", 0)
-            and not _FAILURES_SUPPORTED and setup.scenario not in _warned):
-        _warned.add(setup.scenario)
-        print(f"  ! scenario {setup.scenario} asks for "
-              f"{setup.scenario_cfg['machine_failures']} machine failures, "
-              f"which need MachineTwin (T5.4). Running without them "
-              f"— {setup.scenario} currently equals S1.")
-
     rng = random.Random(seed)
     env = simpy.Environment()
 
@@ -227,6 +298,8 @@ def run_shift(setup: Setup, seed: int = 0, allocator=random_allocator,
         setup=setup,
         machines={m: MachineState(m) for m in setup.machines},
         operators={o: OperatorState(o) for o in setup.operators},
+        twins={m: MachineTwin(spec=s, cfg=setup.cfg)
+               for m, s in setup.machines.items()},
         rng=rng,
         rng_seed=seed,
         allocator=allocator,
@@ -236,6 +309,7 @@ def run_shift(setup: Setup, seed: int = 0, allocator=random_allocator,
     total_demand = len(state.queue)
 
     env.process(_epoch_loop(env, state))
+    env.process(_inject_failures(env, state))
     env.run(until=setup.shift_minutes)
 
     return summarise(state, total_demand, seed, verbose)
@@ -253,14 +327,27 @@ def summarise(state: ShiftState, total_demand: int, seed: int,
     energy = idle_kwh + var_kwh
 
     units = len(state.completed)
+    good = units - state.scrap_units
     busy = [o.busy_minutes for o in state.operators.values()]
+
+    maint_min = sum(t.maintenance_minutes for t in state.twins.values())
+    maint_events = sum(t.maintenance_events for t in state.twins.values())
+    machine_time = len(state.machines) * setup.shift_minutes
 
     result = {
         "seed": seed,
         "scenario": setup.scenario,
         "demand": total_demand,
         "throughput": units,
+        "good_units": good,
+        "scrap_units": state.scrap_units,
+        "scrap_rate": round(state.scrap_units / units, 4) if units else None,
         "unfinished": total_demand - units,
+        "maintenance_events": maint_events,
+        "downtime_hrs": round(maint_min / 60, 3),
+        "downtime_share": round(maint_min / machine_time, 4),
+        "mean_health_end": round(
+            sum(t.health for t in state.twins.values()) / len(state.twins), 4),
         "energy_kwh": round(energy, 3),
         "energy_per_unit": round(energy / units, 4) if units else None,
         "co2e_kg": round(energy * ef, 3),
@@ -297,6 +384,11 @@ def _print_report(state: ShiftState, r: dict) -> None:
     print(f"  demand                {r['demand']} tasks")
     print(f"  completed             {r['throughput']}  "
           f"(unfinished {r['unfinished']})")
+    print(f"  good / scrap          {r['good_units']} / {r['scrap_units']}  "
+          f"({r['scrap_rate']:.2%} scrap)")
+    print(f"  maintenance           {r['maintenance_events']} events, "
+          f"{r['downtime_hrs']} h  ({r['downtime_share']:.1%} of machine time)")
+    print(f"  mean health at end    {r['mean_health_end']}")
     print(f"  energy                {r['energy_kwh']} kWh  "
           f"-> {r['co2e_kg']} kg CO2e")
     print(f"  energy per unit       {r['energy_per_unit']} kWh")
@@ -314,9 +406,11 @@ def _print_report(state: ShiftState, r: dict) -> None:
     print("  per machine:")
     for m in state.machines.values():
         share = m.busy_minutes / setup.shift_minutes
+        t = state.twins[m.machine_id]
         print(f"    {m.machine_id}  {m.busy_minutes:6.1f} min  "
               f"({share:5.1%})  {m.tasks_done:3d} tasks  "
-              f"{m.variable_energy_kwh:6.2f} kWh variable")
+              f"{m.variable_energy_kwh:6.2f} kWh   "
+              f"health {t.health:4.2f}  {t.maintenance_events} stops")
 
 
 # =============================================================================
@@ -333,10 +427,17 @@ if __name__ == "__main__":
     print(f"  other seed -> different: {a != c}")
 
     print()
-    print("=== demand pressure across scenarios (S2 is the stress case) ===")
+    print("=== the three scenarios ===")
     for sc in setup.cfg["experiment"]["scenarios"]:
         s = load_setup(scenario=sc)
         r = run_shift(s, seed=0)
-        print(f"  {sc}: demand {r['demand']:3d}  completed {r['throughput']:3d}  "
+        print(f"  {sc}: demand {r['demand']:3d}  done {r['throughput']:3d}  "
               f"unfinished {r['unfinished']:3d}  "
-              f"operator util {r['operator_utilisation']:.1%}")
+              f"op util {r['operator_utilisation']:.0%}  "
+              f"downtime {r['downtime_share']:.1%}  "
+              f"scrap {r['scrap_rate']:.1%}")
+    print()
+    print("  S3 currently shows up as downtime, not lost throughput: a normal")
+    print("  shift has slack, so breakdowns get absorbed. Its real signal is")
+    print("  what each baseline does to the OPERATORS to catch up, which needs")
+    print("  the human twin (T5.7). Revisit S3's demand if it stays flat then.")

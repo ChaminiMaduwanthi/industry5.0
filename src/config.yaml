@@ -55,6 +55,13 @@ simulation:
   # machine side dominate the shift for no data-supported reason.
   maintenance_minutes: 15         # [TUNABLE]
 
+  # An unplanned breakdown (scenario S3) is not a tool change. Repairing one
+  # takes a diagnosis, a part and a restart, so it holds the machine far
+  # longer. Without this split S3 was toothless: a "breakdown" cost 15 minutes
+  # and handed back a machine at full health, which is a reward rather than a
+  # disruption — losing four of five machines changed throughput by nothing.
+  breakdown_repair_minutes: 90    # [TUNABLE]
+
 
 # =============================================================================
 #  2 · TASK TYPES  (design §4.3 — ISO 8996 metabolic classes)

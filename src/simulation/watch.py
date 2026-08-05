@@ -75,18 +75,26 @@ def draw(state: ShiftState) -> None:
     out.append("")
 
     # --- machines --------------------------------------------------------
-    out.append(f"  {DIM}MACHINES{OFF}")
+    h_min = setup.cfg["machines"]["health_min_operational"]
+    out.append(f"  {DIM}MACHINES{OFF}"
+               f"{GREY}                                    health "
+               f"(floor {h_min:.2f} = maintenance){OFF}")
     for m in state.machines.values():
+        twin = state.twins[m.machine_id]
         if m.under_maintenance:
-            mark, label = f"{RED}▓▓▓{OFF}", f"{RED}maintenance{OFF}"
+            kind = "repair" if twin.broken else "tool change"
+            mark, label = f"{RED}▓▓▓{OFF}", f"{RED}{kind}{OFF}"
         elif m.busy:
             c = TASK_COLOUR[m.current_task_type]
             mark, label = f"{c}███{OFF}", f"{c}task {m.current_task_type}{OFF}"
         else:
             mark, label = f"{GREY}···{OFF}", f"{GREY}idle{OFF}"
-        util = m.busy_minutes / now if now else 0
+
+        hc = GREEN if twin.health > 0.6 else YELLOW if twin.health > h_min else RED
         out.append(f"    {m.machine_id}  {mark}  {label:22s}"
-                   f"{GREY}{m.tasks_done:3d} done · {util:4.0%} busy{OFF}")
+                   f"{hc}{_bar(round(twin.health * 100), 100, 14)}"
+                   f" {twin.health:4.2f}{OFF}  "
+                   f"{GREY}{m.tasks_done:3d} done{OFF}")
 
     out.append("")
 
@@ -109,14 +117,20 @@ def draw(state: ShiftState) -> None:
     out.append("")
     out.append(f"  {DIM}QUEUE{OFF}      {_bar(done, demand)}  "
                f"{done}/{demand} done, {e['queue_pending']} waiting")
+    scrap = state.scrap_units
     out.append(f"  {DIM}ENERGY{OFF}     {kwh:6.1f} kWh    "
-               f"{DIM}CO2e{OFF} {kwh * ef:5.1f} kg")
+               f"{DIM}CO2e{OFF} {kwh * ef:5.1f} kg    "
+               f"{DIM}SCRAP{OFF} {scrap} "
+               f"({scrap / done:.0%})" if done else "")
+    down = sum(t.maintenance_events for t in state.twins.values())
+    if down:
+        out.append(f"  {DIM}DOWNTIME{OFF}   {down} maintenance events")
     if state.deferral_epochs:
         out.append(f"  {YELLOW}DEFERRALS  {state.deferral_epochs} "
                    f"epochs blocked by constraints{OFF}")
     out.append("")
-    out.append(f"  {GREY}fatigue and machine health are not modelled yet "
-               f"(T5.4, T5.7){OFF}")
+    out.append(f"  {GREY}operator fatigue is not modelled yet (T5.7) — "
+               f"nobody here gets tired{OFF}")
 
     print("\n".join(out), flush=True)
 

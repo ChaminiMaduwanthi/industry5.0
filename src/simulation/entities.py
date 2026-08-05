@@ -26,6 +26,7 @@ class Task:
     assigned_machine: str | None = None
     started_min: float | None = None
     finished_min: float | None = None
+    defective: bool = False             # sampled from the twin's defect risk
 
     @property
     def is_done(self) -> bool:
