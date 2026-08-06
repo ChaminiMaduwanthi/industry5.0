@@ -1,9 +1,14 @@
 """
 Live view of the shift clock — watch the simulation walk, epoch by epoch.
 
-    python src/simulation/watch.py                 S1, seed 0, 0.35 s per epoch
-    python src/simulation/watch.py S2              the high-demand shift
-    python src/simulation/watch.py S2 3 0.1        scenario, seed, speed
+    python src/simulation/watch.py B2 S2            Industry 4.0 under high demand
+    python src/simulation/watch.py B3 S2            the proposed framework, same shift
+    python src/simulation/watch.py B3 S2 3 0.1      policy, scenario, seed, speed
+
+Run the same scenario and seed under B2 and then under B3 and the difference
+is visible without reading a single number: under B2 the fatigue bars fill and
+stay full, under B3 they stop at the limit because the operator is sent to
+rest. That is the paper's argument, watched rather than tabulated.
 
 The simulation itself finishes in milliseconds. This attaches an observer to
 the epoch hook and pauses between epochs so a human can follow what the clock
@@ -67,7 +72,7 @@ def draw(state: ShiftState) -> None:
     out = [CLEAR]
     out.append(f"{BOLD}  Industry 5.0 — shift clock{OFF}"
                f"{GREY}    scenario {setup.scenario} · seed {state.rng_seed}"
-               f" · allocator: random (B1){OFF}")
+               f" · policy: {getattr(state, 'policy_label', 'B3 proposed')}{OFF}")
     out.append("")
     out.append(f"  {BOLD}{_clock(now)}{OFF}   epoch {e['epoch'] + 1:2d}/{total_epochs}"
                f"   {_bar(e['epoch'] + 1, total_epochs)}"
@@ -139,30 +144,43 @@ def draw(state: ShiftState) -> None:
                    f"epochs blocked by constraints{OFF}")
     out.append("")
     breaches = sum(1 for h in state.humans.values() if h.fatigue_hat >= hc1)
+    policy = getattr(state, "policy_label", "")
     if breaches:
         out.append(f"  {RED}{breaches} operator(s) past HC1 and still working — "
-                   f"nothing stops them until the decision layer exists "
-                   f"(T5.11){OFF}")
+                   f"{policy} does not look at operator state{OFF}")
     else:
-        out.append(f"  {GREY}fatigue is modelled but not yet acted on "
-                   f"(T5.11 adds the constraints){OFF}")
+        out.append(f"  {GREEN}every operator inside their own limit — "
+                   f"{policy} filters before it chooses{OFF}")
 
     print("\n".join(out), flush=True)
 
 
 # =============================================================================
-def main() -> None:
-    scenario = sys.argv[1] if len(sys.argv) > 1 else "S1"
-    seed = int(sys.argv[2]) if len(sys.argv) > 2 else 0
-    delay = float(sys.argv[3]) if len(sys.argv) > 3 else 0.35
+POLICIES = {
+    "B1": ("random_allocator", "B1 random"),
+    "B2": ("industry40_allocator", "B2 Industry 4.0"),
+    "B3": ("weighted_allocator", "B3 proposed"),
+}
 
+
+def main() -> None:
+    argv = sys.argv[1:]
+    policy = argv.pop(0).upper() if argv and argv[0].upper() in POLICIES else "B3"
+    scenario = argv.pop(0) if argv else "S2"
+    seed = int(argv.pop(0)) if argv else 0
+    delay = float(argv.pop(0)) if argv else 0.35
+
+    import simulation.factory as F
+    fn_name, label = POLICIES[policy]
+    allocator = getattr(F, fn_name)
     setup = load_setup(scenario=scenario)
 
     def observer(state: ShiftState) -> None:
+        state.policy_label = label
         draw(state)
         time.sleep(delay)
 
-    result = run_shift(setup, seed=seed, on_epoch=observer)
+    result = run_shift(setup, seed=seed, allocator=allocator, on_epoch=observer)
 
     print(f"  {BOLD}shift over{OFF}   "
           f"{result['throughput']}/{result['demand']} tasks · "
