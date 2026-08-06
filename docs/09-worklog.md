@@ -6,6 +6,144 @@
 
 ---
 
+# 🗓️ 2026-08-06 (බ්‍රහස්පතින්දා) — Session 12 · 🔍 **සම්පූර්ණ AUDIT**
+
+## ⏱️ සාරාංශය
+
+| | |
+|---|---|
+| **කරපු දේ** | මුල ඉඳන් **හැම දෙයක්ම** පරීක්ෂා කළා — design අනුකූලතාව · සංඛ්‍යා · සංඛ්‍යානය · citations · පරණ ප්‍රකාශ |
+| **හම්බුණේ** | **සොයාගැනීම් 10** — 9ක් හැදුවා, **1ක් හිතාමතාම විවෘතව තිබ්බා** |
+| **Tests** | 256 pass · links 56ම හරි · config parse වෙනවා |
+| **ඊළඟ අදියර** | 🔵 Phase 8 — ඒත් **`[N]` විසඳලා** |
+
+---
+
+## ★★ සොයාගැනීම 1 — **Design deviations register එකක් තිබුණේ නෑ**
+
+Design එක **frozen**. ඒත් implementation එක ඒකෙන් අයිනට ගිය තැන් **9ක්** තිබුණා, ඒවා
+**කිසිම තැනක ලියලා තිබුණේ නෑ**. ඒවායින් **3ක් සම්පූර්ණ features කැපීම්**.
+
+🆕 **`docs/11-design-deviations.md`** — deviations 9ම, හේතු සමඟ.
+
+| # | දේ | වර්ගය |
+|---|---|---|
+| **D3** | **NSGA-II (B3b) ලියලා නෑ** | ⚠️ කැපුවා |
+| **D4** | **L5 explainability + dashboard ලියලා නෑ** | ⚠️ කැපුවා |
+| **D5** | **XGBoost models ලියලා නෑ** | ⚠️ කැපුවා |
+| D1 | §6 normalization ක්‍රියාත්මක නෑ | අවශ්‍ය නොවීය |
+| D2 | Objective epoch-marginal | ක්‍රියාත්මක අවශ්‍යතාව |
+| D6 | β₂, β₃ calibrated | දත්ත සීමාව |
+| D7–D9 | cognitive unused · `v̂` normalization · parameters 2 | කුඩා |
+
+> ⛔⛔ **වඩාත්ම භයානක එක D4.** **Fig 1 එකේ layers 5ම පේනවා**, ලියලා තියෙන්නේ **4යි**.
+> Paper එකේ *"our five-layer architecture"* කියලා ලිව්වොත් ඒක **reviewer කෙනෙක් අල්ලන අසත්‍යයක්**.
+> ✅ දැන් ලියන්න ඕන වාක්‍යය register එකේ තියෙනවා.
+
+**⛔ මේ deviations නිසා ලියන්න බැරි දේ 5ක්** එකතු වුණා → මුළු තහනම් ලැයිස්තුව දැන් **16**.
+
+---
+
+## ✅ සොයාගැනීම 2 — §6 normalization **run වෙන්නේ නෑ** (ඒත් ඒක හරි)
+
+Config එකේ `calibration_seeds`, `bounds` ප්‍රකාශ කරලා — **code එකෙන් කියවන්නේ නෑ**.
+
+**ඒත් ඒක අවශ්‍ය නෑ:** decision rule එකේ **හැම පදයක්ම ව්‍යුහයෙන්ම [0,1]**, සහ Table II
+එකේ තියෙන්නේ **ස්වාභාවික ඒකක**. ★ තවද — B1 මත fit කරපු bound එකක් B1 runs හදන
+rule එකට දුන්නා නම් **ඒක චක්‍රීය**. ➜ **§6 හි අරමුණට වඩා ශක්තිමත්.**
+Config එකේ dead entries ඉවත් කරලා **ඇයි කියලා** ලිව්වා.
+
+---
+
+## 📋 සොයාගැනීම 3–9 · පරණ වෙලා තිබුණු වාර්තා
+
+| # | කොහෙද | තිබුණේ | ඇත්ත |
+|---|---|---|---|
+| 3 | charter §6 | *"Pareto front figure"* නිර්ණායකයක් · 4ක් tick කරලා නෑ | NSGA-II කැපුවා ➜ **trade-off figure** · 4 ✅ |
+| 4 | `src/README.md` | *"simulation code තවම ලියලා නෑ"* | **modules 20 · tests 256** |
+| 5 | `references.bib` | *"entries 43 · [CHECK] 4"* | **61 · [CHECK] 5** |
+| 6 | `README.md` §6 | Phase 4–8 **⬜ නොපටන් ගත්** | 4 ✅ · 5 🟨 · 6 ✅ · 7 🟨 |
+| 7 | expplan §1, §4 | dataset 6ම ⬜ · B3b/B3c live options | ✅/⛔ නිවැරදිව · **කැපුවා** කියලා |
+| 8 | paper outline | *"Fig 3 (Pareto front)"* · Fig 5 | **constraint sweep** · Fig 5 කැපුවා |
+| 9 | START-HERE | per-phase සංඛ්‍යා **අතින්** ලියලා (Phase 5 වැරදියි) | දැන් **board එකෙන්ම ගණනය වෙනවා** |
+
+---
+
+## ⚖️ දිශා දෙකටම නිවැරදි කිරීම් 2
+
+**T5.15 🟨 → ✅ (🚪 GATE 4 පසුයි).** ඉල්ලපු invariants **5ම** test කරලා තිබුණා
+(fatigue [0,1] · HC1 · AWL · energy · CP1–CP5), tests **256ම pass**. Gate එක
+**සපුරලා තිබුණත් විවෘතව** තිබුණා.
+
+**T2.9 ✅ → 🟨.** Metadata verification **✅ කරලා තිබුණා**, ඒත් `[CHECK]` **5ක්**
+තහවුරු නොකර තියෙනවා. ➜ **✅ එක වැරදියි.**
+
+> ★ දෙකම එකට ➜ මුළු එකතුව **55/80 එහෙමම** — ඒත් දැන් **අවංකයි**.
+
+---
+
+## ⛔ සොයාගැනීම 10 — **විවෘතව තිබ්බා (හිතාමතාම)**
+
+```
+Gap statement:  "Of [N] studies reviewed, none couple…"     ← [N] තවම හිස්
+ලේඛන 4ක:        52  ·  47  ·  53                            ← තුනම වෙනස් දේවල්
+```
+
+| සංඛ්‍යාව | ඇත්තටම ගණන් කරන්නේ |
+|---|---|
+| **52** | round 3 metadata verification එකේදී තිබූ screened papers |
+| **47** | ★ කණ්ඩායම B හි comparison rows — **ගණන් කරලා තහවුරු කළා** |
+| **53** | Destouet 2026 එකතු කළාට පස්සේ |
+
+**➜ මම ඒක පුරවලා නෑ.** `[N]` = **තුන් නිර්ණායකයට එරෙහිව ඇගයූ studies** (කණ්ඩායම A ∪ B).
+A සහ B අතර අතිච්ඡාදනයක් තියෙනවද කියන එක **ලැයිස්තුව අතින් බලලා** තීරණය කරන්න ඕන.
+
+> ⛔ **තුනෙන් එකක් තෝරලා දැම්මොත් ඒක ගණන් කිරීමක් නොව අනුමානයක්** — සහ ඒක තමයි
+> අපේ **§4 එකේම** අපි විවේචනය කරන දේ. ➜ **§I / §II ලියන්න කලින්** විනාඩි 10ක් දෙන්න.
+> විස්තර: `03-literature-review.md` §4 මුල.
+
+---
+
+## ✅ පරීක්ෂා කරලා **හරි** කියලා තහවුරු වුණු දේ
+
+| පරීක්ෂාව | ප්‍රතිඵලය |
+|---|---|
+| **Frozen parameters 32** (κ, RULA, c_τ, ψ, γ, HC1–4, hysteresis, weights, EF, λ, μ) | **32/32 design අගයමයි** ✅ |
+| **සමීකරණ** §3.1–3.4, §4.1, §4.4, §4.7, §4.8 | code එකේ **අකුරින් අකුරට** ✅ |
+| **B2 සාධාරණද** (charter අවදානම #3) | ✅ එකම simulator · machine twin පූර්ණ · HC4 · **physics couplings ක්‍රියාත්මක** · straw-man නොවන බව මනිලා |
+| **270 runs නැවත run** (මගේ edits වලට පස්සේ) | columns 39න් **38ම identical**, `runtime_sec` විතරයි |
+| Analysis CSV 4 · figure PNG 2 | **identical** ✅ |
+| §V draft සංඛ්‍යා (§A–§G) | **50/52** ok — 2ක් කලින් session එකේ හදලා |
+| Internal markdown links | **56/56** ✅ |
+| Tests | **256 pass** ✅ |
+
+---
+
+## 📁 වෙනස් වුණු ලිපිගොනු
+
+`docs/11-design-deviations.md` 🆕 · `docs/01-project-charter.md` · `docs/02-task-board.md` ·
+`docs/03-literature-review.md` · `docs/05-experiment-plan.md` · `docs/06-paper-outline.md` ·
+`docs/00-START-HERE.md` · `README.md` · `src/README.md` · `src/config.yaml` · `paper/references.bib`
+
+---
+
+# 👉 ඊළඟට
+
+```
+┌──────────────────────────────────────────────────────────────┐
+│  ⛔ මුලින්ම (විනාඩි 10):                                      │
+│     gap statement එකේ  [N]  ගණන් කරලා තැන් 5 ට දාන්න          │
+│                                                              │
+│  🔵 ඊට පස්සේ PHASE 8 — paper (0/15)                          │
+│     T8.1 template → T8.2 §3 → T8.4 §4 → T8.5 §5 (draft ✅)    │
+│                                                              │
+│  📄 §VI ලියනකොට:  11-design-deviations.md §4 හි 8ම දාන්න      │
+│  ⛔ ලියන්න බැරි දේ 16:  section5-results.md අග + deviations §3│
+└──────────────────────────────────────────────────────────────┘
+```
+
+---
+
 # 🗓️ 2026-08-06 (බ්‍රහස්පතින්දා) — Session 11 · 🎯 **PHASE 7 අවසන්**
 
 ## ⏱️ සාරාංශය
