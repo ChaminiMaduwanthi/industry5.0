@@ -1,6 +1,6 @@
 # 🚦 START HERE — මුලින්ම මේක කියවන්න
 
-> **අවසන් යාවත්කාලීනය: 2026-08-05**
+> **අවසන් යාවත්කාලීනය: 2026-08-06**
 
 ---
 
@@ -11,21 +11,20 @@ Phase 1  ████████████████████  ✅  6/6 
 Phase 2  ██████████████████░░  🟨  8/10   (papers කියවීම ඉතුරුයි — හදිසි නෑ)
 Phase 3  ████████████████████  ✅  10/10  🚪 GATE 3 පසුයි — DESIGN FROZEN
 Phase 4  ████████████████████  ✅  7/7    දත්ත සූදානම්
-Phase 5  ████████████░░░░░░░░  🟨  10/16  (T5.5/5.6/5.12 කැපිය හැක · T5.13/5.14 ඉතුරු)
+Phase 5  █████████████░░░░░░░  🟨  11/16  (T5.5/5.6/5.12 කැපිය හැක · T5.13/5.14 ඉතුරු)
 Phase 6  █████████████████░░░  🟨  6/7    ★ runs 270 ✅  ප්‍රතිඵල තියෙනවා
-Phase 7  ███████████░░░░░░░░░  🟨  5/9    ← ★ දැන් මෙතන
-Phase 8  ░░░░░░░░░░░░░░░░░░░░  ⬜  0/15   ← ලොකුම වැඩේ ඉතුරු
+Phase 7  ██████████████████░░  🟨  8/9    (T7.5 dashboard පමණයි)
+Phase 8  ░░░░░░░░░░░░░░░░░░░░  ⬜  0/15   ← ★ දැන් මෙතන
                                   ──────
-                                  51/80
+                                  55/80
 ```
 
-### 👉 කරන්න ඕන දේ: **T7.3 + T7.4 — Figures 2**
+### 👉 කරන්න ඕන දේ: **T8.2 — §3 Proposed Framework ලියන්න**
 
-> 📊 **ප්‍රතිඵල දැනටමත් තියෙනවා** — `results/kpi_table.md`, `ablation.csv`,
-> `sensitivity*.csv`, `crosstraining.csv`. **Plot කරන එක විතරයි ඉතුරු.**
-> ඊට පස්සේ T7.7 (trade-off කතාව) → **Phase 8, paper එක**.
+> 📊 **විශ්ලේෂණය ඉවරයි.** KPI table · figures 2 · sensitivity 3 · ablation ·
+> §V draft (§A–§G, සංඛ්‍යා ඔක්කොම verify කරලා). **දැන් ඉතුරු paper එක ලිවීම විතරයි.**
 >
-> ✅ **Tests 236ම pass** · commits 42 · GitHub එකේ · `paper/section5-results.md` draft ✅
+> ✅ **Tests 256ම pass** · GitHub එකේ · `paper/section5-results.md` **§5 ලියලා ඉවරයි**
 > ⛔ **Code එකේ කිසිම අගයක් hard-code කරන්න එපා** — හැම එකක්ම `config.yaml` එකෙන්.
 
 > 📓 **ඊට කලින්:** [**09-worklog.md**](09-worklog.md) කියවන්න — කලින් session එකේ **මොනවද කලේ,
@@ -126,23 +125,28 @@ Phase 8  ░░░░░░░░░░░░░░░░░░░░  ⬜  0/15
 
 ```
 ┌────────────────────────────────────────────────────────────┐
-│  1️⃣  09-worklog.md · Session 10 කියවන්න   ← ★★★ මුලින්ම    │
+│  1️⃣  09-worklog.md · Session 11 කියවන්න   ← ★★★ මුලින්ම    │
 │      Phase 7 එකේ මොකද හම්බුණේ, මොනවා ලියන්න බැරිද          │
 │                                                            │
-│  2️⃣  results/kpi_table.md බලන්න                            │
-│      ප්‍රධාන ප්‍රතිඵලය — B3 vs B2, KPI 11 × scenario 3      │
+│  2️⃣  paper/section5-results.md කියවන්න                     │
+│      §V ලියලා ඉවරයි — §A headline · §E trade-off කතාව      │
+│      ⚠️ අගදී "ලියන්න බැරි දේ" ලැයිස්තුව බලන්න               │
 │                                                            │
-│  3️⃣  T7.3 + T7.4 — figures 2ක් හදන්න                       │
-│      → figures/fig3_tradeoff.png · fig4_comparison.png     │
+│  3️⃣  T8.1 — IEEE template setup                            │
 │                                                            │
-│  4️⃣  T7.7 — trade-off කතාව                                 │
-│      (paper/section5-results.md එකේ අඩක් තියෙනවා)          │
+│  4️⃣  T8.2 — §3 Proposed Framework ලියන්න  ← මුලින්ම මේක     │
+│      04-framework-design.md + fig1, fig2 එකෙන්             │
 └────────────────────────────────────────────────────────────┘
 ```
 
-> ⚠️ **Paper එකේ ලියන්න බැරි දේ 4ක්** Session 10 අගදී ලැයිස්තුගත කර ඇත —
-> weights steer කරනවා කියන්න එපා · CP1/CP2 බලපානවා කියන්න එපා ·
-> quality/OEE වැඩි වුණා කියන්න එපා · workload ප්‍රතිඵලය අත්හරින්න එපා.
+> ⚠️ **Paper එකේ ලියන්න බැරි දේ 11ක්** — සම්පූර්ණ ලැයිස්තුව
+> [`paper/section5-results.md`](../paper/section5-results.md) අගදී. ප්‍රධාන ඒවා:
+> weights steer කරනවා කියන්න එපා · coupling 5ම බලපානවා කියන්න එපා ·
+> quality/OEE වැඩි වුණා කියන්න එපා · **"Pareto front" කියන්න එපා** ·
+> workload ප්‍රතිඵලය අත්හරින්න එපා.
+
+> ⚠️ **§VI Limitations එකට අනිවාර්ය 3:** ① λ, μ calibrated ② β₂, β₃ fit කරන්න බැරි
+> ③ deferral rate 15% guard එක ඉක්මවනවා (S1 24%, S3 19%) — **ඇයි කියලා එක්කම**.
 
 ---
 

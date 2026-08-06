@@ -6,6 +6,159 @@
 
 ---
 
+# 🗓️ 2026-08-06 (බ්‍රහස්පතින්දා) — Session 11 · 🎯 **PHASE 7 අවසන්**
+
+## ⏱️ සාරාංශය
+
+| | |
+|---|---|
+| **කරපු දේ** | T5.16 🚪 වැහුවා · T7.3 + T7.4 figures · T7.7 trade-off කතාව |
+| **Tests** | 236 → **256 pass** |
+| **Phase තත්ත්වය** | Phase 7 **8/9** *(T7.5 dashboard screenshot පමණයි ඉතුරු — ඒක T5.14 මත රඳා පවතී)* |
+| **ඊළඟ අදියර** | 🔵 **PHASE 8 — Paper ලිවීම** |
+
+---
+
+## 📦 කොටස 1 — T5.16 🚪 **GATE 3 carry-over වැහුවා**
+
+**ප්‍රශ්නය:** deferral rate S1 24.4%, S3 19.5% — design §12 හි **15% guard එක ඉක්මවනවා**.
+§12 විසඳුම් 2ක් දෙනවා. **දෙකම මැනුවා — දෙකෙන්ම S1 යටට එන්නේ නෑ** (20.0%, 20.8%).
+
+➜ ඒ නිසා **හේතුව හොයන්නම වුණා.** Hard constraint හතරම එකින් එක ඉවත් කරලා මැනුවා
+(`src/deferral_diagnosis.py`):
+
+```
+Constraint ඉවත් කළාම deferral rate වෙනස් වීම (percentage points)
+                      S1      S2      S3     breaches
+  HC3 ergonomic     -7.8    -2.8    -6.4     ⚠️ 105+     ← ලොකුම හේතුව
+  HC2 competence    -4.5    -2.8    -3.4     ✅ 0
+  HC1 fatigue       +0.2    -0.8    -0.5     ⚠️ 161–208
+  HC4 health         0.0     0.0     0.0     ✅ 0
+```
+
+### ★★ §12 **වැරදි knob එකක්** නිර්දේශ කරලා තිබුණා
+
+HC1 **සම්පූර්ණයෙන් ඉවත් කළත්** deferral rate වෙනස් වෙන්නේ නෑ. Set එක වහන්නේ **HC3 සහ HC2**.
+ඒ දෙකෙන් එකක් ලිහිල් කරනවා කියන්නේ **ඇත්ත ergonomic breaches** හෝ **competence floor එකට යටින් වැඩ** —
+දෙකම paper එකේ claim එකට පටහැනියි.
+
+**තීරණය:** configuration එක **එහෙමම තියනවා**. Guard එක තිබුණේ feasible set එක **කඩාවැටෙනවද** කියලා
+අල්ලන්න — ඒක වෙලා නෑ (throughput B2 ගෙන් S1 90%, S2 98%, breaches 0). ➜ **§VI Limitations එකේ ලියනවා.**
+සම්පූර්ණ තීරණය `config.yaml → constraints.deferral_decision_log` (වචන 314).
+
+### 🔬 පරීක්ෂා කරලා **ප්‍රතික්ෂේප කළ** උපකල්පනයක්
+
+*"deferral වෙන්නේ queue එක හිස් නිසා"* — S2 (demand වැඩිම) එකේ deferral අඩුම නිසා ඒක සිතුණා.
+**වැරදියි:** deferral වෙනකොට queue එකේ median **11 / 24 / 18** tasks, tasks 2ක් හෝ අඩුවෙන් තියෙන
+deferral එකක් **එකක්වත් නෑ**. වැඩ තියෙනවා — **නීත්‍යානුකූල එකක් නෑ**.
+
+> ⚠️ **Test එකෙන් උගුලක් අල්ලගත්තා:** HC1 = 1.01 කළාම breaches ගණන් වෙන්නේ **අලුත් threshold එකට**
+> ➜ 0 වාර්තා වෙනවා, ආරක්ෂිත වගේ පේනවා. **Session 7 එකේ HC1 sweep එකට වුණු දෙයම.** දැන්
+> **ස්ථිර yardstick එකකට** (fatigue 0.80, RULA 5) ගණන් කරනවා.
+
+---
+
+## 📦 කොටස 2 — T7.3 + T7.4 · Figures 2 ✅
+
+| Figure | මොකද පෙන්නන්නේ |
+|---|---|
+| **fig3_tradeoff** | Throughput vs fatigue · scenario 3 · HC1 **0.70 / 0.80 / 0.90** sweep + B2 |
+| **fig4_comparison** | B1/B2/B3 × KPI 6 (pillar 3) · S2 · error bars |
+
+**★ Fig 3 ගැන වැදගත් තීරණයක්:** curve එක අඳින්නේ **constraint එක සොලවලා** — weights සොලවලා නෙවෙයි.
+ඇයි? weight study එකෙන් පෙනුණා **weights 4ම එකයි** කියලා ➜ ඒවායින් අඳින "frontier" එකක් කියන්නේ
+**එකම තැන points 3ක්** trade-off එකක් විදිහට පෙන්නන එකයි. ⛔ ඒක කරන්නේ නෑ.
+
+> ⚠️ ඒ නිසා **"Pareto front" කියලා ලියන්න බෑ** — multi-objective search එකක් run කරලා නෑ.
+> ✅ ලියන්න: *"constraint sweep"*.
+
+**කළු-සුදු පරීක්ෂාව (T8.11) දැනටමත් pass:** grayscale එකට හරවලා කියෙව්වා — marker හැඩ, line style,
+hatching, සහ හැම අගයක්ම bar එක උඩ ලියලා. **Colour එකෙන් විතරක් අර්ථයක් යන්නේ නෑ.**
+
+**අඳිද්දී අහුවුණු දේ 2:** ① baseline marker එකේ ඉඳන් frontier එකට ඇදපු connector 3 plot එක හරහා
+කැපිලා **තව series 3ක් වගේ** පෙනුණා → අයින් කළා ② breaches = **0** නිසා bar එකක්ම නෑ →
+**"දත්ත නැති"** වගේ පේනවා → baseline එකේ stub එකක් දැම්මා.
+
+---
+
+## 📦 කොටස 3 — T7.7 · Trade-off කතාව ✅ (`section5-results.md` §E)
+
+**අධ්‍යයන 3ක් එකම උත්තරයක් දෙනවා**, ඒ නිසා §V එකට ඒක **එක වතාවක්** කියන section එකක් දැම්මා:
+
+```
+★★★  මේ framework එක steer කරන්නේ  objective එක නෙවෙයි — CONSTRAINTS.
+```
+
+| § | කරුණ |
+|---|---|
+| **E.1** | Weights 4ම එකයි. හේතුව: **තීරණවලින් 95.7%ට candidate 0 හෝ 1යි** |
+| **E.2** | *"Industry 4.0 = objective එකේ සීමාව මිසක් framework එකේ සීමාව නොවේ"* |
+| **E.3** | Ablatable coupling 3න් **1යි** තීරණ වෙනස් කරන්නේ (CP5). අනිත් 2 **redundant, අදාළ නොවීම නොවේ** |
+| **E.4** | Deferral වෙන්නේ HC1 නිසා නෙවෙයි — **HC3 + HC2**. ➜ §C හි workload කතාවේම හේතුව |
+| **E.5** | Trade-off dial එක = **සංවිධානය මිනිසුන්ට තියන සීමාව**, objective එකේ ප්‍රමුඛතාවය නොවේ |
+
+---
+
+## ⚠️ ලියලා තිබුණු draft එකේ **වැරදි 2ක්** අහුවුණා
+
+| # | වැරද්ද | නිවැරදි කිරීම |
+|---|---|---|
+| 1 | *"deferred in **14.4%** of decision epochs"* — **කිසිම result file එකක නෑ** | ඇත්ත: **11.0%** (S2) · 24.0% (S1) · 19.0% (S3) |
+| 2 | ★★ *"**95.8%** … median **0.016**"* — **print statement එකක literals** | දැන් `decision_pressure.py` එකෙන් **මනිනවා**: **95.7%** of **45,754** decisions · median **0.015** |
+
+> ⛔ **#2 බරපතළයි.** §E මුළු කොටසම ඒ වාක්‍යය මත හැදිලා තියෙන්නේ — **කිසිවෙකුට ප්‍රතිනිෂ්පාදනය කරන්න
+> බැරි සංඛ්‍යාවක් මත**. පරණ අගය ආසන්නව හරි වුණා — ඒත් **ඒක වාසනාවක්, සහතිකයක් නෙවෙයි**.
+>
+> මනින්න `decide()` එකට **optional probe** එකක් දැම්මා. ඒක **බලනවා විතරයි** — probe එකත් එක්ක
+> සහ නැතුව run එක **byte-identical** කියලා test එකකින් assert කරලා තියෙනවා.
+
+✅ **§E හි සංඛ්‍යා 22ම** result files එකට ගළපලා පරීක්ෂා කළා.
+
+---
+
+## 📁 හැදුණු / වෙනස් වුණු ලිපිගොනු
+
+| ලිපිගොනුව | |
+|---|---|
+| `src/deferral_diagnosis.py` + tests (15) | 🆕 T5.16 |
+| `src/decision_pressure.py` + tests (5) | 🆕 §E.1 එකේ පදනම |
+| `src/make_figures.py` | 🆕 T7.3, T7.4 |
+| `figures/fig3_tradeoff.{png,pdf}` · `fig4_comparison.{png,pdf}` | 🆕 |
+| `results/deferral_diagnosis.csv` · `deferral_queue_depth.csv` · `decision_pressure.csv` | 🆕 |
+| `paper/section5-results.md` | ✏️ §E අලුත් · 14.4% නිවැරදි කළා |
+| `src/config.yaml` | ✏️ T5.16 තීරණය (වචන 314) |
+| `src/decision/weighted.py` · `simulation/factory.py` | ✏️ probe + deferral flag *(observation only)* |
+| `src/weight_sensitivity.py` | ✏️ hard-code කරපු සංඛ්‍යා අයින් කළා |
+
+---
+
+# 👉 ඊළඟට මෙතනින් පටන් ගන්න
+
+```
+┌──────────────────────────────────────────────────────────────┐
+│  🔵 PHASE 8 — Paper ලිවීම   (ඉතුරු ලොකුම වැඩේ · 0/15)        │
+│                                                              │
+│  T8.1  IEEE template setup                                   │
+│  T8.2  ★ §3 Proposed Framework   ← මුලින්ම මේක               │
+│  T8.4  §4 Implementation & Setup                             │
+│  T8.5  ★ §5 Results  ← section5-results.md එකෙන් copy        │
+│  T8.6  §6 Limitations                                        │
+└──────────────────────────────────────────────────────────────┘
+```
+
+**⚠️ §VI Limitations එකට අනිවාර්යයෙන් යන්න ඕන දේ 3:**
+```
+1. λ, μ  "calibrated rather than measured"
+2. β2, β3 (skill/fatigue → quality) — කිසිම dataset එකකින් fit කරන්න බැරි
+3. ★ deferral rate  15% guard එක ඉක්මවනවා (S1 24%, S3 19%) + ඇයි කියලා
+```
+
+**⛔ Paper එකේ ලියන්න බැරි දේ — දැන් 11ක්.** ලැයිස්තුව `paper/section5-results.md` අගදී.
+අලුතෙන් එකතු වුණු 5: weights steer කරනවා · coupling 5ම බලපානවා · HC1 නිසා deferrals ·
+"Pareto front" · deferral guard එක සපුරලා තියෙනවා.
+
+---
+
 # 🗓️ 2026-08-05 (බදාදා) — Session 10 · 🔬 **PHASE 7 — විශ්ලේෂණය**
 
 > 📌 මේ ලිපිය commits **6ක්** ආවරණය කරයි: `74bcd66` → `c455288`.
