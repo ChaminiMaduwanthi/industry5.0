@@ -13,6 +13,9 @@ data/raw/*
 # through a public repository. Full citations live in paper/references.bib.
 literature/*.pdf
 
+# --- Build scratch ---------------------------------------------------------
+.paper_template_tmp.docx
+
 # --- Archives -----------------------------------------------------------------
 *.zip
 *.tar.gz

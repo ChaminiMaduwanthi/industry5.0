@@ -191,7 +191,9 @@ def figure_four() -> None:
     stds = s2[[p[0] for p in PANELS]].std()
 
     order = ["B1", "B2", "B3"]
-    fig, axes = plt.subplots(2, 3, figsize=(7.2, 4.6))
+    # Sized for a full-text-width (two-column-spanning) figure on an IEEE A4
+    # page: 7.03 in of text width, kept short so it does not eat half a page.
+    fig, axes = plt.subplots(2, 3, figsize=(7.0, 3.5))
 
     for ax, (key, label, pillar, fmt, higher_better) in zip(axes.flat, PANELS):
         _style_axes(ax)
