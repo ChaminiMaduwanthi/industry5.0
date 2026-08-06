@@ -340,7 +340,40 @@ constraints:
   # this, either relax HC1 to 0.85 or adjust the operator profiles, and RECORD
   # THE DECISION HERE with the date and the measured rate.
   deferral_rate_threshold: 0.15
-  deferral_decision_log: "not yet measured (T5.16)"
+  deferral_decision_log: >
+    CLOSED 2026-08-05. Measured over 640 epochs (results/feasibility.csv):
+    24.4% in S1, 11.6% in S2, 19.5% in S3. S1 and S3 exceed the 15% guard.
+
+    Both §12 remedies were measured before choosing
+    (src/deferral_diagnosis.py, results/deferral_diagnosis.csv), and each hard
+    constraint was also removed on its own to find what actually closes the
+    set. Breaches counted against the fixed 0.80 / RULA 5 reference, since a
+    run with a limit lifted reports zero breaches of a limit it no longer has.
+
+    Remedy A, HC1 -> 0.85: leaves S1 at 20.0%, still over, and costs 46, 64 and
+    56 real fatigue breaches. Rejected: it pays a safety cost for no benefit.
+    Removing HC1 entirely moves the rate by +0.2, -0.8 and -0.5 points, so the
+    fatigue limit is not what closes the set and §12 prescribed the wrong knob.
+
+    Remedy B, lifting OP1's heavy skill past the floor: 20.8% in S1, zero
+    breaches, and higher throughput in all three scenarios. Still over the
+    guard, and adopting it would invalidate the 270 runs already reported. Kept
+    as the diagnosis it is (src/crosstraining.py), not applied.
+
+    What actually closes the set is HC3, the ergonomic ceiling (-7.8, -2.8,
+    -6.4 points when removed) and HC2, the competence floor (-4.5, -2.8, -3.4).
+    Relaxing either means allowing genuine ergonomic breaches or placing work
+    below the competence floor, which contradicts what the framework claims.
+
+    Tested and rejected: that the rate reports a thin queue. The median queue
+    at a deferral is 11, 24 and 18 tasks and no deferral in any scenario occurs
+    with two or fewer waiting (results/deferral_queue_depth.csv).
+
+    DECISION: keep the configuration as run. The guard was set to catch the
+    feasible set collapsing; it has not. Throughput holds at 90% (S1) and 98%
+    (S2) of the machine-only baseline with zero breaches, so the deferrals are
+    the framework declining work it cannot place legally rather than a
+    feasibility failure. Reported in §VI Limitations, not silently carried.
 
 
 # =============================================================================

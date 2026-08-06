@@ -521,7 +521,8 @@ def _epoch_loop(env: simpy.Environment, state: ShiftState):
         pending = sum(1 for t in state.queue if t.assigned_operator is None)
         free_op = any(o.available() for o in state.operators.values())
         free_mac = any(m.available() for m in state.machines.values())
-        if pending and free_op and free_mac and not n_assigned:
+        deferred = bool(pending and free_op and free_mac and not n_assigned)
+        if deferred:
             state.deferral_epochs += 1
 
         state.epoch_log.append({
@@ -531,6 +532,10 @@ def _epoch_loop(env: simpy.Environment, state: ShiftState):
             "busy_operators": sum(o.busy for o in state.operators.values()),
             "on_break": on_break,
             "queue_pending": pending,
+            # Recorded so T5.16 can ask not just how often the set closed but
+            # how much work was waiting when it did. A deferral with one task
+            # in the queue and one with twenty are not the same event.
+            "deferred": deferred,
             "completed": len(state.completed),
         })
 

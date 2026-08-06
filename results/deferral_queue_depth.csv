@@ -1,0 +1,4 @@
+scenario,deferral_epochs,median_queue_when_deferred,share_with_two_or_fewer,mean_queue_when_deferred,mean_queue_otherwise
+S1,156.0,11.0,0.0,11.33,35.31
+S2,74.0,24.0,0.0,24.35,64.03
+S3,125.0,18.0,0.0,18.36,50.51

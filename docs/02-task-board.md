@@ -255,10 +255,34 @@
 >
 > ⬜ **තව එකතු කරන්න ඕන (twins ආවම):** fatigue `[0,1]` ද · HC1 කැඩෙනවද ·
 > AWL ට යටින්ද · energy ධනද · CP1–CP5 ක්‍රියාත්මකද.
-| **T5.16** | ★ **GATE 3 carry-over:** `constraint_deferrals` අනුපාතය මනින්න (epochs 640) | `results/feasibility.csv` | 0.5 දින | 🟨 **මැනුවා 08-05 — තීරණය ඉතුරුයි** |
+| **T5.16** | ★ **GATE 3 carry-over:** `constraint_deferrals` අනුපාතය මනින්න (epochs 640) | `results/feasibility.csv` · `deferral_diagnosis.csv` | 0.5 දින | ✅ **08-05 — වැහුවා** |
 
 > ⚠️ **T5.16 (design §12 එකෙන් එනවා):** deferrals **>15%** නම් → HC1 එක 0.85 දක්වා ලිහිල් කරන්න
 > **හෝ** operator profiles සකසන්න. **තීරණය `config.yaml` එකේ ලේඛනගත කරන්න.**
+
+### ✅ T5.16 තීරණය (2026-08-05) — `config.yaml → constraints.deferral_decision_log`
+
+මනින ලද අනුපාත: **S1 24.4% · S2 11.6% · S3 19.5%** ➜ S1, S3 guard එක ඉක්මවනවා.
+**විසඳුම් දෙකම මැනලා**, තවද hard constraint හතරම **එකින් එක ඉවත් කරලා** බැලුවා
+(`src/deferral_diagnosis.py`):
+
+| Constraint ඉවත් කළාම | S1 | S2 | S3 | breaches |
+|---|---|---|---|---|
+| **HC3** ergonomic ceiling | **−7.8** | −2.8 | **−6.4** | ⚠️ 105+ |
+| **HC2** competence floor | **−4.5** | −2.8 | −3.4 | ✅ 0 |
+| HC1 fatigue limit | +0.2 | −0.8 | −0.5 | ⚠️ 161+ |
+| HC4 health floor | 0.0 | 0.0 | 0.0 | ✅ 0 |
+
+> ★★ **§12 වැරදි knob එකක් නිර්දේශ කරලා තිබුණා.** HC1 සම්පූර්ණයෙන් ඉවත් කළත් deferral
+> අනුපාතය **වෙනස් වෙන්නේ නෑ** — set එක වහන්නේ **HC3 සහ HC2**.
+>
+> **තීරණය: configuration එක එහෙමම තියනවා.** Guard එක තිබුණේ feasible set එක **කඩාවැටෙනවද**
+> කියලා අල්ලන්න — ඒක වෙලා නෑ (throughput B2 ගෙන් S1 90%, S2 98%, breaches 0).
+> Deferrals කියන්නේ **නීත්‍යානුකූලව තැබිය නොහැකි වැඩ framework එක ප්‍රතික්ෂේප කිරීමයි**.
+> ➜ **§VI Limitations එකේ ලියනවා** — හංගන්නේ නෑ.
+>
+> 🔬 **පරීක්ෂා කරලා ප්‍රතික්ෂේප කළා:** *"queue එක හිස් නිසා"* — deferral වෙනකොට queue එකේ
+> median tasks **11 / 24 / 18**, tasks 2ක් හෝ අඩුවෙන් තියෙන deferral එකක් **එකක්වත් නෑ**.
 
 > 💡 **T5.11 මුලින්ම කරන්න, T5.12 ඊට පස්සේ.** සරල එක වැඩ කරනවා තහවුරු වුණාට පස්සේ complex එකට යන්න.
 > 💡 **T5.14 override button එක** = human-centricity ඔප්පු කරන ප්‍රායෝගික සාක්ෂිය. අමතක කරන්න එපා.
