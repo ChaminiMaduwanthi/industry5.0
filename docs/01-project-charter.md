@@ -131,12 +131,22 @@ Downtime            = machine නවතින මුළු පැය ගණන
 
 මේ ව්‍යාපෘතිය **සාර්ථකයි** කියන්නේ මේවා තියෙනවා නම්:
 
-- [ ] Layer 5ක architecture diagram එකක් — පැහැදිලිව අඳින ලද
-- [ ] `HumanTwin` class එකක් — variable 4ක්, සංඛ්‍යාත්මකව ක්‍රියාත්මක
-- [ ] Baseline 3 (B1, B2, B3) — 30 replications × 3 scenarios
-- [ ] KPI table එකක් — statistical significance (p < 0.05) සමඟ
-- [ ] Pareto front figure එකක්
+- [x] Layer 5ක architecture diagram එකක් — පැහැදිලිව අඳින ලද ✅ `figures/fig1_architecture.*`
+- [x] `HumanTwin` class එකක් — variable 4ක්, සංඛ්‍යාත්මකව ක්‍රියාත්මක ✅ `src/twins/human_twin.py`
+- [x] Baseline 3 (B1, B2, B3) — 30 replications × 3 scenarios ✅ **runs 270** · `results/raw_results.csv`
+- [x] KPI table එකක් — statistical significance (p < 0.05) සමඟ ✅ `results/kpi_table.md`
+      *(Mann-Whitney U + Cliff's δ + Bonferroni α = 0.0045)*
+- [x] ⚠️ ~~Pareto front figure එකක්~~ → **trade-off figure එකක්** ✅ `figures/fig3_tradeoff.png`
 - [ ] පිටු 6ක paper එකක් — submit කරන ලද
+
+> ⚠️ **නිර්ණායක 5 වෙනස් කළා (2026-08-06) — ඇයි කියලා:**
+> **NSGA-II (T5.12) විෂය පථයෙන් කැපුවා**, ඒ නිසා multi-objective search එකක් run කරලා නෑ —
+> **"Pareto front" එකක් තියෙන්න බෑ**. ඒ වෙනුවට trade-off curve එක **constraint එක සොලවලා**
+> (HC1 = 0.70 / 0.80 / 0.90) අඳිනවා.
+>
+> ★ **ඒක දුර්වල විකල්පයක් නොවේ — වඩා තොරතුරු දායකයි.** Weight sensitivity එකෙන් පෙනුණේ
+> weight configurations **4ම වෙනසක් නෑ** කියලා (§V.E.1) ➜ objective weights දිගේ front එකක්
+> ඇදලා පෙන්නන්නේ **එකම තැන points 3ක්**. විස්තර: [11-design-deviations.md](11-design-deviations.md) D3.
 
 ---
 

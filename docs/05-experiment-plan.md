@@ -11,15 +11,19 @@
 
 | # | අවශ්‍යතාව | Dataset | ප්‍රභවය | ප්‍රමාණය | තත්ත්වය |
 |---|---|---|---|---|---|
-| **D1** | ⚙️ Machine failure | **AI4I 2020 Predictive Maintenance** | UCI ML Repository | 10k rows | ⬜ |
-| **D2** | ⚙️ Degradation / RUL | **NASA C-MAPSS (Turbofan)** | NASA Prognostics Data Repo | ~20k | ⬜ |
-| **D3** | ⚡ බලශක්තිය | **Steel Industry Energy Consumption** | UCI ML Repository | 35k rows | ⬜ |
-| **D4** | 🔍 Quality / defect | **SECOM** | UCI ML Repository | 1.5k × 590 | ⬜ |
-| **D5** | 😴 Stress / fatigue | **WESAD** | UniSiegen (wearables) | 15 subjects | ⬜ |
-| **D6** | 🦴 Activity / posture | **UCI HAR** හෝ **PAMAP2** | UCI ML Repository | 10k | ⬜ |
+| **D1** | ⚙️ Machine failure | **AI4I 2020 Predictive Maintenance** | UCI 601 | 10,000 × 14 | ✅ **භාවිතා කළා** — `L⁰` |
+| **D2** | ⚙️ Degradation / RUL | **NASA C-MAPSS (Turbofan)** | S3 mirror | 13 files | 🟡 බාගත්තා, භාවිතා නෑ |
+| **D3** | ⚡ බලශක්තිය | **Steel Industry Energy Consumption** | UCI 851 | 35,040 × 11 | ✅ **භාවිතා කළා** — `e_idle`, `Δe` |
+| **D4** | 🔍 Quality / defect | **SECOM** | UCI 179 | 1,567 × 591 | ✅ **භාවිතා කළා** — `β₀` |
+| **D5** | 😴 Stress / fatigue | **WESAD** | UniSiegen | 15 subjects | ⛔ **භාවිතා නොකළා** |
+| **D6** | 🦴 Activity / posture | **UCI HAR** හෝ **PAMAP2** | UCI | 10k | ⛔ **භාවිතා නොකළා** |
 
-> 💡 **අවම වශයෙන් D1, D3, D5** තුන ගන්න. අනිත් ඒවා optional.
-> 💡 හැම dataset එකකම **license** එක බලලා data card එකේ ලියන්න.
+> ⛔ **D5, D6 අත්හැරියා (2026-08-05).** D5 ඕන වුණේ λ, μ calibrate කරන්නයි — ඒවා දැන්
+> **calibrated parameters** ලෙස ප්‍රකාශ කරලා **T7.6b sensitivity** එකෙන් ආවරණය කරනවා.
+> D6 (posture) ඕන වුණේ නෑ — RULA base scores design §4.3 එකෙන් එනවා.
+> සම්පූර්ණ හේතු: [10-data-card.md](10-data-card.md) §5.
+>
+> ✅ **License තුනම තහවුරු කර ඇත** (CC BY 4.0) — [10-data-card.md](10-data-card.md) §1.
 
 ### D1–D6 කොහෙන් මොකටද?
 
@@ -86,9 +90,11 @@ D6      →  HumanTwin.ergo_risk     (posture/activity)
 
 ---
 
-## §3 · Data Card (T4.7)
+## §3 · Data Card (T4.7) — ✅ **අවසන්**
 
-සෑම dataset එකකටම මේක පුරවන්න:
+> 👉 **පිරවූ අනුවාදය: [10-data-card.md](10-data-card.md)** — dataset 4කට කාඩ්පත්,
+> licenses තහවුරු කර ඇත (CC BY 4.0 × 3 + public domain), ⚠️ D1 **synthetic** බව සමඟ.
+> පහත ඇත්තේ මුල් **ආකෘතිය** පමණි.
 
 | Field | D1 | D3 | D5 |
 |---|---|---|---|
@@ -120,9 +126,13 @@ D6      →  HumanTwin.ergo_risk     (posture/activity)
 
 | ID | නම | වෙනස |
 |---|---|---|
-| B3a | Proposed (Weighted sum) | සරල optimizer |
-| B3b | Proposed (NSGA-II) | Pareto-optimal |
-| B3c | Proposed + XAI + override | සම්පූර්ණ framework එක |
+| B3a | Proposed (Weighted sum) | සරල optimizer — ✅ **මේක තමයි ලියපු එක** |
+| B3b | Proposed (NSGA-II) | Pareto-optimal — ⛔ **කැපුවා** (T5.12) |
+| B3c | Proposed + XAI + override | සම්පූර්ණ framework එක — ⛔ **කැපුවා** (T5.13, T5.14) |
+
+> ⛔ **B3b සහ B3c ලියලා නෑ.** ඒ නිසා පත්‍රිකාවේ **"Pareto front" කියලා ලියන්න බෑ** —
+> Fig 3 යනු **constraint sweep** එකකි. විස්තර සහ හේතු:
+> [11-design-deviations.md](11-design-deviations.md) D3, D4.
 
 ---
 
@@ -177,6 +187,10 @@ constraint_violations, runtime_sec
 ## §7 · KPI Table (T7.1)
 
 > Paper එකේ **Table II** ලෙස යනවා. මේක තමයි ප්‍රධාන ප්‍රතිඵලය.
+>
+> ✅ **පිරවූ අනුවාදය: [`results/kpi_table.md`](../results/kpi_table.md)** — KPI **11** ×
+> scenario **3**, Mann-Whitney U + Cliff's δ + Bonferroni (α = 0.0045).
+> පහත ඇත්තේ මුල් **ආකෘතිය** පමණි — `[...]` පුරවන්න ඕන නෑ.
 
 ### S1 (Normal) සඳහා
 
@@ -265,6 +279,12 @@ d = (mean(b3) - mean(b2)) / pooled_std
 ## §10 · Sensitivity Analysis (T7.6)
 
 Weight configs 4 (§5 of framework-design) යටතේ B3 run කරලා පෙන්වන්න:
+
+> ✅ **කර ඇත: [`results/sensitivity.csv`](../results/sensitivity.csv)** — ⚠️ **ප්‍රතිඵලය
+> මෙතන අපේක්ෂා කරපු එක නොවේ.** Weight configurations **4ම වෙනසක් නෑ**
+> (mean fatigue 0.541–0.542). හේතුව: hard constraints filter කළාට පස්සේ තීරණවලින්
+> **95.7%ට candidate 0 හෝ 1යි**. විස්තර: `paper/section5-results.md` §E.1.
+> ➜ පහත table එකේ `[...]` **පුරවන්න ඕන නෑ**.
 
 | Config | Fatigue | Energy | Throughput | සටහන |
 |---|---|---|---|---|

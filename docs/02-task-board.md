@@ -69,11 +69,16 @@
 | **T2.5** | Comparison table එක පුරවන්න (paper එකකට පේළියක්) | litreview §3 | 3 දින | ✅ **කණ්ඩායම A (8) · B (44)** |
 | **T2.6** | 🚪 ★ **Gap statement එක ලියන්න** | litreview §4 | 1 දින | ✅ **v2 · citation-backed** |
 | **T2.7** | Related Work කොටසේ **කෙටුම්පත** ලියන්න (පිටු 1) | `paper/section2-related-work.md` | 2 දින | ✅ **≈870 වචන + Table I** |
-| **T2.8** | `references.bib` හදන්න | `paper/references.bib` | — | ✅ **entries 43** |
-| **T2.9** | BibTeX entries metadata තහවුරු කරන්න | `paper/references.bib` | 1 දින | ✅ **39 තහවුරු · 4 `[CHECK]`** |
+| **T2.8** | `references.bib` හදන්න | `paper/references.bib` | — | ✅ **entries 61** |
+| **T2.9** | BibTeX entries metadata තහවුරු කරන්න | `paper/references.bib` | 1 දින | 🟨 **56 තහවුරු · 5 `[CHECK]` ඉතුරු** |
 | **T2.10** | Backward citation chasing — `gaffinet2025hdtslr` reference list (113) | litreview §3 | 1 දින | ✅ **අලුත් 19** |
 
 > ⚠️ **T2.6 එක ඉතාම වැදගත්.** Gap එක පැහැදිලි නැත්නම් paper එක reject වෙනවා.
+>
+> ⛔ **ඉතුරු එකක් තියෙනවා (2026-08-06 audit):** gap statement එකේ **`[N]`** තවම හිස්.
+> ලේඛන 4ක **52 / 47 / 53** කියලා තියෙනවා — ඒවා එකම දේ ගැන නොවේ.
+> **§II හෝ §I ලියන්න කලින්** එක වතාවක් ගණන් කරලා තැන් 5ට එකම අගය දාන්න.
+> විස්තර: [03-literature-review.md](03-literature-review.md) §4 මුල.
 
 ### 📊 Phase 2 ප්‍රගතිය — 2026-08-03 (round 3 · **≈90% අවසන්**)
 
@@ -85,13 +90,13 @@
 - ★ Fatigue model citation — `calzavara2019rest` (λ/μ අපගේ සමීකරණයට හරියටම ගැලපේ)
 - ★ Ethics citation — `cardin2022ethics` (T8.12 එකට)
 - ★★ **`destouet2023survey`** — අපගේ ගැටලු අවකාශයේම survey එක (232 cites)
-- `references.bib` — entries **43** (**39 metadata-verified**, 4 `[CHECK]`)
+- `references.bib` — entries **61** (**56 metadata-verified**, 5 `[CHECK]`)
 - ★ **Related Work කෙටුම්පත ලියා ඇත** — ≈870 වචන + Table I
 
 **⏳ ඉතිරි දේ (ඔබ කරන්න):**
 - කණ්ඩායම B වල `🔎`/`⬜` ඒවා කියවන්න → **10/30 → 30/30** (T2.4)
 - Gap statement + Related Work හි `[N]` අවසන් සංඛ්‍යාව *(දැන් papers **53**)*
-- `[CHECK]` **4ක්** තහවුරු කරන්න: `ma2010muscle`, `aidt2026critical`, `dtcarbon2025`, `xai2026quality`
+- `[CHECK]` **5ක්** තහවුරු කරන්න: `ma2010muscle`, `aidt2026critical`, `dtcarbon2025`, `xai2026quality`, `iso8996`
 - ~~**Destouet et al. (2024)** full-text කියවා Table I පේළිය තහවුරු කරන්න~~ ✅ **අවසන් · 2026-08-04**
 
 ### ✅ T2.4-D · Destouet full-text විශ්ලේෂණය — **අවසන් (2026-08-04)**
@@ -247,14 +252,20 @@
 |---|---|---|---|---|
 | **T5.13** | SHAP integration — AI තීරණය පැහැදිලි කිරීම (XAI) | `src/decision/explain.py` | 1 දින | ⬜ |
 | **T5.14** | ★ Streamlit dashboard + **operator override button** | `src/dashboard/app.py` | 2 දින | ⬜ |
-| **T5.15** | 🚪 Unit tests + sanity checks (fatigue 0–1 අතරද? energy ධනද?) | `tests/` | 1 දින | 🟨 **පටන් ගත්තා 08-05** |
+| **T5.15** | 🚪 Unit tests + sanity checks (fatigue 0–1 අතරද? energy ධනද?) | `tests/` | 1 දින | ✅ **08-06 — 🚪 GATE 4 පසුයි** |
 
 > 🟨 **T5.15 කලින්ම පටන් ගත්තා** — `tests/test_invariants.py` (checks 124, ඔක්කොම pass).
 > **හේතුව:** T5.4 එකේ **HC4 ක්‍රියාත්මක වෙලාම නැති bug එකක්** තිබුණා, සහ ඒක **ප්‍රතිඵල දිහා
 > බැලුවම පේන්නේ නෑ** — invariant test එකකින් විතරයි අල්ලුනේ. *(worklog බලන්න.)*
 >
-> ⬜ **තව එකතු කරන්න ඕන (twins ආවම):** fatigue `[0,1]` ද · HC1 කැඩෙනවද ·
-> AWL ට යටින්ද · energy ධනද · CP1–CP5 ක්‍රියාත්මකද.
+> ✅ **GATE 4 පසුයි (2026-08-06).** ඉල්ලපු invariants **5ම** test කරලා:
+> fatigue `[0,1]` · HC1 කැඩෙනවද · AWL · energy ධනද · CP1–CP5.
+> **Test files 11 · tests 256 · ඔක්කොම pass.**
+>
+> ★ **මේ tests තමන්ගේම වැරදි 6ක් අල්ලලා තියෙනවා** — KPI % දෙකක්, weight-sensitivity
+> rogue diagnosis එකක්, `<=` වලින් කිසිවක් නොසෙල්වුණත් pass වුණ test එකක්, ablation
+> එකේ health timing එකක්, HC1 threshold yardstick එකක්, සහ decision probe එකක්.
+> විස්තර: `docs/09-worklog.md`.
 | **T5.16** | ★ **GATE 3 carry-over:** `constraint_deferrals` අනුපාතය මනින්න (epochs 640) | `results/feasibility.csv` · `deferral_diagnosis.csv` | 0.5 දින | ✅ **08-05 — වැහුවා** |
 
 > ⚠️ **T5.16 (design §12 එකෙන් එනවා):** deferrals **>15%** නම් → HC1 එක 0.85 දක්වා ලිහිල් කරන්න

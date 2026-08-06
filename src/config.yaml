@@ -398,18 +398,33 @@ objective:
 # =============================================================================
 #  11 · NORMALIZATION  (design §6)  — leakage-free protocol
 # =============================================================================
-#  x_hat = clip((x - x_min) / (x_max - x_min), 0, 1)
-#  Bounds come from B1 calibration runs on a SEPARATE seed block, then frozen.
+#  The design specifies x_hat = clip((x - x_min)/(x_max - x_min), 0, 1) with the
+#  bounds fitted from B1 calibration runs on a seed block held apart from the
+#  evaluation seeds, so that no evaluation data reaches the decision rule.
+#
+#  *** THAT CALIBRATION IS NOT RUN, AND IS NOT NEEDED. See docs/11-design-
+#  deviations.md D1. Recorded here rather than left as dead configuration with
+#  null bounds, which read as "unfinished" instead of "not required". ***
+#
+#  Two reasons. Every term in the decision rule is bounded on [0,1] by
+#  construction — normalised fatigue already is, RULA maps through (r-1)/6,
+#  defect risk is a probability, and energy and time divide by that epoch's own
+#  maximum — so there is no fitted scale to supply. And Table II reports natural
+#  units (kWh, units, RULA 1-7), so reporting needs none either.
+#
+#  This is stronger than the protocol it replaces: §6 exists to keep evaluation
+#  data out of the decision, and nothing is fitted at all. Feeding B1-fitted
+#  bounds into the rule that generates the B1 runs would have been circular.
 normalization:
-  method: minmax_p5_p95           # [FROZEN] P5/P95, not min/max (outlier-robust)
-  calibration_seeds: [100, 129]   # [FROZEN] calibration block
-  evaluation_seeds: [0, 29]       # [FROZEN] evaluation block — must not overlap
-  bounds:                         # filled by the calibration run, then frozen
-    energy_kwh: {p5: null, p95: null}
-    waste: {p5: 0.0, p95: null}
-    throughput: {p5: null, p95: null}
-  fixed_bounds:
+  applies: false                  # see above; kept so the omission is explicit
+  design_reference: "docs/04-framework-design.md §6"
+  deviation_reference: "docs/11-design-deviations.md D1"
+  fixed_bounds:                   # used for reporting only, never fitted
     ergonomic_rula: {min: 1, max: 7}
+
+# The evaluation seed block the design asks for IS honoured — run_experiments.py
+# uses seeds 0..29 (experiment.seeds below), and nothing is fitted on any block.
+evaluation_seeds: [0, 29]         # [FROZEN]
 
 
 # =============================================================================

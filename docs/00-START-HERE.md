@@ -7,14 +7,14 @@
 ## ⚡ 0. දැන් තියෙන තැන — විනාඩි 1කින්
 
 ```
-Phase 1  ████████████████████  ✅  6/6    🚪 GATE 1 පසුයි
-Phase 2  ██████████████████░░  🟨  8/10   (papers කියවීම ඉතුරුයි — හදිසි නෑ)
-Phase 3  ████████████████████  ✅  10/10  🚪 GATE 3 පසුයි — DESIGN FROZEN
-Phase 4  ████████████████████  ✅  7/7    දත්ත සූදානම්
-Phase 5  █████████████░░░░░░░  🟨  11/16  (T5.5/5.6/5.12 කැපිය හැක · T5.13/5.14 ඉතුරු)
-Phase 6  █████████████████░░░  🟨  6/7    ★ runs 270 ✅  ප්‍රතිඵල තියෙනවා
-Phase 7  ██████████████████░░  🟨  8/9    (T7.5 dashboard පමණයි)
-Phase 8  ░░░░░░░░░░░░░░░░░░░░  ⬜  0/15   ← ★ දැන් මෙතන
+Phase 1  ████████████████████  ✅  6/6     🚪 GATE 1 පසුයි
+Phase 2  ██████████████░░░░░░  🟨  7/10    (⛔ [N] + [CHECK] 5 ඉතුරු — §II ලියන්න කලින්)
+Phase 3  ████████████████████  ✅  10/10    🚪 GATE 3 පසුයි — DESIGN FROZEN
+Phase 4  ████████████████████  ✅  7/7     දත්ත සූදානම්
+Phase 5  ██████████████░░░░░░  🟨  11/16    🚪 GATE 4 පසුයි · NSGA-II/SHAP/dashboard කැපුවා
+Phase 6  █████████████████░░░  🟨  6/7     ★ runs 270 ✅  reproducible
+Phase 7  ██████████████████░░  🟨  8/9     (T7.5 dashboard පමණයි)
+Phase 8  ░░░░░░░░░░░░░░░░░░░░  ⬜  0/15    ← ★ දැන් මෙතන
                                   ──────
                                   55/80
 ```
@@ -64,7 +64,8 @@ Phase 8  ░░░░░░░░░░░░░░░░░░░░  ⬜  0/15
 | **[08-competitor-destouet.md](08-competitor-destouet.md)** ★ | Phase 2, 8 | ළඟම තරඟකරුවා + **§III එකට ready-to-paste ඡේදය** |
 | **[04-framework-design.md](04-framework-design.md)** ★ | 🔒 **FROZEN** | Architecture, සමීකරණ, constraints — **structure වෙනස් කරන්න එපා** |
 | [05-experiment-plan.md](05-experiment-plan.md) | ★ | Datasets, baselines, KPIs, statistics |
-| **[10-data-card.md](10-data-card.md)** 🆕 | Phase 4, 8 | මොන දත්තද, කොහෙන්ද, **license** එක · ⚠️ D1 synthetic බව |
+| **[10-data-card.md](10-data-card.md)** | Phase 4, 8 | මොන දත්තද, කොහෙන්ද, **license** එක · ⚠️ D1 synthetic බව |
+| **[11-design-deviations.md](11-design-deviations.md)** 🆕 ★ | **Phase 8** | ⚠️ **Design එකෙන් අයිනට ගිය තැන් 9** — §VI එකට අනිවාර්ය |
 | **`../src/config.yaml`** ★★ | **හැම දාම** | **Parameters සියල්ල.** Code එකේ අගයක් hard-code කරන්න එපා |
 | [06-paper-outline.md](06-paper-outline.md) | සති 12–13 | Paper එක ලියන හැටි |
 | [07-glossary.md](07-glossary.md) | ඕනෑම වෙලාවක | තේරෙන්නේ නැති වචන |
@@ -103,7 +104,7 @@ Phase 8  ░░░░░░░░░░░░░░░░░░░░  ⬜  0/15
 | 🚪 1 | T1.6 | Charter එකට supervisor අනුමැතිය | ✅ **2026-08-03** |
 | 🚪 2 | T2.6 | **Gap statement** — සංඛ්‍යා සමඟ | ✅ v2 ලියා ඇත |
 | 🚪 3 | T3.8 | **Design freeze** | ✅ **2026-08-04** |
-| 🚪 4 | T5.15 | **Tests pass** — code එක හරියට වැඩ කරනවා | ⬜ |
+| 🚪 4 | T5.15 | **Tests pass** — code එක හරියට වැඩ කරනවා | ✅ **2026-08-06 · 256 pass** |
 | 🚪 5 | T8.15 | **Submit** 🎉 | ⬜ |
 
 > ⚠️ **Supervisor sign-off ගැන:** topic එක supervisor විසින්ම පවරන ලද බැවින්, වෙනම ලිඛිත අනුමැතියක්
@@ -145,8 +146,14 @@ Phase 8  ░░░░░░░░░░░░░░░░░░░░  ⬜  0/15
 > quality/OEE වැඩි වුණා කියන්න එපා · **"Pareto front" කියන්න එපා** ·
 > workload ප්‍රතිඵලය අත්හරින්න එපා.
 
-> ⚠️ **§VI Limitations එකට අනිවාර්ය 3:** ① λ, μ calibrated ② β₂, β₃ fit කරන්න බැරි
-> ③ deferral rate 15% guard එක ඉක්මවනවා (S1 24%, S3 19%) — **ඇයි කියලා එක්කම**.
+> ⚠️ **§VI Limitations එකට අනිවාර්ය 8ක්** → [11-design-deviations.md](11-design-deviations.md) §4.
+> ප්‍රධාන ඒවා: λ, μ calibrated · β₂, β₃ fit කරන්න බැරි · deferral 15% guard ඉක්මවනවා ·
+> **NSGA-II, L5 explainability, ML models තුනම කැපුවා**.
+
+> ⛔ **§II / §I ලියන්න කලින් විසඳන්නම ඕන එකක්:** gap statement එකේ **`[N]`** තවම හිස්
+> (*"Of [N] studies reviewed, none…"*). ලේඛන 4ක **52 / 47 / 53** කියලා තියෙනවා —
+> ඒවා **එකම දේ ගැන නොවේ**. විනාඩි 10ක ගණන් කිරීමක්:
+> [03-literature-review.md](03-literature-review.md) §4 මුල බලන්න.
 
 ---
 

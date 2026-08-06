@@ -340,11 +340,41 @@ Round 1 (papers 33) සහ full-text කියවූ 3 මත පදනම්ව
 > 🎯 **පැහැදිලි රටාව:** **එකම column එකක්වත් සම්පූර්ණ නෑ.**
 > Digital twin තියෙන අයට fatigue නෑ. Fatigue තියෙන අයට digital twin නෑ. **කාටවත් sustainability නෑ.**
 
+### ⛔ **විසඳන්නම ඕන — `[N]` (2026-08-06 audit)**
+
+> **මේක paper එකේ මූලික වාක්‍යයේ සංඛ්‍යාවයි:** *"Of `[N]` studies reviewed, **none** couple
+> a quantified human twin, a machine twin and measured sustainability objectives."*
+> **වැරදුනොත් reviewer කෙනෙක්ට ගණන් කරලා අල්ලන්න පුළුවන්.**
+
+**දැනට ලේඛන 4ක සංඛ්‍යා 3ක් තියෙනවා — ඒවා එකම දේ ගැන නොවේ:**
+
+| සංඛ්‍යාව | කොහෙද | ඇත්තටම ගණන් කරන්නේ |
+|---|---|---|
+| **52** | task board · litreview §1 round 3 | Round 3 metadata verification එකේදී bib එකේ තිබූ **screened papers** |
+| **47** | මේ table එක (පහත) | **කණ්ඩායම B** හි comparison rows — 2026-08-06 දින ගණන් කළා: **හරියටම 47** ✅ |
+| **53** | README · task board පේළිය | Destouet 2026 **එකතු කළාට පස්සේ** මුළු එකතුව |
+
+**➜ තීරණය ගන්න ඕන එකම දේ:** `[N]` යනු **තුන් නිර්ණායකයට එරෙහිව ඇගයූ studies ගණන** විය යුතුයි
+— එනම් **කණ්ඩායම A ∪ කණ්ඩායම B** (A = ළඟම competitors, B = පුළුල් සමීක්ෂණය).
+ඒ දෙක අතර **අතිච්ඡාදනයක් තියෙනවද** කියන එක අතින් බලලා **එක වතාවක්** ගණන් කරන්න.
+
+```
+⏱️ විනාඩි 10යි.  ගණන් කරලා ඒ එකම සංඛ්‍යාව මේ තැන් 5 ට දාන්න:
+   1. මේ table එකේ  [final]
+   2. Gap statement v2 හි  [N]  (තැන් 2ක)
+   3. paper/section2-related-work.md
+   4. README.md §6
+   5. docs/02-task-board.md
+```
+
+> ⚠️ **මම මේක අනුමානයෙන් පුරවලා නෑ.** 52/47/53 තුනෙන් එකක් තෝරලා දැම්මොත් ඒක
+> **ගණන් කිරීමක් නොව අනුමානයක්** — සහ ඒක තමයි මේ ලේඛනයේම §4 එකේ අපි විවේචනය කරන දේ.
+
 ### 📊 අවසන් සංඛ්‍යා (T2.4 සම්පූර්ණ වූ පසු පුරවන්න)
 
 | ප්‍රශ්නය | Paper ගණන |
 |---|---|
-| මුළු papers (N) | `[final]` *(දැනට: **47**)* |
+| මුළු papers (N) | `[final]` *(⛔ ඉහත බලන්න — කණ්ඩායම B = **47** තහවුරු)* |
 | Machine DT ✅ | `[X]` |
 | Human-side model කිසියම් ආකාරයක ✅ | `[Y]` |
 | ★ Human state **quantified & decision-coupled** ✅ | `[Z]` *(දැනට හඳුනාගත්තේ: **1** — Tan et al.)* |

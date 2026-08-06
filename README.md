@@ -33,7 +33,7 @@
 | ✍️ [docs/06-paper-outline.md](docs/06-paper-outline.md) | Paper එකේ ව්‍යුහය + ලිවීමේ අනුපිළිවෙල | Phase 8 |
 | 📖 [docs/07-glossary.md](docs/07-glossary.md) | තාක්ෂණික වචන — සිංහලෙන් සරලව | ඕනෑම වෙලාවක |
 | 🎯 **[docs/08-competitor-destouet.md](docs/08-competitor-destouet.md)** | **ළඟම තරඟකරුවා** — full-text විශ්ලේෂණය + §III එකට ready-to-paste ඡේදය | Phase 2, 8 |
-| 📗 [paper/references.bib](paper/references.bib) | BibTeX library — entries 43 (39 verified) | Phase 2, 8 |
+| 📗 [paper/references.bib](paper/references.bib) | BibTeX library — entries 61 ([CHECK] 7 ඉතුරු) | Phase 2, 8 |
 | ✍️ [paper/section2-related-work.md](paper/section2-related-work.md) | **§II Related Work කෙටුම්පත** + Table I | Phase 2, 8 |
 
 ---
@@ -74,8 +74,15 @@ ICARC/
 | 1 | පදනම හදාගැනීම | ✅ **අවසන් · GATE 1 පසුයි (2026-08-03)** |
 | 2 | Literature Review | 🟨 **≈92% — papers 53, කියවා 10, gap v2 ✅, Related Work ✅, ★ Destouet full-text ✅ (2026-08-04)** |
 | 3 | Framework Design ★ | ✅ **අවසන් · 🚪 GATE 3 පසුයි (2026-08-04) — DESIGN FROZEN** |
-| 4 | දත්ත සකසාගැනීම | 🟨 **ඊළඟට මේක** |
-| 5 | Implementation | ⬜ නොපටන් ගත් |
-| 6 | Experiments | ⬜ නොපටන් ගත් |
-| 7 | ප්‍රතිඵල විශ්ලේෂණය | ⬜ නොපටන් ගත් |
-| 8 | Paper ලිවීම | ⬜ නොපටන් ගත් |
+| 4 | දත්ත සකසාගැනීම | ✅ **අවසන් (2026-08-05)** — D1/D3/D4 · data card · licenses තහවුරු |
+| 5 | Implementation | 🟨 **11/16** — twins, coupling, decision layer, tests 256 ✅ · NSGA-II/SHAP/dashboard **කැපුවා** |
+| 6 | Experiments | ✅ **runs 270** (3 × 3 × 30) · reproducible |
+| 7 | ප්‍රතිඵල විශ්ලේෂණය | ✅ **8/9** — Table II · figures 2 · sensitivity 3 · ablation · §V draft |
+| 8 | Paper ලිවීම | ⬜ **← දැන් මෙතන** (0/15) |
+
+**ප්‍රධාන ප්‍රතිඵලය (S2 high-demand, B3 vs B2):** mean fatigue **−27.0%** · energy/unit **−30.8%** ·
+constraint breaches **79.5 → 0** · throughput **−1.8% (p = 0.148, සැලකිය යුතු නොවේ)**
+
+> ⚠️ **Design එකෙන් අයිනට ගිය තැන් 9ක්** ලේඛනගත කර ඇත →
+> [docs/11-design-deviations.md](docs/11-design-deviations.md). ලොකුම 3:
+> **NSGA-II · L5 explainability · XGBoost models — තුනම කැපුවා**, තුනම §VI එකට යා යුතුයි.

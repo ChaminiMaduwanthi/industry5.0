@@ -31,7 +31,7 @@
 | 2. Related Work | 1.00 | 800 |
 | 3. **Proposed Framework** ★ | 1.75 | 1,200 + Fig 1, 2 |
 | 4. Implementation & Setup | 0.75 | 500 + Table I |
-| 5. **Results & Discussion** ★ | 1.25 | 900 + Table II, Fig 3–5 |
+| 5. **Results & Discussion** ★ | 1.25 | 900 + Table II, Fig 3–4 *(Fig 5 dashboard **කැපුවා**)* |
 | 6. Limitations & Future Work | 0.25 | 200 |
 | 7. Conclusion | 0.25 | 200 |
 | References | (ඉතිරිය) | 30–35 refs |
@@ -124,7 +124,7 @@
 | § | මාතෘකාව | Figure/Table |
 |---|---|---|
 | V-A | Overall KPI comparison | **Table II** |
-| V-B | ★ Trade-off analysis | **Fig. 3** (Pareto front) |
+| V-B | ★ Trade-off analysis | **Fig. 3** (constraint sweep — ⛔ Pareto front **නොවේ**) |
 | V-C | Scenario-wise behaviour (විශේෂයෙන් S2 high-demand) | **Fig. 5** |
 | V-D | Sensitivity to objective weights | Table III |
 | V-E | Explainability & operator oversight | **Fig. 6** |
