@@ -19,14 +19,14 @@
   <text x="146" y="92" font-size="13.5" font-weight="bold" fill="#111">L5 · HUMAN INTERFACE LAYER</text>
   <text x="146" y="112" font-size="11.5" fill="#222">Real-time twin dashboard   ·   Explainable AI (SHAP): "why this assignment?"</text>
   <text x="146" y="130" font-size="11.5" fill="#222">Operator OVERRIDE — the final decision remains with the human</text>
-  <text x="146" y="152" font-size="11" font-style="italic" fill="#666">human-in-command, not human-in-the-loop</text>
+  <text x="146" y="152" font-size="11" font-style="italic" fill="#666">human-in-command, not human-in-the-loop   —   specified; NOT implemented in this study</text>
 
   <!-- ================= L4 ================= -->
   <rect x="120" y="182" width="700" height="96" fill="#eaeaea" stroke="#111" stroke-width="1.6" rx="4"/>
   <rect x="120" y="182" width="10" height="96" fill="#111"/>
   <text x="146" y="204" font-size="13.5" font-weight="bold" fill="#111">L4 · DECISION &amp; OPTIMISATION LAYER</text>
-  <text x="146" y="224" font-size="11.5" fill="#222">Hard-constraint feasibility filter (HC1–HC4)   →   NSGA-II multi-objective search</text>
-  <text x="146" y="242" font-size="11.5" fill="#222">Objective  Z = w₁F̂ + w₂R̂ + w₃Ê + w₄Ŵ − w₅T̂        (People · Planet · Profit)</text>
+  <text x="146" y="224" font-size="11.5" fill="#222">Hard-constraint feasibility filter (HC1–HC4)   →   weighted-sum selection</text>
+  <text x="146" y="242" font-size="11.5" fill="#222">Objective  Z = w1F + w2R + w3E + w4W − w5T    (normalised terms · People · Planet · Profit)</text>
   <text x="146" y="264" font-size="11" font-style="italic" fill="#666">decision epoch = 15 min</text>
 
   <!-- ================= L3 ================= -->
@@ -84,9 +84,6 @@
 
   <line x1="842" y1="86" x2="842" y2="690" stroke="#444" stroke-width="1.5"/>
   <text x="856" y="400" font-size="11" fill="#444" text-anchor="middle" transform="rotate(90 856 400)">decision / actuation flow  ↓</text>
-
-  <text x="470" y="730" text-anchor="middle" font-size="10.5" fill="#666">Fig. 1.  Five-layer reference architecture. The novelty is L3: a machine twin and a quantified, personalised</text>
-  <text x="470" y="746" text-anchor="middle" font-size="10.5" fill="#666">human twin exchanging state bidirectionally, both feeding a single constrained multi-objective decision layer.</text>
   <!-- explicit arrowheads (renderer-independent) -->
   <polygon points="516.0,388.0 507.0,392.2 507.0,383.8" fill="#111"/>
   <polygon points="424.0,430.0 433.0,425.8 433.0,434.2" fill="#111"/>

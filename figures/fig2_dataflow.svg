@@ -24,7 +24,7 @@
     <rect x="546" y="46" width="150" height="34" fill="#eaeaea" stroke="#111" stroke-width="1.4" rx="3"/>
     <text x="621" y="68" text-anchor="middle">L4 Optimiser</text>
     <rect x="762" y="46" width="150" height="34" fill="#f4f4f4" stroke="#111" stroke-width="1.4" rx="3"/>
-    <text x="837" y="68" text-anchor="middle">L5 Operator</text>
+    <text x="837" y="68" text-anchor="middle">L5 Operator *</text>
   </g>
 
   <!-- lifelines -->
@@ -69,12 +69,12 @@
   <rect x="536" y="372" width="170" height="86" fill="#eaeaea" stroke="#111" stroke-width="1.6" rx="3"/>
   <text x="621" y="391" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#111">7  decide</text>
   <text x="546" y="410" font-size="10" fill="#222">filter HC1–HC4  (hard)</text>
-  <text x="546" y="427" font-size="10" fill="#222">NSGA-II on feasible set</text>
-  <text x="546" y="444" font-size="10" fill="#222">select by w₁…w₅</text>
+  <text x="546" y="427" font-size="10" fill="#222">weighted sum on feasible set</text>
+  <text x="546" y="444" font-size="10" fill="#222">select by w1…w5</text>
 
   <!-- to operator -->
   <line x1="621" y1="484" x2="837" y2="484" stroke="#111" stroke-width="1.5"/>
-  <text x="729" y="478" text-anchor="middle" font-size="10.5" fill="#111">8  allocation + SHAP reason</text>
+  <text x="729" y="478" text-anchor="middle" font-size="10.5" fill="#111">8  allocation + explanation</text>
   <line x1="837" y1="518" x2="621" y2="518" stroke="#111" stroke-width="1.8"/>
   <text x="729" y="512" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#111">9  accept  /  OVERRIDE</text>
 
@@ -92,23 +92,21 @@
 
   <g font-size="10.5" fill="#222">
     <text x="44"  y="650">CP1</text><text x="86" y="650">skill → quality</text>
-    <text x="250" y="650" font-style="italic">defect risk rises as skill falls:   term  β₂(1 − Ŝ_h,t)  in  Q_m</text>
+    <text x="250" y="650" font-style="italic">defect risk rises as skill falls:   term  β2(1 − S_h,t) (normalised)  in  Q_m</text>
     <text x="44"  y="672">CP2</text><text x="86" y="672">fatigue → quality</text>
-    <text x="250" y="672" font-style="italic">a tired operator produces more scrap:   term  β₃F̂_h  in  Q_m</text>
+    <text x="250" y="672" font-style="italic">a tired operator produces more scrap:   term  β3 F_h (normalised)  in  Q_m</text>
     <text x="44"  y="694">CP3</text><text x="86" y="694">health → cognition</text>
-    <text x="250" y="694" font-style="italic">a degraded machine demands attention:   term  γ₁(1 − H_m)  in  C_h</text>
+    <text x="250" y="694" font-style="italic">a degraded machine demands attention:   term  γ1(1 − H_m)  in  C_h</text>
     <text x="44"  y="716">CP4</text><text x="86" y="716">intensity → fatigue</text>
     <text x="250" y="716" font-style="italic">heavier task raises the fatigue asymptote:   E′_w(task)  in  F_h</text>
     <text x="44"  y="738">CP5</text><text x="86" y="738">speed → ergonomics</text>
-    <text x="250" y="738" font-style="italic">faster machine worsens posture / safety margin:   term  ψ₂v̂_m  in  R_h</text>
+    <text x="250" y="738" font-style="italic">faster machine worsens posture / safety margin:   term  ψ2 v_m (normalised)  in  R_h</text>
   </g>
   <text x="700" y="650" font-size="10" fill="#666">CP1, CP2:  H-DT → M-DT</text>
   <text x="700" y="672" font-size="10" fill="#666">CP3, CP4, CP5:  M-DT → H-DT</text>
   <text x="700" y="700" font-size="10" font-style="italic" fill="#666">Removing all five reduces the</text>
   <text x="700" y="716" font-size="10" font-style="italic" fill="#666">framework to two independent</text>
   <text x="700" y="732" font-size="10" font-style="italic" fill="#666">static parameter sets.</text>
-
-  <text x="480" y="786" text-anchor="middle" font-size="10.5" fill="#666">Fig. 2.  One decision epoch. Steps 3 and 4 are the bidirectional exchange that distinguishes this framework from static human-aware scheduling.</text>
   <!-- explicit arrowheads (renderer-independent) -->
   <polygon points="260.0,110.0 251.0,114.2 251.0,105.8" fill="#111"/>
   <polygon points="426.0,140.0 417.0,144.2 417.0,135.8" fill="#111"/>
@@ -119,4 +117,5 @@
   <polygon points="837.0,484.0 828.0,488.2 828.0,479.8" fill="#111"/>
   <polygon points="621.0,518.0 630.0,513.8 630.0,522.2" fill="#111"/>
   <polygon points="94.0,562.0 103.0,557.8 103.0,566.2" fill="#111"/>
+<text x="480" y="786" text-anchor="middle" font-size="10.5" fill="#666">* L5 is specified in the architecture but is not implemented in this study (steps 8 and 9).</text>
 </svg>
