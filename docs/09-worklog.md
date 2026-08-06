@@ -461,8 +461,14 @@ S3: B2 0.653  →  B3 0.665   (+1.8%)
 [ok] ★ එකම seed → එකම ප්‍රතිඵලය
 
   run 1 hash : d0e7ba3b70e756f1b18699de22acad05
-  run 2 hash : d0e7ba3b70e756f1b18699de22acad05   →  BYTE-IDENTICAL ✅
+  run 2 hash : d0e7ba3b70e756f1b18699de22acad05   →  සමානයි ✅
 ```
+
+> ⚠️ **නිවැරදි කිරීමක් (Session 12 එකේදී අහුවුණා):** *"BYTE-IDENTICAL"* කියන වචනය
+> **ලිපිගොනුවට** අදාළ නෑ — `runtime_sec` column එක wall-clock එකක් නිසා run එකින් එකට
+> වෙනස් වෙනවා. **ප්‍රතිඵල columns 38ම** සමානයි, සහ `tests/test_experiment_runner.py`
+> එකේ reproducibility test එක `runtime_sec` **හරියටම බැහැර කරනවා** — ඒ නිසා
+> පරීක්ෂාව නිවැරදියි, **ප්‍රකාශය පමණයි නිරවද්‍ය නොවුණේ**.
 
 > 270 runs **තත්පර 9.5යි** (එකකට 35ms) ➜ sensitivity, ablation ඔක්කොම **ලාභයි**.
 

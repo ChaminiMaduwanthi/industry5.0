@@ -80,9 +80,9 @@ block, divided by the 32 epochs in a shift; `results/feasibility.csv` gives
 >
 > **Because the framework models both the equipment and the person, it can
 > localise this and quantify the intervention.** Raising that single skill past
-> the competence floor closed 61–70% of the distribution gap in every scenario
-> and increased throughput in every scenario (+2.0 to +4.9 units), with
-> constraint breaches remaining at zero.
+> the competence floor closed roughly two thirds of the distribution gap in
+> every scenario (60.7%, 66.6% and 69.5%) and increased throughput in every
+> scenario (+2.0 to +4.9 units), with constraint breaches remaining at zero.
 >
 > This extends the framework's use beyond scheduling: the same twin that
 > allocates work can answer *which competence gap is costing the most*. A
