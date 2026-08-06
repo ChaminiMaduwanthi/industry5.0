@@ -179,9 +179,9 @@ def table(doc, header, rows, widths=None, head_fill="1F4E79"):
 
 
 # =============================================================================
-#  the ten steps
+#  the ten steps — Sinhala
 # =============================================================================
-def build() -> Document:
+def build_si() -> Document:
     doc = Document()
     s = doc.sections[0]
     s.left_margin = s.right_margin = Inches(0.9)
@@ -479,11 +479,373 @@ def build() -> Document:
     return doc
 
 
+# =============================================================================
+#  the ten steps — English
+# =============================================================================
+EN = "Segoe UI"
+
+
+def build_en() -> Document:
+    doc = Document()
+    s = doc.sections[0]
+    s.left_margin = s.right_margin = Inches(0.9)
+    s.top_margin = s.bottom_margin = Inches(0.8)
+
+    def P(text="", **kw):
+        kw.setdefault("font", EN)
+        return para(doc, text, **kw)
+
+    def H(number, text):
+        p = doc.add_paragraph()
+        p.paragraph_format.space_before = Pt(16)
+        p.paragraph_format.space_after = Pt(6)
+        style_run(p.add_run(f"{number}   "), EN, 16, True, color=ACCENT)
+        style_run(p.add_run(text), EN, 15, True, color=ACCENT)
+        bar = doc.add_paragraph()
+        bar.paragraph_format.space_after = Pt(8)
+        pbdr = OxmlElement("w:pBdr")
+        bottom = OxmlElement("w:bottom")
+        bottom.set(qn("w:val"), "single")
+        bottom.set(qn("w:sz"), "6")
+        bottom.set(qn("w:color"), "1F4E79")
+        pbdr.append(bottom)
+        bar._p.get_or_add_pPr().append(pbdr)
+
+    def S(text):
+        return para(doc, text, size=12, bold=True, space_after=4, font=EN)
+
+    def B(lines, fill="EAF2FA", color=ACCENT, size=11):
+        for i, line in enumerate(lines):
+            p = doc.add_paragraph()
+            p.paragraph_format.left_indent = Inches(0.12)
+            p.paragraph_format.right_indent = Inches(0.12)
+            p.paragraph_format.space_before = Pt(8 if i == 0 else 0)
+            p.paragraph_format.space_after = Pt(8 if i == len(lines) - 1 else 2)
+            style_run(p.add_run(line), EN, size, bold=(i == 0), color=color)
+            shade(p, fill)
+
+    def T(header, rows, widths=None):
+        t = table(doc, header, rows, widths)
+        for row in t.rows:
+            for c in row.cells:
+                for p in c.paragraphs:
+                    for r in p.runs:
+                        if r.font.color and r.font.color.rgb == RGBColor(
+                                0xFF, 0xFF, 0xFF):
+                            style_run(r, EN, 10, True,
+                                      color=RGBColor(0xFF, 0xFF, 0xFF))
+                        else:
+                            style_run(r, EN, 10)
+        return t
+
+    # ---- title ----------------------------------------------------------
+    t = doc.add_paragraph()
+    t.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    t.paragraph_format.space_after = Pt(2)
+    style_run(t.add_run("My Research — From the Beginning"), EN, 22, True,
+              color=ACCENT)
+    st = doc.add_paragraph()
+    st.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    st.paragraph_format.space_after = Pt(2)
+    style_run(st.add_run("A digital twin framework that models the machine and "
+                         "the person together, for Industry 5.0"), EN, 12,
+              color=MUTED)
+    a = doc.add_paragraph()
+    a.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    a.paragraph_format.space_after = Pt(14)
+    style_run(a.add_run("Chamini Maduwanthi   ·   explained in ten steps"),
+              EN, 10.5, italic=True, color=MUTED)
+
+    B(["Who is this for?",
+       "Anyone with no background in computing or industrial engineering. "
+       "Read the ten steps in order; each one builds on the last."])
+
+    # ---- 1 ---------------------------------------------------------------
+    H("1", "What is the problem?")
+    P("Picture a small factory. Five machines. Three workers.")
+    P("Every fifteen minutes, somebody has to make a decision:")
+    B(["“This new job — who should do it, and on which machine?”"],
+      fill="F4F4F2", color=INK)
+    P("It sounds simple. But that single decision settles three things at once:")
+    code(doc, ["PEOPLE   how tired that person becomes",
+               "PLANET   how much electricity is used, how much is wasted",
+               "PROFIT   how much gets produced"])
+    B(["Today's scheduling systems look at the third one only — output.",
+       "They do not look at the person at all."], fill="FDEEEA", color=WARN)
+
+    S("Why fifteen minutes?")
+    P("Think of checking a pot of rice. Every ten seconds is wasted effort — "
+      "nothing has changed. Once an hour and it has burnt. Every ten or "
+      "fifteen minutes is about right.")
+    P("The factory is the same. A job takes eight to eighteen minutes, and "
+      "tiredness takes about fifteen minutes to change noticeably. Deciding "
+      "every minute would be pointless; deciding once an hour would mean "
+      "somebody passes their limit and nobody notices until far too late.",
+      space_after=4)
+    P("An eight-hour shift is 480 minutes. 480 ÷ 15 = 32 decisions per day.",
+      italic=True, color=MUTED)
+
+    # ---- 2 ---------------------------------------------------------------
+    H("2", "Industry 4.0 and Industry 5.0")
+    T(["", "The idea"],
+      [["Industry 4.0", "“Automate everything, make it faster.” — efficiency"],
+       ["Industry 5.0", "“Fine… but who is it for? Is it good for the person? "
+                        "For the planet?”"]],
+      widths=[1.3, 5.0])
+    P("The European Commission's official definition gives Industry 5.0 three "
+      "pillars: people, sustainability and resilience.")
+    B(["An analogy",
+       "Industry 4.0 = the fastest car.",
+       "Industry 5.0 = a fast car that is also safe for the driver and uses "
+       "less fuel."])
+
+    # ---- 3 ---------------------------------------------------------------
+    H("3", "What is a digital twin?")
+    B(["A live computer copy of something real."])
+    code(doc, ["the real machine   <-->   its copy inside the computer",
+               "                          (updated constantly from sensors)"])
+    P("Example: the battery indicator on your phone. That is a digital twin of "
+      "the battery — the real battery's state, shown on screen. You look at "
+      "the copy and decide “time to charge”. You never open the phone.")
+
+    # ---- 4 ---------------------------------------------------------------
+    H("4", "The gap — what nobody had done")
+    P("There is plenty of research on digital twins. Reading 46 studies showed "
+      "the field is split in two:")
+    code(doc, ["Group A  -  builds a twin of the machine                    YES",
+               "            represents the person by fixed facts:",
+               "            name, age, skill level                          NO",
+               "",
+               "Group B  -  measures the person's tiredness                 YES",
+               "            but never uses it to make a decision            NO"])
+    B(["Not one of the 46 studies does all three at once:",
+       "(1) the person's live state    (2) a machine twin    "
+       "(3) measured environmental goals",
+       "That is the gap this research fills."])
+
+    # ---- 5 ---------------------------------------------------------------
+    H("5", "What was built — in four pieces")
+
+    S("Piece 1 — the machine's twin")
+    P("Each machine keeps track of five things: health, energy use, defect "
+      "risk, whether it is available, and how busy it has been.")
+    code(doc, ["a machine wears out after 216 minutes of work",
+               "                          (taken from real maintenance data)",
+               "",
+               "give it light work  ->  291 minutes           :)",
+               "give it heavy work  ->  145 minutes           :(   twice as fast"])
+
+    S("Piece 2 — the person's twin        <-- this is the new part")
+    P("Other researchers treat tiredness as a fixed number: “heavy job = 8 "
+      "points of strain”. That is the end of it.")
+    B(["But that is wrong:",
+       "a person doing heavy work at 8 in the morning is not the same as the "
+       "same person doing the same work at 4 in the afternoon"],
+      fill="FDEEEA", color=WARN)
+    P("Here, tiredness is treated like a bucket filling with water. Working "
+      "fills it. Resting empties it.")
+    P("And more important still: not everybody's bucket is the same size.",
+      bold=True)
+    P("From age, weight, height and sex, the model computes the work rate each "
+      "person can sustain all day — using published medical equations "
+      "(Mifflin 1990, Price 1990).")
+    T(["Worker", "Age", "Sustainable maximum",
+       "Can they do medium work (4.26) all day?"],
+      [["OP1  male", "28", "5.35", "Yes"],
+       ["OP3  male", "47", "4.55", "Yes, but close to the line"],
+       ["OP2  female", "35", "3.62", "No"]],
+      widths=[1.2, 0.6, 1.6, 2.9])
+    B(["This is the best part.",
+       "Nowhere does the system say “OP2 cannot do medium work”. That falls "
+       "out of the numbers describing her body. The system gives her extra "
+       "rest on its own.",
+       "One rule for everyone — but different protection for each person."],
+      fill="E9F5EC", color=GOOD)
+    P("What is “4.26”? It is calories burnt per minute — the rate the body is "
+      "being drained, like the rate a phone battery discharges. It comes from "
+      "ISO 8996, an international standard, not from us.", space_after=4)
+    T(["Work", "ISO class", "kcal/min", "Over an 8-hour shift"],
+      [["Light", "Class 1", "2.58", "1,239 kcal"],
+       ["Medium", "Class 2", "4.26", "2,044 kcal"],
+       ["Heavy", "Class 3", "5.94", "2,850 kcal"]],
+      widths=[1.3, 1.2, 1.2, 1.8])
+
+    S("Piece 3 — the two twins talk to each other")
+    code(doc, ["person  -> machine :  a tired worker      ->  more defects",
+               "                      a less skilled one  ->  more defects",
+               "",
+               "machine -> person  :  a worn machine      ->  more mental load",
+               "                      a heavy job         ->  tires faster",
+               "                      a fast machine      ->  worse posture"])
+    P("Example: a tired worker makes mistakes, so the product comes out "
+      "faulty. That looks like a machine problem. It is really a people "
+      "problem. This system can see that.")
+
+    S("Piece 4 — how the decision is made        <-- the central idea")
+    P("There are two ways to do it.", bold=True)
+    P("Way 1 — a “fine” (a penalty). This is what others do:", space_after=2)
+    code(doc, ["high output          ->  +100 points",
+               "the worker gets tired ->   -30 points   (the fine)",
+               "                         ---------",
+               "total                 =   +70   ->  “good enough, do it”"])
+    B(["The problem: if the profit is large enough, the fine on tiredness can "
+       "always be paid. The person becomes something you can trade away."],
+      fill="FDEEEA", color=WARN)
+    P("Way 2 — a “filter” (a hard constraint). This is what was built:",
+      space_after=2)
+    code(doc, ["step 1 :  remove every option that would harm the person   <- first",
+               "step 2 :  pick the best of whatever is left"])
+    B(["The difference",
+       "An option removed by the filter cannot be bought back at any price, "
+       "no matter how large the profit.",
+       "Drink-driving does not carry a fine you can pay to proceed — it is "
+       "forbidden. Tiredness is treated the same way here."],
+      fill="E9F5EC", color=GOOD)
+    T(["", "The rule", "In plain words", "Where the number comes from"],
+      [["HC1", "tiredness < 80%", "cannot go past 80% of your own limit",
+        "ours *"],
+       ["HC2", "skill >= 0.40", "cannot give someone a job they cannot do",
+        "ours"],
+       ["HC3", "posture risk <= 5", "cannot use a dangerous posture",
+        "from the literature (RULA)"],
+       ["HC4", "machine health > 0.30", "cannot use a machine about to fail",
+        "ours"]],
+      widths=[0.5, 1.4, 2.5, 1.8])
+    P("* The number 80% is ours. But what it is 80% of comes from the "
+      "literature — it is 80% of the rate that person can sustain all day. "
+      "Setting a speed limit at 60 km/h is a choice; the unit “km/h” is not.",
+      size=10, italic=True, color=MUTED)
+    P("And they were tested. HC1 was rerun at 0.70, 0.80 and 0.90 — the same "
+      "conclusion every time. Removing HC4 changed nothing at all. Removing "
+      "HC1 or HC3 caused real harm to the workers.",
+      size=10, italic=True, color=MUTED)
+
+    # ---- 6 ---------------------------------------------------------------
+    H("6", "How it was tested")
+    P("The obstacle: no public dataset in the world contains machine data and "
+      "human data from the same factory.")
+    P("The answer: a simulation — a factory inside the computer — but with "
+      "every number taken from real data:")
+    code(doc, ["machine lifetime      <-  a real maintenance dataset",
+               "electricity use       <-  a real steel plant's records",
+               "defect rate           <-  a real semiconductor production line",
+               "the human body        <-  published medical equations"])
+    T(["Method", "What it does"],
+      [["B1", "assigns work at random (a floor, for sanity)"],
+       ["B2", "Industry 4.0 — full machine twin, but blind to the person"],
+       ["B3", "this research — both twins, plus the forbidden rules"]],
+      widths=[0.8, 5.5])
+    code(doc, ["three situations :  normal  ·  demand at 150%  ·  machines break",
+               "runs             :  3 x 3 x 30 random seeds  =  270 runs"])
+    B(["B2 was not allowed to be weak.",
+       "A straw opponent would make the whole comparison worthless. B2 keeps "
+       "the machine twin at full strength. The only difference is that it does "
+       "not think about the person."])
+
+    # ---- 7 ---------------------------------------------------------------
+    H("7", "The results, one by one")
+    P("Under high demand, this research against Industry 4.0:", bold=True)
+    T(["Measure", "Industry 4.0", "This work", "Change"],
+      [["Tiredness", "0.741", "0.541", "down 27%"],
+       ["Rules broken (per shift)", "79.5", "0.0", "down 100%"],
+       ["Electricity per unit", "1.321", "0.915", "down 31%"],
+       ["Carbon", "39.9 kg", "27.2 kg", "down 32%"],
+       ["Machine stoppages", "1.858", "1.358", "down 27%"],
+       ["Output", "91.9", "90.2", "down 1.8%  <- the key one"]],
+      widths=[2.2, 1.4, 1.2, 1.6])
+    B(["The single most important sentence in the paper",
+       "At the moment of highest demand — exactly when a throughput-driven "
+       "scheduler pushes people hardest — protecting the workers cost no "
+       "measurable production.",
+       "That 1.8% has p = 0.148, which means it could easily be chance rather "
+       "than a real difference."], fill="E9F5EC", color=GOOD)
+    P("And one more: the machines stopped less often too (down 27%). What is "
+      "good for the person turns out to be good for the equipment — a tired "
+      "worker makes mistakes, and the machine absorbs the consequences.")
+
+    # ---- 8 ---------------------------------------------------------------
+    H("8", "The most surprising finding")
+    P("Four different sets of priorities were tried — favouring the person, "
+      "the planet, profit, and a balance. They differ enormously.")
+    code(doc, ["balanced     :  tiredness 0.541      output 90.2",
+               "people first :  tiredness 0.541      output 90.3",
+               "planet first :  tiredness 0.542      output 90.3",
+               "profit first :  tiredness 0.542      output 90.3",
+               "                    ^                    ^",
+               "                 identical            identical"])
+    P("Why? Measuring it gave the answer:", bold=True)
+    code(doc, ["after the forbidden rules filter the options...",
+               "in 95.7% of 45,754 decisions, either 0 or 1 option is left"])
+    B(["An analogy — the restaurant",
+       "You love chicken and hate fish. But by the time the kitchen's rules "
+       "are applied, one dish is left on the menu.",
+       "Do your preferences matter now? No. There is only one thing to order.",
+       "When there is nothing to choose between, preferences change nothing."])
+    B(["This is good news, not bad",
+       "It means no change of priorities can strip the protection away. Even "
+       "with profit weighted at 100%, the ban on exceeding the tiredness limit "
+       "is still there.",
+       "“This framework is steered by its constraints — not by its "
+       "priorities.”"], fill="E9F5EC", color=GOOD)
+
+    # ---- 9 ---------------------------------------------------------------
+    H("9", "The weaknesses, stated honestly")
+    P("This is what makes it real research — nothing is hidden.",
+      italic=True, color=MUTED)
+    T(["#", "Weakness", "Why it is written down"],
+      [["1", "Posture risk fell only 13–15%, not the 20% predicted",
+        "our own prediction was not met — but there is an arithmetic reason"],
+       ["2", "Work was shared out less evenly",
+        "a result against us — reported in full anyway"],
+       ["3", "Two rates were calibrated, not measured",
+        "varied from half to double; the conclusion did not change"],
+       ["4", "The explanation layer was not built",
+        "it is in the design, not in the code — and the paper says so"],
+       ["5", "Never tested in a real factory",
+        "it is a simulation, and that is stated plainly"]],
+      widths=[0.35, 2.6, 3.4])
+    B(["There is something good hidden in #2",
+       "Asking why the work was shared unevenly gave the answer: OP1, the "
+       "strongest worker, is the only one barred from heavy jobs — his skill "
+       "there is 0.30 against a floor of 0.40. So heavy work falls to the two "
+       "least able to sustain it.",
+       "Training that one skill closes about two thirds of the gap and raises "
+       "output as well.",
+       "A machine-only system could not even ask this question — it has no "
+       "model of the person to ask it about."])
+
+    # ---- 10 --------------------------------------------------------------
+    H("10", "The whole thing in three sentences")
+    for n, line in enumerate([
+            "Industry 5.0 puts the person at the centre. But digital twins are "
+            "still about machines; the person is only static data.",
+            "This work makes tiredness a live state, connects it to the machine's "
+            "twin, and turns human limits from a “fine” into a “ban”.",
+            "The result: tiredness down 27%, electricity down 31%, rules broken "
+            "from 79.5 to zero — with no measurable loss of output."], 1):
+        p = doc.add_paragraph()
+        p.paragraph_format.left_indent = Inches(0.3)
+        p.paragraph_format.space_after = Pt(8)
+        style_run(p.add_run(f"{n}.  "), EN, 13, True, color=ACCENT)
+        style_run(p.add_run(line), EN, 12)
+
+    doc.add_paragraph()
+    B(["Where to look next:",
+       "paper.docx — the full paper  ·  docs/14-demo-guide.md — how to "
+       "demonstrate it  ·  docs/12-paper-blueprint.md — every detail"],
+      fill="F4F4F2", color=MUTED, size=10)
+    return doc
+
+
 def main() -> None:
-    doc = build()
-    doc.save(str(OUT))
+    lang = (sys.argv[1] if len(sys.argv) > 1 else "en").lower()
+    if lang.startswith("si"):
+        doc, out = build_si(), ROOT / "doc_sinhala.docx"
+    else:
+        doc, out = build_en(), OUT
+    doc.save(str(out))
     words = sum(len(p.text.split()) for p in doc.paragraphs)
-    print(f"  [ok] wrote {OUT.name}")
+    print(f"  [ok] wrote {out.name}  ({lang})")
     print(f"       {len(doc.paragraphs)} paragraphs, ~{words} words, "
           f"{len(doc.tables)} tables")
 
