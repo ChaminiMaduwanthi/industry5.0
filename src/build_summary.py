@@ -482,83 +482,111 @@ def build_si() -> Document:
 # =============================================================================
 #  the ten steps — English
 # =============================================================================
-EN = "Segoe UI"
+EN = "Calibri"
+BLACK = RGBColor(0, 0, 0)
 
 
 def build_en() -> Document:
+    """Plain Word document — the kind a person types, not one a tool decorates.
+
+    No colour, no shading, no rules under the headings, no monospace panels.
+    Emphasis comes from bold and italic only, which is all a reader needs and
+    all that survives being pasted somewhere else.
+    """
     doc = Document()
     s = doc.sections[0]
-    s.left_margin = s.right_margin = Inches(0.9)
-    s.top_margin = s.bottom_margin = Inches(0.8)
+    s.left_margin = s.right_margin = Inches(1.0)
+    s.top_margin = s.bottom_margin = Inches(1.0)
 
-    def P(text="", **kw):
-        kw.setdefault("font", EN)
-        return para(doc, text, **kw)
+    def P(text="", size=11, bold=False, italic=False, space_after=8,
+          indent=None, align=None, **_):
+        # a colour argument may still arrive from the earlier styled version;
+        # it is accepted and ignored, because this document is plain black
+        p = doc.add_paragraph()
+        if text:
+            style_run(p.add_run(text), EN, size, bold, italic, BLACK)
+        p.paragraph_format.space_after = Pt(space_after)
+        p.paragraph_format.space_before = Pt(0)
+        if indent is not None:
+            p.paragraph_format.left_indent = Inches(indent)
+        if align is not None:
+            p.alignment = align
+        return p
 
     def H(number, text):
         p = doc.add_paragraph()
-        p.paragraph_format.space_before = Pt(16)
+        p.paragraph_format.space_before = Pt(18)
         p.paragraph_format.space_after = Pt(6)
-        style_run(p.add_run(f"{number}   "), EN, 16, True, color=ACCENT)
-        style_run(p.add_run(text), EN, 15, True, color=ACCENT)
-        bar = doc.add_paragraph()
-        bar.paragraph_format.space_after = Pt(8)
-        pbdr = OxmlElement("w:pBdr")
-        bottom = OxmlElement("w:bottom")
-        bottom.set(qn("w:val"), "single")
-        bottom.set(qn("w:sz"), "6")
-        bottom.set(qn("w:color"), "1F4E79")
-        pbdr.append(bottom)
-        bar._p.get_or_add_pPr().append(pbdr)
+        style_run(p.add_run(f"{number}. {text}"), EN, 14, True, color=BLACK)
+        return p
 
     def S(text):
-        return para(doc, text, size=12, bold=True, space_after=4, font=EN)
+        p = doc.add_paragraph()
+        p.paragraph_format.space_before = Pt(10)
+        p.paragraph_format.space_after = Pt(4)
+        style_run(p.add_run(text), EN, 11.5, True, color=BLACK)
+        return p
 
-    def B(lines, fill="EAF2FA", color=ACCENT, size=11):
+    def B(lines, **_):
+        """What used to be a coloured panel is now an indented paragraph."""
         for i, line in enumerate(lines):
-            p = doc.add_paragraph()
-            p.paragraph_format.left_indent = Inches(0.12)
-            p.paragraph_format.right_indent = Inches(0.12)
-            p.paragraph_format.space_before = Pt(8 if i == 0 else 0)
-            p.paragraph_format.space_after = Pt(8 if i == len(lines) - 1 else 2)
-            style_run(p.add_run(line), EN, size, bold=(i == 0), color=color)
-            shade(p, fill)
+            P(line, bold=(i == 0), indent=0.3,
+              space_after=8 if i == len(lines) - 1 else 3)
+
+    def code(doc_, lines):
+        """Indented plain text, not a shaded monospace block."""
+        for i, line in enumerate(lines):
+            P(line.rstrip(), size=10.5, indent=0.35,
+              space_after=8 if i == len(lines) - 1 else 0)
 
     def T(header, rows, widths=None):
-        t = table(doc, header, rows, widths)
-        for row in t.rows:
-            for c in row.cells:
-                for p in c.paragraphs:
-                    for r in p.runs:
-                        if r.font.color and r.font.color.rgb == RGBColor(
-                                0xFF, 0xFF, 0xFF):
-                            style_run(r, EN, 10, True,
-                                      color=RGBColor(0xFF, 0xFF, 0xFF))
-                        else:
-                            style_run(r, EN, 10)
+        t = doc.add_table(rows=1, cols=len(header))
+        t.style = None
+        tbl = t._tbl
+        borders = OxmlElement("w:tblBorders")
+        for edge in ("top", "bottom", "insideH"):
+            el = OxmlElement(f"w:{edge}")
+            el.set(qn("w:val"), "single")
+            el.set(qn("w:sz"), "4")
+            el.set(qn("w:color"), "808080")
+            borders.append(el)
+        for edge in ("left", "right", "insideV"):
+            el = OxmlElement(f"w:{edge}")
+            el.set(qn("w:val"), "none")
+            borders.append(el)
+        tbl.tblPr.append(borders)
+
+        for i, h in enumerate(header):
+            cell = t.rows[0].cells[i]
+            cell.text = ""
+            p = cell.paragraphs[0]
+            p.paragraph_format.space_before = Pt(3)
+            p.paragraph_format.space_after = Pt(3)
+            style_run(p.add_run(h), EN, 10.5, True, color=BLACK)
+        for r in rows:
+            cells = t.add_row().cells
+            for i, v in enumerate(r):
+                cells[i].text = ""
+                p = cells[i].paragraphs[0]
+                p.paragraph_format.space_before = Pt(2)
+                p.paragraph_format.space_after = Pt(2)
+                style_run(p.add_run(str(v)), EN, 10.5, color=BLACK)
+        if widths:
+            for row in t.rows:
+                for i, w in enumerate(widths):
+                    row.cells[i].width = Inches(w)
+        doc.add_paragraph().paragraph_format.space_after = Pt(6)
         return t
 
     # ---- title ----------------------------------------------------------
-    t = doc.add_paragraph()
-    t.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    t.paragraph_format.space_after = Pt(2)
-    style_run(t.add_run("My Research — From the Beginning"), EN, 22, True,
-              color=ACCENT)
-    st = doc.add_paragraph()
-    st.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    st.paragraph_format.space_after = Pt(2)
-    style_run(st.add_run("A digital twin framework that models the machine and "
-                         "the person together, for Industry 5.0"), EN, 12,
-              color=MUTED)
-    a = doc.add_paragraph()
-    a.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    a.paragraph_format.space_after = Pt(14)
-    style_run(a.add_run("Chamini Maduwanthi   ·   explained in ten steps"),
-              EN, 10.5, italic=True, color=MUTED)
+    P("My Research — From the Beginning", size=16, bold=True, space_after=4)
+    P("A digital twin framework that models the machine and the person "
+      "together, for Industry 5.0", size=11, italic=True, space_after=4)
+    P("Chamini Maduwanthi", size=11, space_after=16)
 
-    B(["Who is this for?",
-       "Anyone with no background in computing or industrial engineering. "
-       "Read the ten steps in order; each one builds on the last."])
+    P("This is written for anyone with no background in computing or "
+      "industrial engineering. The ten steps are in order, and each one "
+      "builds on the last.")
 
     # ---- 1 ---------------------------------------------------------------
     H("1", "What is the problem?")
@@ -820,20 +848,16 @@ def build_en() -> Document:
             "Industry 5.0 puts the person at the centre. But digital twins are "
             "still about machines; the person is only static data.",
             "This work makes tiredness a live state, connects it to the machine's "
-            "twin, and turns human limits from a “fine” into a “ban”.",
+            "twin, and turns human limits from a fine into a ban.",
             "The result: tiredness down 27%, electricity down 31%, rules broken "
-            "from 79.5 to zero — with no measurable loss of output."], 1):
-        p = doc.add_paragraph()
-        p.paragraph_format.left_indent = Inches(0.3)
-        p.paragraph_format.space_after = Pt(8)
-        style_run(p.add_run(f"{n}.  "), EN, 13, True, color=ACCENT)
-        style_run(p.add_run(line), EN, 12)
+            "from 79.5 to zero, with no measurable loss of output."], 1):
+        P(f"{n}. {line}", indent=0.3, space_after=8)
 
-    doc.add_paragraph()
-    B(["Where to look next:",
-       "paper.docx — the full paper  ·  docs/14-demo-guide.md — how to "
-       "demonstrate it  ·  docs/12-paper-blueprint.md — every detail"],
-      fill="F4F4F2", color=MUTED, size=10)
+    P()
+    P("Where to look next: paper.docx is the full paper, "
+      "docs/14-demo-guide.md explains how to demonstrate the system, and "
+      "docs/12-paper-blueprint.md holds every detail.",
+      size=10, italic=True)
     return doc
 
 
