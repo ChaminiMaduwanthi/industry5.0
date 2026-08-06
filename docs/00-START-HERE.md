@@ -65,7 +65,8 @@ Phase 8  ░░░░░░░░░░░░░░░░░░░░  ⬜  0/15
 | **[04-framework-design.md](04-framework-design.md)** ★ | 🔒 **FROZEN** | Architecture, සමීකරණ, constraints — **structure වෙනස් කරන්න එපා** |
 | [05-experiment-plan.md](05-experiment-plan.md) | ★ | Datasets, baselines, KPIs, statistics |
 | **[10-data-card.md](10-data-card.md)** | Phase 4, 8 | මොන දත්තද, කොහෙන්ද, **license** එක · ⚠️ D1 synthetic බව |
-| **[11-design-deviations.md](11-design-deviations.md)** 🆕 ★ | **Phase 8** | ⚠️ **Design එකෙන් අයිනට ගිය තැන් 9** — §VI එකට අනිවාර්ය |
+| **[12-paper-blueprint.md](12-paper-blueprint.md)** 🆕 ★★★ | **Phase 8 — මුලින්ම මේක** | **පත්‍රිකාවට ඕන හැම දෙයක්ම.** Framework එකේ අන්තර්ගතය · කොටස් අනුව blueprint · සාක්ෂි · H1/H2 · ලියන්න බැරි දේ 16 |
+| **[11-design-deviations.md](11-design-deviations.md)** ★ | **Phase 8** | ⚠️ **Design එකෙන් අයිනට ගිය තැන් 9** — §VI එකට අනිවාර්ය |
 | **`../src/config.yaml`** ★★ | **හැම දාම** | **Parameters සියල්ල.** Code එකේ අගයක් hard-code කරන්න එපා |
 | [06-paper-outline.md](06-paper-outline.md) | සති 12–13 | Paper එක ලියන හැටි |
 | [07-glossary.md](07-glossary.md) | ඕනෑම වෙලාවක | තේරෙන්නේ නැති වචන |
@@ -133,10 +134,11 @@ Phase 8  ░░░░░░░░░░░░░░░░░░░░  ⬜  0/15
 │      §V ලියලා ඉවරයි — §A headline · §E trade-off කතාව      │
 │      ⚠️ අගදී "ලියන්න බැරි දේ" ලැයිස්තුව බලන්න               │
 │                                                            │
-│  3️⃣  T8.1 — IEEE template setup                            │
+│  3️⃣  ★★★ 12-paper-blueprint.md කියවන්න                     │
+│      පත්‍රිකාවට ඕන හැම දෙයක්ම එකතැනක                        │
 │                                                            │
-│  4️⃣  T8.2 — §3 Proposed Framework ලියන්න  ← මුලින්ම මේක     │
-│      04-framework-design.md + fig1, fig2 එකෙන්             │
+│  4️⃣  T8.1 template → T8.2 §3 Proposed Framework            │
+│      ⛔ ඊට කලින්: [CHECK] 5 + charter §2/§3 (blueprint §F.1)│
 └────────────────────────────────────────────────────────────┘
 ```
 

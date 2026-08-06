@@ -49,8 +49,13 @@
 - [ ] Operator ergonomic risk (posture)
 - [ ] Task allocation තීරණය (කාට / කුමන machine එකට)
 - [ ] Sustainability metrics (kWh/unit, CO₂e, scrap %)
-- [ ] Explainable AI (තීරණය පැහැදිලි කිරීම)
-- [ ] Operator override (මිනිසාට තීරණය වෙනස් කරන්න පුළුවන්)
+- [x] ~~Explainable AI (තීරණය පැහැදිලි කිරීම)~~ ⚠️ **නිර්වචනය කළා, ලියලා නෑ** (T5.13)
+- [x] ~~Operator override (මිනිසාට තීරණය වෙනස් කරන්න පුළුවන්)~~ ⚠️ **නිර්වචනය කළා, ලියලා නෑ** (T5.14)
+
+> ⚠️ **2026-08-06:** ඉහත **2 (L5 layer එක) විෂය පථයෙන් කැපුවා.** Architecture එකේ (Fig. 1)
+> නිර්වචනය කරලා තියෙනවා, ඒත් **ලියලා නෑ**. ➜ §VI Limitations එකේ ලියන්නම ඕන.
+> ⛔ පත්‍රිකාවේ *"our five-layer architecture"* කියලා **ලියන්න එපා**.
+> විස්තර: [11-design-deviations.md](11-design-deviations.md) D4.
 
 ### ❌ බැහැර (Out of Scope) — **මේක ලියන එකත් වැදගත්**
 
@@ -76,13 +81,14 @@
 ```
 Mean fatigue index = (හැම operator ගේම fatigue එකතුව) / (operator ගණන × time steps)
 Energy per unit     = මුළු kWh / නිෂ්පාදිත ඒකක ගණන
-CO₂e                = මුළු kWh × 0.53         # ශ්‍රී ලංකා grid emission factor
+CO₂e                = මුළු kWh × 0.33         # ⚠️ නිවැරදි කළා 2026-08-04 (කලින් 0.53)
 Scrap rate          = දෝෂ සහිත ඒකක / මුළු ඒකක × 100
 Throughput          = shift එකකට නිෂ්පාදිත ඒකක
 Downtime            = machine නවතින මුළු පැය ගණන
 ```
 
-> ⚠️ **CO₂ factor එකට source එකක් දෙන්න** (CEB / IEA report). Paper එකේ cite කරන්න.
+> ✅ **CO₂ factor විසඳා ඇත (T3.10):** **0.33 kgCO₂/kWh** — Ember (2025), `ember2025electricity`.
+> කලින් තිබූ **0.53 කල් ඉකුත් වී තිබුණා** (ඒක ≈2016–17 මට්ටම). design §3.2 බලන්න.
 
 ---
 
@@ -111,7 +117,8 @@ Downtime            = machine නවතින මුළු පැය ගණන
 
 ### උපකල්පන (Assumptions)
 
-1. Operator ලාගේ fatigue එක පිළිගත් exponential model එකකට අනුව හැසිරේ *(citation: `[...]`)*
+1. Operator ලාගේ fatigue එක පිළිගත් exponential model එකකට අනුව හැසිරේ
+   *(citation: `calzavara2019rest` — Calzavara et al. 2019, IJPR 57(3):948–962)*
 2. Skill levels shift එක තුළ ස්ථිරව පවතී (ඉගෙනීම සලකා නොබලයි)
 3. Machine degradation benchmark dataset එකේ pattern අනුව සිදුවේ
 4. සියලු operator ලා shift එකේ ආරම්භයේ fatigue = 0 සමඟ පැමිණේ

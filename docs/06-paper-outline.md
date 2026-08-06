@@ -46,12 +46,13 @@
 1. සන්දර්භය   : Industry 5.0 මිනිසා මධ්‍යයට ගෙන එයි, නමුත් …
 2. ගැටලුව     : පවතින digital twins asset-centric ය; මිනිස් සාධක conceptual පමණි.
 3. අප කරන දේ  : අපි layer 5ක framework එකක් ඉදිරිපත් කරමු, machine + human twin එකට සම්බන්ධ කරමින්.
-4. ක්‍රමවේදය   : Co-simulation, benchmark datasets 3ක්, NSGA-II, replications 30ක්.
-5. ප්‍රතිඵල   : Fatigue X% ↓, ergonomic risk Y% ↓, energy/unit Z% ↓, throughput W% ↓ පමණි.
+4. ක්‍රමවේදය   : Co-simulation, benchmark datasets 3ක්, runs 270ක්.  ⛔ NSGA-II කියන්න එපා
+5. ප්‍රතිඵල   : fatigue −27%, energy/unit −31%, breaches 79.5→0, throughput −1.8% (n.s.)
 6. වැදගත්කම   : මිනිස් සුබසාධනය hard constraint එකක් කිරීම කුඩා efficiency වියදමකින් හැකි බව පෙන්වයි.
 ```
 
-**Keywords (5–6):** `Industry 5.0` · `Human Digital Twin` · `Sustainable Manufacturing` · `Multi-objective Optimisation` · `Explainable AI` · `Human-Centric Design`
+**Keywords (5):** `Industry 5.0` · `Human Digital Twin` · `Sustainable Manufacturing` · `Multi-objective Scheduling` · `Human-Centric Design`
+> ⛔ `Explainable AI` **අයින් කළා** — L5 ලියලා නෑ (D4).
 
 ---
 
@@ -100,7 +101,7 @@
 | III-D | ★ Twin Coupling | **Fig. 2** + coupling points CP1–CP5 |
 | III-E | Multi-Objective Formulation | Objective function eq. + weights |
 | III-F | ★ Human-Centric Constraints | HC1–HC4. *"hard vs soft"* තර්කය. |
-| III-G | Explainability & Human Oversight | SHAP + override mechanism |
+| ~~III-G~~ | ~~Explainability & Human Oversight~~ | ⛔ **කැපුවා (D4)** — III-A එකේ එක වාක්‍යයකින් *"specified but not implemented"* කියන්න |
 
 > 💡 **III-F එකේ මේ වාක්‍යය දාන්න:**
 > *"The distinction between Industry 4.0 and Industry 5.0 optimisation is, in our formulation, precisely the distinction between treating operator state as a soft penalty and treating it as a hard constraint. Under the former, sufficient efficiency gain will always justify operator strain; under the latter, it never can."*
@@ -113,7 +114,7 @@
 |---|---|
 | IV-A | Co-simulation environment (SimPy, parameters) |
 | IV-B | Datasets සහ preprocessing (**Table: Data sources**) |
-| IV-C | AI models (XGBoost, NSGA-II, SHAP) + hyperparameters |
+| IV-C | ⚠️ **නැවත ලියන්න** — XGBoost/NSGA-II/SHAP **තුනම කැපුවා**. Parameters දත්තවලින් සෘජුව + weighted sum. නිවැරදි ඡේදය: [12-paper-blueprint.md](12-paper-blueprint.md) §C.4 |
 | IV-D | Baselines B1, B2, B3 |
 | IV-E | Scenarios S1, S2, S3 + evaluation protocol (30 seeds) |
 
@@ -125,10 +126,13 @@
 |---|---|---|
 | V-A | Overall KPI comparison | **Table II** |
 | V-B | ★ Trade-off analysis | **Fig. 3** (constraint sweep — ⛔ Pareto front **නොවේ**) |
-| V-C | Scenario-wise behaviour (විශේෂයෙන් S2 high-demand) | **Fig. 5** |
-| V-D | Sensitivity to objective weights | Table III |
-| V-E | Explainability & operator oversight | **Fig. 6** |
-| V-F | Discussion — මේවා අදහස් කරන්නේ මොකක්ද? | — |
+| V-C | Baseline comparison | **Fig. 4** *(Fig 5 කැපුවා)* |
+| V-D | ★ Robustness — sensitivity **3ක්** (λμ · HC1 · weights). ⚠️ weights **වෙනසක් කරන්නේ නෑ** | — |
+| V-E | ★★ *"Constraints steer, not the objective"* (95.7%) | — |
+| V-F | Ablation — **CP5 විතරයි** තීරණ වෙනස් කරන්නේ | — |
+| V-G | Workload + cross-training diagnosis | — |
+| V-H | ★ **H1 / H2 තීන්දු** — H1 **PARTIAL**, H2 S1+S2 පමණයි | — |
+
 
 > 💡 **V-F එකේ මේ 3 කතා කරන්න:**
 > 1. Trade-off එක කුඩායි — human-centricity ලාභදායකයි
