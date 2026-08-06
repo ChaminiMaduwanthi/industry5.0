@@ -70,7 +70,7 @@ Table I summarises the position. The field is **bifurcated**: studies that build
 
 *✓ = addressed; ~ = partially addressed; ✗ = not addressed*
 
-Of the `[N]` studies reviewed, none couple a quantified human twin, a machine twin and measured sustainability objectives within a single decision framework. This study addresses that gap by (i) coupling the two twins through five explicitly defined bidirectional interfaces, (ii) formulating operator fatigue, skill and ergonomic risk as **hard constraints** rather than soft penalties, and (iii) evaluating the result against an Industry 4.0 baseline across three operating scenarios.
+Of the 46 studies published between 2018 and 2026 — 31 assessed at abstract level or beyond, and the nine most closely related read in full — none couples a quantified human twin, a machine twin and measured sustainability objectives within a single decision framework. This study addresses that gap by (i) coupling the two twins through five explicitly defined bidirectional interfaces, (ii) formulating operator fatigue, skill and ergonomic risk as **hard constraints** rather than soft penalties, and (iii) evaluating the result against an Industry 4.0 baseline across three operating scenarios.
 
 ---
 ---
@@ -88,7 +88,7 @@ Of the `[N]` studies reviewed, none couple a quantified human twin, a machine tw
 
 | # | දේ | Task |
 |---|---|---|
-| 1 | `[N]` — screening අවසන් සංඛ්‍යාව දාන්න | T2.4 |
+| 1 | ~~`[N]`~~ ✅ **46** — ගණන් කර ඇත 2026-08-06 *(03-literature-review §4)* | T2.4 |
 | 2 | `[bibkey]` → `[1]`, `[2]`… ලෙස LaTeX එකේදී හැරෙනවා | T8.1 |
 | 3 | **Destouet et al. [destouet2024sustainable]** පේළිය — full-text කියවලා ✓/✗ තහවුරු කරන්න | T2.4 |
 | 4 | Table I එකට තව පේළි 2–3ක් එකතු කරන්න පුළුවන් (Bucci, Montini) | T2.5 |

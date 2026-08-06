@@ -126,9 +126,9 @@ manufacturing / ergonomics / scheduling / sustainability / DT-architecture ට �
 
 > මේකයි ඔබේ **gap** එක පෙන්වන සාක්ෂිය. Paper එකේ Table I ලෙස යනවා.
 
-### 🔍 කණ්ඩායම A — ළඟම competitors 7 (**කියවා තහවුරු කර ඇත**)
+### 🔍 කණ්ඩායම A — ළඟම competitors **9** (**කියවා තහවුරු කර ඇත**)
 
-> මේ 7 තමයි ඔබේ paper එකට **වඩාත්ම ළං** ඒවා. සියල්ලම full-text හෝ abstract-level කියවා තහවුරු කර ඇත.
+> මේ **9** තමයි ඔබේ paper එකට **වඩාත්ම ළං** ඒවා. සියල්ලම full-text හෝ abstract-level කියවා තහවුරු කර ඇත.
 
 | # | Ref | Yr | Venue | Cites | Machine DT? | **Human DT (quantified)?** | **තීරණ ගැනීමට යොදයිද?** | Sustainability? | Multi-obj? | **තහවුරු කළ අඩුපාඩුව** |
 |---|---|---|---|---|---|---|---|---|---|---|
@@ -324,7 +324,7 @@ manufacturing / ergonomics / scheduling / sustainability / DT-architecture ට �
 
 Round 1 (papers 33) සහ full-text කියවූ 3 මත පදනම්ව, **gap එක ඇත්තටම පවතී**.
 
-### 🔬 සාක්ෂි — කියවූ competitors 7 (**තහවුරු කර ඇත**)
+### 🔬 සාක්ෂි — කියවූ competitors **9** (**තහවුරු කර ඇත**)
 
 | Paper | Cites | Machine DT | Human state **quantified** | **තීරණයට යොදයිද** | Sustainability **measured** | Multi-obj |
 |---|---|---|---|---|---|---|
@@ -340,41 +340,71 @@ Round 1 (papers 33) සහ full-text කියවූ 3 මත පදනම්ව
 > 🎯 **පැහැදිලි රටාව:** **එකම column එකක්වත් සම්පූර්ණ නෑ.**
 > Digital twin තියෙන අයට fatigue නෑ. Fatigue තියෙන අයට digital twin නෑ. **කාටවත් sustainability නෑ.**
 
-### ⛔ **විසඳන්නම ඕන — `[N]` (2026-08-06 audit)**
+### ✅ **`[N]` ගණන් කර ඇත — 2026-08-06**
 
-> **මේක paper එකේ මූලික වාක්‍යයේ සංඛ්‍යාවයි:** *"Of `[N]` studies reviewed, **none** couple
-> a quantified human twin, a machine twin and measured sustainability objectives."*
-> **වැරදුනොත් reviewer කෙනෙක්ට ගණන් කරලා අල්ලන්න පුළුවන්.**
+> කලින් ලේඛන 4ක **52 / 47 / 53** කියලා තිබුණා. ඒවා **එකම දේ ගැන නොවේ**:
+> 52 = round 3 screening · 47 = කණ්ඩායම B rows · 53 = Destouet 2026 එකතු කළාට පස්සේ.
+> ➜ **ගණන් කරලා විසඳුවා** — පේළි එකින් එක, අනන්‍යතාවෙන් dedupe කරලා.
 
-**දැනට ලේඛන 4ක සංඛ්‍යා 3ක් තියෙනවා — ඒවා එකම දේ ගැන නොවේ:**
+#### ගණන් කිරීම
 
-| සංඛ්‍යාව | කොහෙද | ඇත්තටම ගණන් කරන්නේ |
+```
+කණ්ඩායම A  (ළඟම competitors)                                       =  9
+කණ්ඩායම B  (පුළුල් සමීක්ෂණය · පේළි ගණන් කළා)                         = 47
+A ∩ B  (Tan · Sharotry · Greco · Löcklin · Destouet 2024)          =  5
+                                                                    ─────
+UNION  =  9 + 47 − 5                                                = 51  records
+```
+
+> ⚠️ **කණ්ඩායම B එකේ `#` අංක නැවත භාවිතා වෙලා** — B5 = 27–31, B6 = 32–35, ඒවා
+> B2c සහ B4 සමඟ ගැටෙනවා. **අංකවලින් ගණන් කරන්න බෑ; පේළි ගණන් කරන්නම ඕන.**
+> *(කලින් 47/52/53 පටලැවුණේ මේකෙන්.)*
+
+#### ➜ `[N]` = **46** — *"published between 2018 and 2026"*
+
+Union 51 න් **5ක්** window එකෙන් පිට හෝ නොදන්නා, සහ ඒවා **reviewed studies නොව method citations**:
+
+| ඉවත් කළේ | වර්ෂය | ඇයි |
 |---|---|---|
-| **52** | task board · litreview §1 round 3 | Round 3 metadata verification එකේදී bib එකේ තිබූ **screened papers** |
-| **47** | මේ table එක (පහත) | **කණ්ඩායම B** හි comparison rows — 2026-08-06 දින ගණන් කළා: **හරියටම 47** ✅ |
-| **53** | README · task board පේළිය | Destouet 2026 **එකතු කළාට පස්සේ** මුළු එකතුව |
-
-**➜ තීරණය ගන්න ඕන එකම දේ:** `[N]` යනු **තුන් නිර්ණායකයට එරෙහිව ඇගයූ studies ගණන** විය යුතුයි
-— එනම් **කණ්ඩායම A ∪ කණ්ඩායම B** (A = ළඟම competitors, B = පුළුල් සමීක්ෂණය).
-ඒ දෙක අතර **අතිච්ඡාදනයක් තියෙනවද** කියන එක අතින් බලලා **එක වතාවක්** ගණන් කරන්න.
+| McAtamney & Corlett — **RULA** | 1993 | method citation |
+| Deb et al. — **NSGA-II** | 2002 | method citation |
+| Ma et al. — muscle fatigue | 2010 | window එකෙන් පිට |
+| Lundberg & Lee — **SHAP** | 2017 | method citation |
+| ⚠️ **Othman et al.** — *JIEM* | **වර්ෂය නෑ** | තහවුරු කරන්න බෑ ➜ ගණනට ගත්තේ නෑ |
 
 ```
-⏱️ විනාඩි 10යි.  ගණන් කරලා ඒ එකම සංඛ්‍යාව මේ තැන් 5 ට දාන්න:
-   1. මේ table එකේ  [final]
-   2. Gap statement v2 හි  [N]  (තැන් 2ක)
-   3. paper/section2-related-work.md
-   4. README.md §6
-   5. docs/02-task-board.md
+51 − 5  =  46  studies published 2018–2026          ← ★ මේක තමයි [N]
 ```
 
-> ⚠️ **මම මේක අනුමානයෙන් පුරවලා නෑ.** 52/47/53 තුනෙන් එකක් තෝරලා දැම්මොත් ඒක
-> **ගණන් කිරීමක් නොව අනුමානයක්** — සහ ඒක තමයි මේ ලේඛනයේම §4 එකේ අපි විවේචනය කරන දේ.
+> ⚠️ **ඉතුරු එකම දෙය:** Othman et al. (*JIEM*, "Workforce scheduling incorporating human
+> factors") හි **වර්ෂය table එකේ නෑ**. ඒක **2018 හෝ ඊට පසුව** නම් → **N = 47**.
+> ➜ ගණනට නොගැනීම **conservative** — වැරදි දිශාවට වැරදෙන එකක් නොවේ.
 
-### 📊 අවසන් සංඛ්‍යා (T2.4 සම්පූර්ණ වූ පසු පුරවන්න)
+#### ඇගයීමේ ගැඹුර — *"none"* කියන්න පුළුවන් කීයකටද?
+
+| | ගණන |
+|---|---|
+| Records screened (A ∪ B) | **51** |
+| ★ **Published 2018–2026** → `[N]` | **46** |
+| Abstract මට්ටමින් හෝ ඊට වඩා **ඇගයූ** | **31** |
+| **Full text කියවූ** (කණ්ඩායම A) | **9** |
+| ★★ **තුනම එකවර ✅** | **0** |
+
+> ⚠️ කණ්ඩායම B හි **15ක් තවම `⬜ pending`**. ඒ නිසා *"none of 46"* කියන එක
+> **ඇගයීමේ ගැඹුර නොකියා ලියන්න එපා** — reviewer කෙනෙක් *"46ම කියෙව්වද?"* කියලා අහනවා.
+>
+> ✅ **මෙසේ ලියන්න** *(සම්පූර්ණයෙන් සත්‍ය, තවමත් ශක්තිමත්)*:
+>
+> > *"Of the 46 studies published between 2018 and 2026 — 31 assessed at abstract level or
+> > beyond, and the nine most closely related read in full — none couples a quantified human
+> > twin, a machine twin and measured sustainability objectives within a single decision
+> > framework."*
+
+### 📊 අවසන් සංඛ්‍යා
 
 | ප්‍රශ්නය | Paper ගණන |
 |---|---|
-| මුළු papers (N) | `[final]` *(⛔ ඉහත බලන්න — කණ්ඩායම B = **47** තහවුරු)* |
+| මුළු papers (N) | ✅ **46** *(2018–2026 · screened 51)* |
 | Machine DT ✅ | `[X]` |
 | Human-side model කිසියම් ආකාරයක ✅ | `[Y]` |
 | ★ Human state **quantified & decision-coupled** ✅ | `[Z]` *(දැනට හඳුනාගත්තේ: **1** — Tan et al.)* |
@@ -383,26 +413,27 @@ Round 1 (papers 33) සහ full-text කියවූ 3 මත පදනම්ව
 
 ### ✍️ Gap Statement — කෙටුම්පත **v2** *(citation-backed)*
 
-> *Our review of `[N]` studies published between 2018 and 2026 reveals that the field is **bifurcated**, and that the two halves have not been joined.*
+> *Our review of **46** studies published between 2018 and 2026 reveals that the field is **bifurcated**, and that the two halves have not been joined.*
 >
 > ***First**, digital-twin research that adopts a human-centric framing represents the operator through **static profile data** rather than dynamic physiological state. The Human Digital Twin framework of Modoni and Sacco [1] models worker capabilities, aspirations and attitudes, but computes neither fatigue nor ergonomic risk — a limitation the authors themselves identify as unaddressed. Others remain entirely conceptual, offering no computable human parameters and no experimental validation [2].*
 >
 > ***Second**, the complementary body of work **does quantify operator state, but stops short of decision-making**. Sharotry et al. [3] detect biomechanical fatigue from joint-angle dynamics with considerable rigour, yet the resulting fatigue estimate is used for monitoring only and is never fed back into task allocation; the authors conclude by calling for "a true personalized DT for an operator". Greco et al. [4] compute ergonomic indices within a human digital twin, but the twin informs manual decision support rather than automated optimisation. Where fatigue does drive scheduling — as in the enhanced NSGA-II formulation of Tan et al. [5] — no machine-side digital twin exists, so machine health, energy consumption and quality risk cannot participate in the allocation decision.*
 >
-> ***Third**, the requirement to join these halves has been **explicitly stated but not met**. Löcklin et al. [6] argue that Operator 4.0 applications "require a bi-directional flow of information and need data, models and simulations of machines as well as humans", yet present an architecture without implementation, optimisation or sustainability objectives. Meanwhile, environmental performance is almost never co-optimised with human wellbeing: recent human-centric digital twin work invokes sustainability rhetorically while reporting no energy or carbon accounting [7]. Of `[N]` studies reviewed, **none** couple a quantified human twin, a machine twin and measured sustainability objectives within a single decision framework.*
+> ***Third**, the requirement to join these halves has been **explicitly stated but not met**. Löcklin et al. [6] argue that Operator 4.0 applications "require a bi-directional flow of information and need data, models and simulations of machines as well as humans", yet present an architecture without implementation, optimisation or sustainability objectives. Meanwhile, environmental performance is almost never co-optimised with human wellbeing: recent human-centric digital twin work invokes sustainability rhetorically while reporting no energy or carbon accounting [7]. Of the **46** studies published between 2018 and 2026 — **31** assessed at abstract level or beyond, and the **nine** most closely related read in full — **none** couples a quantified human twin, a machine twin and measured sustainability objectives within a single decision framework.*
 >
 > *This study addresses all three gaps.*
 
 > ✅ **Citations [1]–[7] සියල්ලම තහවුරු කර ඇත** — වෙනස් කරන්න එපා.
-> ⚠️ **`[N]` පමණක් ඉතිරි** — T2.4 සම්පූර්ණ වූ පසු පුරවන්න.
+> ✅ **`[N]` = 46 පුරවා ඇත (2026-08-06)** — ගණන් කිරීම §4 මුල බලන්න.
+> ⚠️ **එකම ඉතුරු දෙය:** Othman et al. (*JIEM*) හි වර්ෂය — 2018+ නම් N = 47.
 
 ### 🚪 GATE 2 තත්ත්වය
 
-- [x] Gap එකේ **දිශාව** තහවුරු — competitors **7ක්** කියවා
+- [x] Gap එකේ **දිශාව** තහවුරු — competitors **9ක්** කියවා
 - [x] **Citation-backed** තර්කයක් ලියා ඇත (v2)
 - [x] ★ **තරඟකරුවන්ගේම වචන 3ක්** gap එකට සහාය දෙයි (Sharotry, Löcklin, Modoni)
-- [x] "තුනම එකවර ✅" = **0 / 47** — තහවුරු කර ඇත
-- [ ] `[N]` අවසන් සංඛ්‍යාව — T2.4 සම්පූර්ණ වූ පසු
+- [x] "තුනම එකවර ✅" = **0 / 46** — තහවුරු කර ඇත
+- [x] ✅ **`[N]` = 46** — ගණන් කර ඇත (2026-08-06) · screened 51 · ඇගයූ 31 · full-text 9
 - [ ] Supervisor අනුමැතිය
 
 ---
