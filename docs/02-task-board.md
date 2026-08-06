@@ -318,8 +318,8 @@
 |---|---|---|---|---|
 | **T7.1** | KPI table හදන්න — B1 vs B2 vs B3, KPI 6ක් | `results/kpi_table.csv` | 1 දින | ✅ **08-05** |
 | **T7.2** | ★ සංඛ්‍යානමය පරීක්ෂාව — Mann-Whitney U + effect size | `results/stats.csv` | 1 දින | ✅ **08-05** |
-| **T7.3** | ★ **Fig 3: Pareto front** — efficiency vs wellbeing trade-off | `figures/fig3_pareto.png` | 1 දින | ⬜ |
-| **T7.4** | **Fig 4:** Baseline comparison bar chart | `figures/fig4_comparison.png` | 0.5 දින | ⬜ |
+| **T7.3** | ★ **Fig 3: trade-off** — efficiency vs wellbeing (HC1 sweep) | `figures/fig3_tradeoff.png` | 1 දින | ✅ **08-06** |
+| **T7.4** | **Fig 4:** Baseline comparison bar chart | `figures/fig4_comparison.png` | 0.5 දින | ✅ **08-06** |
 | **T7.5** | **Fig 5:** Dashboard screenshot + SHAP explanation | `figures/fig5_dashboard.png` | 0.5 දින | ⬜ |
 | **T7.6** | Sensitivity analysis — weights (w₁…w₅) වෙනස් කලාම මොකද වෙන්නේ? | `results/sensitivity.csv` | 1.5 දින | ✅ **08-05** |
 | **T7.6b** | ★★ **GATE 3 carry-over:** **λ, μ** sensitivity — 0.5× · 1× · 2× | `results/sensitivity_fatigue.csv` | 0.5 දින | ✅ **08-05** |
