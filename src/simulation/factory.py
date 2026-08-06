@@ -181,13 +181,15 @@ def weighted_allocator(state: ShiftState, rng: random.Random
     current = {o: s.current_machine for o, s in state.operators.items()}
 
     ablate = getattr(state.allocator, "ablate", frozenset())
+    # Observation only, and absent in every normal run — see decide().
+    probe = getattr(state, "decision_probe", None)
     assignments = []
     for task in state.pending_tasks():
         if not free_ops or not free_macs:
             break
         chosen = decide(
             build_candidates(state, task, free_ops, free_macs, ablate),
-            setup.cfg, scales, shares, current, state.violations)
+            setup.cfg, scales, shares, current, state.violations, probe=probe)
         if chosen is None:
             continue                       # deferred: no feasible pairing
         assignments.append((task, chosen.operator, chosen.machine))

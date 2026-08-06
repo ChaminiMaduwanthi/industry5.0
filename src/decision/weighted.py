@@ -47,23 +47,44 @@ def score(candidate: Candidate, weights: dict, scales: dict,
 
 def decide(candidates: list[Candidate], cfg: dict, scales: dict,
            workload_shares: dict, current_machine: dict,
-           violations: Violations | None = None) -> Candidate | None:
+           violations: Violations | None = None,
+           probe=None) -> Candidate | None:
     """One epoch's choice: filter on the hard constraints, then optimise.
 
     Returns None when nothing survives the filter — a deferral, which the
     design treats as a result worth reporting rather than a failure to hide.
+
+    `probe`, when given, is called once per decision with the number of
+    admissible options and the spread between the best and worst score among
+    them (None when fewer than two). It is how decision_pressure.py measures
+    how much room the objective actually has, and it observes only — the
+    choice made is identical whether or not it is passed.
     """
     feasible = filter_candidates(candidates, cfg["constraints"]["hard"],
                                  violations)
     if not feasible:
+        if probe is not None:
+            probe(0, None)
         return None
 
     weights = cfg["objective"]["weight_scenarios"][cfg["objective"]["active_weights"]]
     soft = cfg["constraints"]["soft"]
 
-    return min(feasible, key=lambda c: score(
-        c, weights, scales,
-        workload_share=workload_shares.get(c.operator, 0.0),
-        switching=(current_machine.get(c.operator) not in (None, c.machine)),
-        soft=soft,
-    ))
+    def _score(c: Candidate) -> float:
+        return score(
+            c, weights, scales,
+            workload_share=workload_shares.get(c.operator, 0.0),
+            switching=(current_machine.get(c.operator) not in (None, c.machine)),
+            soft=soft,
+        )
+
+    if probe is None:
+        return min(feasible, key=_score)
+
+    # Same selection, with the scores kept so the spread can be reported.
+    # min() over (score, candidate) pairs keyed on the score returns the first
+    # minimum, exactly as min(feasible, key=...) does.
+    scored = [(_score(c), c) for c in feasible]
+    values = [s for s, _ in scored]
+    probe(len(scored), max(values) - min(values) if len(values) > 1 else None)
+    return min(scored, key=lambda pair: pair[0])[1]

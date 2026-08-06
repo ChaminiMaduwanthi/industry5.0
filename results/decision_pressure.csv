@@ -1,0 +1,4 @@
+scenario,shifts,decisions,no_choice,share_no_choice,share_with_choice,median_options,max_options,median_spread,mean_spread,max_spread
+S1,30,27296,25855,0.9472,0.0528,0.0,8,0.016,0.0233,0.3715
+S2,30,45754,43784,0.9569,0.0431,0.0,8,0.015,0.0218,0.4141
+S3,30,37199,35549,0.9556,0.0444,0.0,8,0.0157,0.0238,0.4574
