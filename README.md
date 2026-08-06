@@ -72,7 +72,7 @@ ICARC/
 | Phase | නම | තත්ත්වය |
 |---|---|---|
 | 1 | පදනම හදාගැනීම | ✅ **අවසන් · GATE 1 පසුයි (2026-08-03)** |
-| 2 | Literature Review | 🟨 **≈92% — papers **46** (screened 51), full-text කියවා 9, gap v2 ✅, Related Work ✅, ★ Destouet full-text ✅ (2026-08-04)** |
+| 2 | Literature Review | 🟨 **≈92% — papers **46** (2018–2026; screened 51), full-text කියවා 9, gap v2 ✅, Related Work ✅, ★ Destouet full-text ✅ (2026-08-04)** |
 | 3 | Framework Design ★ | ✅ **අවසන් · 🚪 GATE 3 පසුයි (2026-08-04) — DESIGN FROZEN** |
 | 4 | දත්ත සකසාගැනීම | ✅ **අවසන් (2026-08-05)** — D1/D3/D4 · data card · licenses තහවුරු |
 | 5 | Implementation | 🟨 **11/16** — twins, coupling, decision layer, tests 256 ✅ · NSGA-II/SHAP/dashboard **කැපුවා** |
