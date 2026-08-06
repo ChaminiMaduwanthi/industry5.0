@@ -65,7 +65,8 @@ Phase 8  ░░░░░░░░░░░░░░░░░░░░  ⬜  0/15
 | **[04-framework-design.md](04-framework-design.md)** ★ | 🔒 **FROZEN** | Architecture, සමීකරණ, constraints — **structure වෙනස් කරන්න එපා** |
 | [05-experiment-plan.md](05-experiment-plan.md) | ★ | Datasets, baselines, KPIs, statistics |
 | **[10-data-card.md](10-data-card.md)** | Phase 4, 8 | මොන දත්තද, කොහෙන්ද, **license** එක · ⚠️ D1 synthetic බව |
-| **[12-paper-blueprint.md](12-paper-blueprint.md)** 🆕 ★★★ | **Phase 8 — මුලින්ම මේක** | **පත්‍රිකාවට ඕන හැම දෙයක්ම.** Framework එකේ අන්තර්ගතය · කොටස් අනුව blueprint · සාක්ෂි · H1/H2 · ලියන්න බැරි දේ 16 |
+| **[13-reference-verification.md](13-reference-verification.md)** 🆕 | **Submit කරන්න කලින්** | references 33 verify කළ ප්‍රතිඵල · ⚠️ [20] Sgarbossa pages ඉතුරු |
+| **[12-paper-blueprint.md](12-paper-blueprint.md)** ★★★ | **Phase 8 — මුලින්ම මේක** | **පත්‍රිකාවට ඕන හැම දෙයක්ම.** Framework එකේ අන්තර්ගතය · කොටස් අනුව blueprint · සාක්ෂි · H1/H2 · ලියන්න බැරි දේ 16 |
 | **[11-design-deviations.md](11-design-deviations.md)** ★ | **Phase 8** | ⚠️ **Design එකෙන් අයිනට ගිය තැන් 9** — §VI එකට අනිවාර්ය |
 | **`../src/config.yaml`** ★★ | **හැම දාම** | **Parameters සියල්ල.** Code එකේ අගයක් hard-code කරන්න එපා |
 | [06-paper-outline.md](06-paper-outline.md) | සති 12–13 | Paper එක ලියන හැටි |
